@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="1" author="example">
+        <createTable tableName="managed_system">
+            <column name="id" type="int"/>
+            <column name="name" type="varchar(20)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="example">
+        <createTable tableName="user_table" ext:prefix="secure">
+            <column name="id" type="int"/>
+            <column name="username" type="varchar(20)"/>
+            <column name="password" type="varchar(20)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="3" author="example">
+        <preConditions>
+            <ext:hasPasswordColumn tableName="secure_user_table"/>
+            <not>
+                <ext:hasPasswordColumn tableName="managed_system"/>
+            </not>
+        </preConditions>
+        <ext:clearPasswords tableName="secure_user_table"/>
+    </changeSet>
+
+</databaseChangeLog>
