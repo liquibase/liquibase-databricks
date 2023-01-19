@@ -7,12 +7,13 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
     http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd ">
 
-<changeSet id="1" author="author name">
-	<!--Insert XML change objects here https://www.liquibase.org/documentation/xml_format.html-->
-</changeSet>
-
-<changeSet id="2" author="author name">
-	<!--Insert XML change objects here https://www.liquibase.org/documentation/xml_format.html-->
-</changeSet>
+	<changeSet author="me" id="1">
+		<createTable tableName="person">
+			<column name="id" type="int">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="name" type="varchar(255)"/>
+		</createTable>
+	</changeSet>
 
 </databaseChangeLog>
