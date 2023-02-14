@@ -1,2 +1,2 @@
-com.example.change.ClearPasswordsChange
-com.example.change.PrefixedCreateTableChange
+liquibase.ext.databricks.change.ClearPasswordsChange
+liquibase.ext.databricks.change.PrefixedCreateTableChange
