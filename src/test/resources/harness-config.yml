@@ -1,0 +1,9 @@
+inputFormat: xml
+context: testContext
+
+databasesUnderTest:
+  - name: databricks
+    version:
+    url: jdbc:databricks://domain:443/default;transportMode=http;ssl=1;httpPath=sql/protocolv1/o/<warehouse_id>>;AuthMech=3;ConnCatalog=main;ConnSchema=liquibase_harness_test_ds;
+    username: token
+    password: <token>
