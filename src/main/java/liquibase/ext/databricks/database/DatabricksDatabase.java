@@ -37,7 +37,7 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
 
     public DatabricksDatabase() {
 
-        super.setCurrentDateTimeFunction("(current_timestamp()::bigint/5500)::timestamp");
+        super.setCurrentDateTimeFunction("current_timestamp()");
         super.addReservedWords(getDatabricksReservedWords());
         super.defaultAutoIncrementStartWith = BigInteger.ONE;
         super.defaultAutoIncrementBy = BigInteger.ONE;
