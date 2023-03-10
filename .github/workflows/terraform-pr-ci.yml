@@ -1,0 +1,109 @@
+# Define the name of the workflow
+name: Terraform Workflow
+
+# Trigger the workflow to run on pull requests to the main branch
+on:
+  pull_request:
+    branches:
+      - main
+
+# Define the jobs that will run in this workflow
+jobs:
+  # Define the Terraform job
+  setup:
+    # Run the job on the latest version of Ubuntu
+    runs-on: ubuntu-latest
+
+    # Define environment variables to be used in the job
+    env:
+      # Set the version of Terraform to be used
+      TF_VERSION: 1.1.0
+      # Set the AWS region to be used in the Terraform script
+      AWS_REGION: us-west-2
+
+    # Define the steps to be run in the job
+    steps:
+      # Checkout the repository so that the Terraform script can be accessed
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      # Set up Terraform using the hashicorp/setup-terraform action
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      # Initialize Terraform
+      - name: Terraform Init
+        run: terraform init
+
+      # Validate the Terraform script
+      - name: Terraform Validate
+        run: terraform validate
+
+      # Apply the Terraform script to create infrastructure
+      - name: Terraform Apply
+        run: |
+          terraform apply -auto-approve
+
+  # Define the test job
+  test:
+    # Run the job on the latest version of Ubuntu after the terraform job completes
+    runs-on: ubuntu-latest
+    needs: terraform
+
+    # Define the steps to be run in the job
+    steps:
+      # Checkout the repository so that the test can be accessed
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      # Set up Temurin Java 17 and cache the Maven packages
+      - name: Set up JDK and Cache Maven packages
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17' # Set the version of Java to be used
+          distribution: 'temurin' # Use Temurin Java
+          cache: 'maven' # Cache Maven packages
+
+      # Build the code using Maven
+      - name: Build with Maven
+        run: mvn -B jacoco:prepare-agent package --file pom.xml
+
+      # Run the LiquibaseHarnessSuiteIT tests using Maven
+      - name: Run Test Harness Tests
+        run: mvn -B jacoco:prepare-agent surefire:test -Dit.test=LiquibaseHarnessSuiteIT
+
+  # Define the destroy job
+  destroy:
+    # Run the job on the latest version of Ubuntu after the test job completes
+    runs-on: ubuntu-latest
+    needs: test
+
+    # Define environment variables to be used in the job
+    env:
+      # Set the version of Terraform to be used
+      TF_VERSION: 1.1.0
+      # Set the AWS region to be used in the Terraform script
+      AWS_REGION: us-west-2
+
+    # Define the steps to destroy the created infrastructure using Terraform
+    steps:
+      # Checkout the repository so that the Terraform script can be accessed
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      # Set up Terraform using the hashicorp/setup-terraform action
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      # Initialize Terraform
+      - name: Terraform Init
+        run: terraform init
+
+      # Destroy the Terraform resources
+      - name: Terraform Destroy
+        run: |
+          terraform destroy -auto-approve
