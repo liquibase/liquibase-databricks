@@ -23,10 +23,13 @@ public class PrefixedCreateTableChange extends CreateTableChange {
     @Override
     protected CreateTableStatement generateCreateTableStatement() {
         String prefix = getPrefix();
+
         if (prefix == null) {
-            prefix = "standard";
+            setPrefix("");
+        } else if (prefix.trim().length() > 0) {
+            this.setPrefix(prefix + "_");
         }
 
-        return new CreateTableStatement(getCatalogName(), getSchemaName(), prefix + "_" + getTableName(), getRemarks());
+        return new CreateTableStatement(getCatalogName(), getSchemaName(), this.getPrefix() + getTableName(), getRemarks());
     }
 }
