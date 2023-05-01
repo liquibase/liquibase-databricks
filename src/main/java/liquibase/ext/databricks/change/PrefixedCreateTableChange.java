@@ -5,6 +5,7 @@ import liquibase.change.DatabaseChange;
 import liquibase.change.DatabaseChangeProperty;
 import liquibase.change.core.CreateTableChange;
 import liquibase.statement.core.CreateTableStatement;
+import liquibase.util.StringUtil;
 
 @DatabaseChange(name = "createTable", description = "Create Table", priority = ChangeMetaData.PRIORITY_DATABASE + 50)
 public class PrefixedCreateTableChange extends CreateTableChange {
@@ -22,14 +23,12 @@ public class PrefixedCreateTableChange extends CreateTableChange {
 
     @Override
     protected CreateTableStatement generateCreateTableStatement() {
-        String prefix = getPrefix();
+        String prefix = StringUtil.trimToEmpty(getPrefix());
 
-        if (prefix == null) {
-            setPrefix("");
-        } else if (prefix.trim().length() > 0) {
-            this.setPrefix(prefix + "_");
+        if (!prefix.equals("")) {
+            prefix = prefix + "_";
         }
 
-        return new CreateTableStatement(getCatalogName(), getSchemaName(), this.getPrefix() + getTableName(), getRemarks());
+        return new CreateTableStatement(getCatalogName(), getSchemaName(), prefix + getTableName(), getRemarks());
     }
 }
