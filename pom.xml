@@ -5,7 +5,7 @@
 
     <groupId>org.liquibase.ext</groupId>
     <artifactId>liquibase-databricks</artifactId>
-    <version>0.0.1</version>
+    <version>1.0.0-SNAPSHOT</version>
 
     <description>Liquibase Extension for Databricks.</description>
     <url>https://docs.liquibase.com</url>
@@ -54,7 +54,7 @@
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
-            <version>4.18.0</version>
+            <version>4.21.1</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -67,11 +67,6 @@
             <artifactId>liquibase-test-harness</artifactId>
             <version>1.0.9</version>
 
-        </dependency>
-        <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>1.33</version>
         </dependency>
         <dependency>
             <groupId>org.skyscreamer</groupId>
