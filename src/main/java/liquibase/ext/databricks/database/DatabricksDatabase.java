@@ -26,7 +26,7 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
     private static final String DEFAULT_CATALOG = "main";
 
     // Set default Schema of given catalog
-    private static final String DEFAULT_SCHEMA = "liquibase_harness_test_ds";
+    private static final String DEFAULT_SCHEMA = "default";
 
     // This is from the new INFORMATION_SCHEMA() database
     private Set<String> systemTablesAndViews = new HashSet<>();
