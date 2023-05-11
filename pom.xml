@@ -16,8 +16,8 @@
 
     <licenses>
         <license>
-            <name>Liquibase EULA</name>
-            <url>https://www.liquibase.com/eula</url>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+            <name>Apache License, Version 2.0</name>
         </license>
     </licenses>
 
@@ -48,6 +48,8 @@
         <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
         <groovy.version>2.4.17</groovy.version>
         <dependency.spock.version>1.3-groovy-2.4</dependency.spock.version>
+
+        <jacoco.fileset.directory>target</jacoco.fileset.directory>
     </properties>
 
     <dependencies>
@@ -184,6 +186,22 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.10</version>
+                <configuration>
+                    <fileSets>
+                        <fileSet>
+                            <directory>${jacoco.fileset.directory}</directory>
+                            <includes>
+                                <include>**/jacoco.exec</include>
+                            </includes>
+                        </fileSet>
+                    </fileSets>
+                </configuration>
             </plugin>
 
             <plugin>
