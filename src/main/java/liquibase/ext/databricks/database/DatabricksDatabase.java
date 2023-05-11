@@ -120,12 +120,24 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
     @Override
     public String getDefaultCatalogName() {
         //must have UC enabled for this, will not play with hive_metastore
-        return DEFAULT_CATALOG;
+        try {
+            String connCatalog = getConnectionCatalogName();
+            return connCatalog;
+        } catch (DatabaseException e) {
+            String connCatalog = DEFAULT_CATALOG;
+            return connCatalog;
+        }
+
     }
 
     @Override
     public String getDefaultSchemaName() {
-        return DEFAULT_SCHEMA;
+
+
+        String connSchema = getConnectionSchemaName();
+        //DEFAULT_SCHEMA
+        if (connSchema != null) {return connSchema;}
+        else {return DEFAULT_SCHEMA;}
     }
 
     @Override
@@ -139,15 +151,19 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
     }
 
     @Override
+    public boolean supportsCatalogInObjectName(Class<? extends DatabaseObject> type) {
+        return true;
+    }
+
+    @Override
     public boolean supportsCatalogs() {
         return true;
     }
 
     @Override
-    public boolean supportsCatalogInObjectName(Class<? extends DatabaseObject> type) {
-        return false;
+    public boolean supportsSchemas() {
+        return true;
     }
-
     @Override
     public boolean supportsSequences() {
         return true;

@@ -4,6 +4,6 @@ context: testContext
 databasesUnderTest:
   - name: databricks
     version:
-    url: jdbc:databricks://<workspace_url>:443/default;transportMode=http;ssl=1;httpPath=sql/<warehouse_id>;AuthMech=3;ConnCatalog=main;ConnSchema=liquibase_harness_test_ds;
+    url: jdbc:databricks://e2-demo-field-eng.cloud.databricks.com:443/default;transportMode=http;ssl=1;httpPath=sql/protocolv1/o/1444828305810485/0509-212704-p04ebihz;AuthMech=3;ConnCatalog=main;ConnSchema=lb_test_harness;
     username: token
-    password: <dbx_token<>
+    password: dapi4143588306001cb35baf442a9aa1ae3d

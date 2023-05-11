@@ -29,6 +29,6 @@ public class PrefixedCreateTableChange extends CreateTableChange {
             prefix = prefix + "_";
         }
 
-        return new CreateTableStatement(getCatalogName(), getSchemaName(), prefix + getTableName(), getRemarks());
+        return new CreateTableStatement(getCatalogName(), getSchemaName(), prefix + getTableName());
     }
 }
