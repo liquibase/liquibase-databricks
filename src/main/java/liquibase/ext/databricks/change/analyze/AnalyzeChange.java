@@ -15,7 +15,7 @@ import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.statement.SqlStatement;
 import liquibase.ext.databricks.change.vacuum.VacuumStatement;
 
-@DatabaseChange(name = "analyze", description = "Analyze Table Stats", priority = ChangeMetaData.PRIORITY_DEFAULT + 200)
+@DatabaseChange(name = "analyze", description = "Analyze Table Stats", priority = ChangeMetaData.PRIORITY_DEFAULT)
 public class AnalyzeChange extends AbstractChange {
 
     private String catalogName;

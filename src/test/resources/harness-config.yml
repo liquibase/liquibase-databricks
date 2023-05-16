@@ -2,8 +2,8 @@ inputFormat: xml
 context: testContext
 
 databasesUnderTest:
-  - name: databricks
+  - name:  <database>
     version:
-    url: jdbc:databricks://e2-demo-field-eng.cloud.databricks.com:443/default;transportMode=http;ssl=1;httpPath=sql/protocolv1/o/1444828305810485/0509-212704-p04ebihz;AuthMech=3;ConnCatalog=main;ConnSchema=lb_test_harness;
+    url: <url>
     username: token
-    password: dapi4143588306001cb35baf442a9aa1ae3d
+    password: <dbx_token>

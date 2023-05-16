@@ -18,14 +18,15 @@ import liquibase.exception.ValidationErrors;
 import liquibase.sql.Sql;
 import liquibase.statement.SqlStatement;
 import liquibase.ext.databricks.change.optimize.OptimizeStatement;
+import liquibase.ext.databricks.change.optimize.OptimizeGenerator;
 
-@DatabaseChange(name = "optimize", description = "Optimize and ZOrder Table", priority = ChangeMetaData.PRIORITY_DEFAULT + 200)
+@DatabaseChange(name = "optimize", description = "Optimize and ZOrder Table", priority = ChangeMetaData.PRIORITY_DEFAULT)
 public class OptimizeChange extends AbstractChange {
 
     private String catalogName;
     private String schemaName;
     private String tableName;
-    private ArrayList<String> zorderColumns;
+    private String zorderColumns;
 
     public String getCatalogName() {
         return catalogName;
@@ -51,12 +52,12 @@ public class OptimizeChange extends AbstractChange {
         this.schemaName = schemaName;
     }
 
-    public ArrayList<String> getZorderColumns () {
+    public String getZorderColumns () {
         return zorderColumns;
     }
 
     public void setZorderColumns (String zorderColumns) {
-        this.zorderColumns = new ArrayList<String>(Arrays.asList(zorderColumns.split("\\s*,\\s*")));
+        this.zorderColumns = zorderColumns;
     }
 
     @Override

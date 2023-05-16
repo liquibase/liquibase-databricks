@@ -14,17 +14,17 @@ import java.util.Optional;
 
 public class AnalyzeGenerator extends AbstractSqlGenerator<AnalyzeStatement> {
 
+    @Override
     //check support for optimizer operation
     public boolean supports(AnalyzeStatement statement, Database database) {
         return database instanceof DatabricksDatabase;
     }
 
+    @Override
     public ValidationErrors validate(AnalyzeStatement statement, Database database, SqlGeneratorChain chain){
 
         ValidationErrors validationErrors = new ValidationErrors();
 
-        validationErrors.checkRequiredField("catalogName", statement.getCatalogName());
-        validationErrors.checkRequiredField("schemaName", statement.getSchemaName());
         validationErrors.checkRequiredField("tableName", statement.getTableName());
 
         // if analyzeColumns columns if null, dont add to sql statement - just use defaults (all columns)
@@ -32,21 +32,13 @@ public class AnalyzeGenerator extends AbstractSqlGenerator<AnalyzeStatement> {
         return validationErrors;
     }
 
+    @Override
     public Sql[] generateSql(AnalyzeStatement statement, Database database, SqlGeneratorChain chain) {
 
         StringBuilder sql = new StringBuilder("ANALYZE TABLE ");
 
-        if (statement.getCatalogName().trim().length() >= 1) {
-            sql.append(statement.getCatalogName() + ".");
-        }
+        sql.append(database.escapeTableName(statement.getCatalogName(), statement.getSchemaName(), statement.getTableName()));
 
-        if (statement.getSchemaName().trim().length() >= 1) {
-            sql.append(statement.getSchemaName() + ".");
-        }
-
-        if (statement.getTableName().trim().length() >= 1) {
-            sql.append(statement.getTableName() + " ");
-        }
 
         if (statement.getPartition().size() >= 1) {
             //only supports one partition at a time for now
@@ -62,10 +54,10 @@ public class AnalyzeGenerator extends AbstractSqlGenerator<AnalyzeStatement> {
         }
 
         if (statement.getAnalyzeColumns().size() >= 1) {
-            sql.append("COMPUTE STATISTICS FOR COLUMNS  (" + String.join(", ", statement.getAnalyzeColumns()) + ");");
+            sql.append("COMPUTE STATISTICS FOR COLUMNS  (" + String.join(", ", statement.getAnalyzeColumns()) + ")");
         }
         else {
-            sql.append(" COMPUTE STATISTICS;");
+            sql.append(" COMPUTE STATISTICS");
         }
         return new Sql[] { new UnparsedSql(sql.toString()) };
 

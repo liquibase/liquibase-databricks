@@ -2,6 +2,8 @@ package liquibase.ext.databricks.change.optimize;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
+
 import liquibase.statement.AbstractSqlStatement;
 
 
@@ -43,6 +45,14 @@ public class OptimizeStatement extends AbstractSqlStatement {
 
     public void setZorderColumns (ArrayList<String> zorderColumns) {
         this.zorderColumns = zorderColumns;
+    }
+
+    public void setZorderColumns (String zorderColumns) {
+        if (zorderColumns == null) {
+            this.zorderColumns = new ArrayList<>();
+            return;
+        }
+        this.zorderColumns = new ArrayList<String>(Arrays.asList(zorderColumns.split("\\s*,\\s*")));
     }
 
 }
