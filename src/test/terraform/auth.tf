@@ -1,8 +1,10 @@
-variable "databricks_connection_profile" {
-  description = "The name of the Databricks connection profile to use."
-  type        = string
+variable "DBX_HOST" {
+  type = string
 }
 
+variable "DBX_TOKEN" {
+  type  = string
+}
 # Initialize the Databricks Terraform provider.
 terraform {
   required_providers {
@@ -12,10 +14,9 @@ terraform {
   }
 }
 
-# Use Databricks CLI authentication.
+## Use environment variables for Github actions
 provider "databricks" {
-  profile = var.databricks_connection_profile
+  host  = var.DBX_HOST
+  token = var.DBX_TOKEN
 }
 
-# Retrieve information about the current user.
-data "databricks_current_user" "me" {}

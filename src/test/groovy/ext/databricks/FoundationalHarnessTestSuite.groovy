@@ -2,5 +2,5 @@ package ext.databricks
 
 import liquibase.harness.FoundationalHarnessSuite
 
-class FoundationalHarnessTestSuiteIT extends FoundationalHarnessSuite {
+class FoundationalHarnessTestSuite extends FoundationalHarnessSuite {
 }
