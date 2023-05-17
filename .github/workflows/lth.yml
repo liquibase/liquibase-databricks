@@ -38,6 +38,7 @@ jobs:
         working-directory: src/test/terraform
 
       - name: Collect Databricks Config
+        working-directory: src/test/terraform
         run: |
           CLUSTER_ID=$(terraform output -raw cluster_url)
           DATABRICKS_HOST=${TF_VAR_DBX_HOST#https://}
