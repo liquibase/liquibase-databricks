@@ -14,21 +14,34 @@ jobs:
       checks: write
 
     env:
-      WAREHOUSE_ID: TODO
-      DBX_TOKEN: TODO
+      TF_VAR_DBX_HOST: ${secrets.TH_DATABRICKS_WORKSPACE_HOST}
+      TF_VAR_DBX_TOKEN: ${secrets.TH_DATABRICKS_WORKSPACE_TOKEN}
+      TF_VAR_TEST_SCHEMA: lb_test_harness
+      WORKSPACE_ID: ${secrets.TH_DATABRICKS_WORKSPACE_ID}
 
     strategy:
       matrix:
         liquibase-support-level: [Foundational] # Define the different test levels to run
-        database-version: [0]
       fail-fast: false # Set fail-fast to false to run all test levels even if some of them fail
 
     steps:
-      - name: Checkout code # Checkout the code from the repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Start test database
-        run: # TODO
+      - run: terraform init
+        working-directory: src/test/terraform
+
+      - run: terraform plan
+        working-directory: src/test/terraform
+
+      - run: terraform apply -auto-approve
+        working-directory: src/test/terraform
+
+      - name: Collect Databricks Config
+        run: |
+          CLUSTER_ID=$(terraform output -raw cluster_url)
+          DATABRICKS_HOST=${TF_VAR_DBX_HOST#https://}
+          echo "DATABRICKS_URL=jdbc:databricks://$DATABRICKS_HOST:443/default;transportMode=http;ssl=1;httpPath=sql/protocolv1/o/$WORKSPACE_ID/$CLUSTER_ID;AuthMech=3;ConnCatalog=$TF_VAR_TEST_CATALOG;ConnSchema=$TF_VAR_TEST_SCHEMA;" >> "$GITHUB_ENV" 
 
       - name: Setup Temurin Java 17
         uses: actions/setup-java@v3
@@ -42,7 +55,7 @@ jobs:
 
       - name: Run ${{ matrix.liquibase-support-level }} Liquibase Test Harness # Run the Liquibase test harness at each test level
         continue-on-error: true # Continue to run the action even if the previous steps fail
-        run: mvn -B -ntp -DdbVersion=${{ matrix.database-version }} -Dtest=liquibase.ext.databricks.${{ matrix.liquibase-support-level }}ExtensionHarnessSuite test # Run the Liquibase test harness at each test level
+        run: mvn -B -ntp -DdbPassword=${{env.TF_VAR_DBX_TOKEN}} -DdbUrl='${{env.DATABRICKS_URL}}' -Dtest=liquibase.ext.databricks.${{ matrix.liquibase-support-level }}ExtensionHarnessSuite test # Run the Liquibase test harness at each test level
 
       - name: Test Reporter # Generate a test report using the Test Reporter action
         uses: dorny/test-reporter@v1.6.0
@@ -54,4 +67,6 @@ jobs:
           fail-on-error: false # Set fail-on-error to false to show report even if it has failed tests
 
       - name: Stop test database
-        run: TODO
+        if: always() # Always destroy, even if the previous steps fail
+        working-directory: src/test/terraform
+        run: terraform destroy -auto-approve
