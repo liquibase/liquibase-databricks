@@ -8,7 +8,7 @@ import liquibase.change.core.CreateTableChange;
 
 
 @DatabaseChange(name = "createTable", description = "Create Table", priority = ChangeMetaData.PRIORITY_DATABASE +500)
-public class DatabricksCreateTableChange extends CreateTableChange {
+public class CreateTableChangeDatabricks extends CreateTableChange {
 
     private String tableFormat;
     private String tableLocation;
@@ -28,9 +28,9 @@ public class DatabricksCreateTableChange extends CreateTableChange {
 
 
     @Override
-    protected DatabricksCreateTableStatement generateCreateTableStatement() {
+    protected CreateTableStatementDatabricks generateCreateTableStatement() {
 
-        DatabricksCreateTableStatement ctas = new DatabricksCreateTableStatement(getCatalogName(), getSchemaName(), getTableName());
+        CreateTableStatementDatabricks ctas = new CreateTableStatementDatabricks(getCatalogName(), getSchemaName(), getTableName());
 
         ctas.setTableFormat(this.getTableFormat());
         ctas.setTableLocation((this.getTableLocation()));

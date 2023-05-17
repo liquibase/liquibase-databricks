@@ -2,13 +2,13 @@ package liquibase.ext.databricks.change.createTable;
 
 
 import liquibase.statement.core.CreateTableStatement;
-public class DatabricksCreateTableStatement extends CreateTableStatement{
+public class CreateTableStatementDatabricks extends CreateTableStatement{
 
     private String tableFormat = "delta";
     private String tableLocation = "";
 
 
-    public DatabricksCreateTableStatement(String catalogName, String schemaName, String tableName) {
+    public CreateTableStatementDatabricks(String catalogName, String schemaName, String tableName) {
         super(catalogName, schemaName, tableName);
     }
 

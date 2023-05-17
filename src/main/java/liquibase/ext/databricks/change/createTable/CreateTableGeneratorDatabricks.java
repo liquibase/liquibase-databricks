@@ -11,7 +11,7 @@ import liquibase.statement.core.CreateTableStatement;
 import liquibase.structure.DatabaseObject;
 import liquibase.util.StringUtil;
 
-public class DatabricksCreateTableGenerator extends CreateTableGenerator {
+public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
 
 
     @Override
@@ -37,7 +37,7 @@ public class DatabricksCreateTableGenerator extends CreateTableGenerator {
 
         //if (statement instanceof DatabricksCreateTableStatement) {
 
-        DatabricksCreateTableStatement thisStatement = (DatabricksCreateTableStatement) statement;
+        CreateTableStatementDatabricks thisStatement = (CreateTableStatementDatabricks) statement;
 
 
         if ((!StringUtil.isEmpty(thisStatement.getTableFormat()))) {
