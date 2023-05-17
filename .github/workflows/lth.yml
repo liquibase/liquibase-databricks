@@ -57,7 +57,7 @@ jobs:
 
       - name: Run ${{ matrix.liquibase-support-level }} Liquibase Test Harness # Run the Liquibase test harness at each test level
         continue-on-error: true # Continue to run the action even if the previous steps fail
-        run: mvn -B -ntp -DdbPassword=${{env.TF_VAR_DBX_TOKEN}} -DdbUrl='${{env.DATABRICKS_URL}}' -Dtest=liquibase.ext.databricks.${{ matrix.liquibase-support-level }}ExtensionHarnessTestSuite test # Run the Liquibase test harness at each test level
+        run: mvn -X -B -ntp -DdbPassword=${{env.TF_VAR_DBX_TOKEN}} -DdbUrl='${{env.DATABRICKS_URL}}' -Dtest=liquibase.ext.databricks.${{ matrix.liquibase-support-level }}ExtensionHarnessTestSuite test # Run the Liquibase test harness at each test level
 
       - name: Test Reporter # Generate a test report using the Test Reporter action
         uses: dorny/test-reporter@v1.6.0
