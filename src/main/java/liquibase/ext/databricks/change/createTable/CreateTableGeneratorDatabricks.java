@@ -35,21 +35,22 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
         String finalsql = sqls[0].toSql();
 
 
-        //if (statement instanceof DatabricksCreateTableStatement) {
+        if (statement instanceof CreateTableStatementDatabricks) {
+            CreateTableStatementDatabricks thisStatement = (CreateTableStatementDatabricks) statement;
 
-        CreateTableStatementDatabricks thisStatement = (CreateTableStatementDatabricks) statement;
+            if ((!StringUtil.isEmpty(thisStatement.getTableFormat()))) {
+                finalsql += " USING " + thisStatement.getTableFormat();
+            } else {
+                finalsql += " USING delta ";
+            }
 
+            // Databricks can decide to have tables live in a particular location. If null, Databricks will handle the location automatically in DBFS
 
-        if ((!StringUtil.isEmpty(thisStatement.getTableFormat()))) {
-            finalsql += " USING " + thisStatement.getTableFormat();
+            if (!StringUtil.isEmpty(thisStatement.getTableLocation())) {
+                finalsql += " LOCATION '" + thisStatement.getTableLocation() + "'";
+            }
         } else {
             finalsql += " USING delta ";
-        }
-
-        // Databricks can decide to have tables live in a particular location. If null, Databricks will handle the location automatically in DBFS
-
-        if (!StringUtil.isEmpty(thisStatement.getTableLocation())) {
-            finalsql += " LOCATION '" + thisStatement.getTableLocation() + "'";
         }
 
         //}
