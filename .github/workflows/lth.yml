@@ -59,16 +59,6 @@ jobs:
         continue-on-error: true # Continue to run the action even if the previous steps fail
         run: mvn -B -ntp -DdbPassword=${{env.TF_VAR_DBX_TOKEN}} -DdbUrl='${{env.DATABRICKS_URL}}' -Dtest=liquibase.ext.databricks.${{ matrix.liquibase-support-level }}ExtensionHarnessTestSuite test # Run the Liquibase test harness at each test level
 
-      - name: Test Debug
-        run: |
-          ls -l target/surefire-reports
-          cat target/surefire-reports/liquibase.ext.databricks.FoundationalExtensionHarnessTestSuite-output.txt
-          cat target/surefire-reports/liquibase.ext.databricks.FoundationalExtensionHarnessTestSuite.txt
-          cat target/surefire-reports/TEST-liquibase.ext.databricks.FoundationalExtensionHarnessTestSuite.xml
-
-        if: always() # Run the action even if the previous steps fail
-
-
       - name: Test Reporter # Generate a test report using the Test Reporter action
         uses: dorny/test-reporter@v1.6.0
         if: always() # Run the action even if the previous steps fail
