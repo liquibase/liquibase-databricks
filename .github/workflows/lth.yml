@@ -43,7 +43,7 @@ jobs:
         run: |
           CLUSTER_ID=$(terraform output -raw cluster_url)
           DATABRICKS_HOST=${TF_VAR_DBX_HOST#https://}
-          echo "DATABRICKS_URL=jdbc:databricks://$DATABRICKS_HOST:443/default;transportMode=http;ssl=1;httpPath=sql/protocolv1/o/$WORKSPACE_ID/$CLUSTER_ID;AuthMech=3;ConnCatalog=$TF_VAR_TEST_CATALOG;ConnSchema=$TF_VAR_TEST_SCHEMA;" >> "$GITHUB_ENV" 
+          echo "DATABRICKS_URL=jdbc:databricks://$DATABRICKS_HOST:443/default;transportMode=http;ssl=1;httpPath=sql/protocolv1/o/$WORKSPACE_ID/$CLUSTER_ID;AuthMech=3;ConnCatalog=$TF_VAR_TEST_CATALOG;ConnSchema=$TF_VAR_TEST_SCHEMA;EnableArrow=0" >> "$GITHUB_ENV" 
 
       - name: Setup Temurin Java 17
         uses: actions/setup-java@v3
