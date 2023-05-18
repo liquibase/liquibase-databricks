@@ -2,6 +2,7 @@ package liquibase.ext.databricks.database;
 
 import liquibase.database.AbstractJdbcDatabase;
 import liquibase.database.DatabaseConnection;
+import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.DatabaseException;
 import liquibase.structure.DatabaseObject;
 import liquibase.statement.SqlStatement;
@@ -14,17 +15,12 @@ import java.util.Set;
 import java.util.List;
 import java.util.Collections;
 
+
 public class DatabricksDatabase extends AbstractJdbcDatabase {
 
     // define env variables for database
     public static final String PRODUCT_NAME = "databricks";
-    private static final Integer DATABRICKS_PRIORITY = 55;
-
     // Set default catalog - must be unity Catalog Enabled
-    private static final String DEFAULT_CATALOG = "main";
-
-    // Set default Schema of given catalog
-    private static final String DEFAULT_SCHEMA = "default";
 
     // This is from the new INFORMATION_SCHEMA() database
     private Set<String> systemTablesAndViews = new HashSet<>();
@@ -32,15 +28,26 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
     //Define data type names enabled for auto-increment columns - currently only BIGINT
     public static final List<String> VALID_AUTO_INCREMENT_COLUMN_TYPE_NAMES = Collections.unmodifiableList(Arrays.asList("BIGINT"));
 
-
     public DatabricksDatabase() {
-
         super.setCurrentDateTimeFunction("current_timestamp()");
         super.addReservedWords(getDatabricksReservedWords());
         super.defaultAutoIncrementStartWith = BigInteger.ONE;
         super.defaultAutoIncrementBy = BigInteger.ONE;
-        super.setDefaultCatalogName(DEFAULT_CATALOG);
-        super.setDefaultSchemaName(DEFAULT_SCHEMA);
+    }
+
+    @Override
+    protected String getQuotingStartCharacter() {
+        return "`";
+    }
+
+    @Override
+    protected String getQuotingEndCharacter() {
+        return "`";
+    }
+
+    @Override
+    protected String getQuotingEndReplacement() {
+        return "``";
     }
 
     @Override
@@ -65,36 +72,20 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
 
     @Override
     public int getPriority() {
-        return DATABRICKS_PRIORITY;
-    }
-
-    @Override
-    public String getCurrentDateTimeFunction() {
-        return "current_timestamp()";
+        return PRIORITY_DATABASE;
     }
 
     @Override
     public boolean isCorrectDatabaseImplementation(DatabaseConnection conn) throws DatabaseException {
-        return PRODUCT_NAME.equalsIgnoreCase(conn.getDatabaseProductName());
+        return PRODUCT_NAME.equalsIgnoreCase(conn.getDatabaseProductName()) || conn.getDatabaseProductName().equalsIgnoreCase("SparkSQL");
     }
 
     @Override
     public String getDefaultDriver(String url) {
-        if (url.startsWith("jdbc:databricks:")) {
-            return "com.databricks.Driver";
+        if (url.startsWith("jdbc:databricks:") || url.startsWith("jdbc:spark:")) {
+            return "com.databricks.client.jdbc.Driver";
         }
         return null;
-    }
-
-    @Override
-    public String getDefaultCatalogName() {
-        //must have UC enabled for this, will not play with hive_metastore
-        return "main";
-    }
-
-    @Override
-    public String getDefaultSchemaName() {
-        return "default";
     }
 
     @Override
@@ -108,28 +99,13 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
     }
 
     @Override
-    public boolean supportsCatalogs() {
-        return true;
-    }
-
-    @Override
     public boolean supportsCatalogInObjectName(Class<? extends DatabaseObject> type) {
-        return false;
-    }
-
-    @Override
-    public boolean supportsSequences() {
         return true;
     }
 
     @Override
     public boolean supportsTablespaces() {
         return false;
-    }
-
-    @Override
-    public boolean supportsAutoIncrement() {
-        return true;
     }
 
     @Override
@@ -164,21 +140,15 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
     }
 
     @Override
-    public boolean supportsRestrictForeignKeys() {
-        return true;
-    }
-
-    @Override
     protected SqlStatement getConnectionSchemaNameCallStatement() {
         return new RawCallStatement("select current_schema()");
     }
 
-
     private Set<String> getDatabricksReservedWords() {
 
-        Set<String> reservedWords = new HashSet<>();
         // Get Reserved words from: https://docs.databricks.com/sql/language-manual/sql-ref-reserved-words.html
-        reservedWords.addAll(Arrays.asList("ANTI",
+        return new HashSet<>(Arrays.asList(
+                "ANTI",
                 "CROSS",
                 "EXCEPT",
                 "FULL",
@@ -230,8 +200,18 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
                 "UNION", "UNIQUE", "UNKNOWN", "UPDATE", "USER", "USING",
                 "VALUES",
                 "WHEN", "WHERE", "WINDOW", "WITH"
-                ));
+        ));
+    }
 
-        return reservedWords;
+    @Override
+    public void setConnection(DatabaseConnection conn) {
+        DatabaseConnection dbConn;
+        if (conn instanceof JdbcConnection) {
+            // (see Databricks Connection for details)
+            dbConn = new DatabricksConnection(((JdbcConnection) conn).getWrappedConnection());
+        } else {
+            dbConn = conn;
+        }
+        super.setConnection(dbConn);
     }
 }

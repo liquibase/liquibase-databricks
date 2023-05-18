@@ -1,21 +1,10 @@
 package liquibase.ext.databricks.change.optimize;
 
 
-import java.text.MessageFormat;
+import liquibase.statement.AbstractSqlStatement;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-
-import liquibase.change.AbstractChange;
-import liquibase.change.ChangeMetaData;
-import liquibase.change.ChangeWithColumns;
-import liquibase.change.ColumnConfig;
-import liquibase.change.DatabaseChange;
-import liquibase.change.DatabaseChangeProperty;
-import liquibase.database.Database;
-import liquibase.exception.ValidationErrors;
-import liquibase.statement.SqlStatement;
-import liquibase.statement.AbstractSqlStatement;
 
 
 
@@ -56,6 +45,14 @@ public class OptimizeStatement extends AbstractSqlStatement {
 
     public void setZorderColumns (ArrayList<String> zorderColumns) {
         this.zorderColumns = zorderColumns;
+    }
+
+    public void setZorderColumns (String zorderColumns) {
+        if (zorderColumns == null) {
+            this.zorderColumns = new ArrayList<>();
+            return;
+        }
+        this.zorderColumns = new ArrayList<>(Arrays.asList(zorderColumns.split("\\s*,\\s*")));
     }
 
 }

@@ -1,0 +1,8 @@
+inputFormat: xml
+context: testContext
+
+databasesUnderTest:
+  - name: databricks
+    url: <url>
+    username: token
+    password: <dbx_token>

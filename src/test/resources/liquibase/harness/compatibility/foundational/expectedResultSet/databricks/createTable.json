@@ -1,0 +1,48 @@
+{
+  "createTable": [
+    {
+      "EXECTYPE": "EXECUTED",
+      "COMMENTS": "test_comment",
+      "AUTHOR": "as",
+      "CONTEXTS": "test_context",
+      "DESCRIPTION": "sql",
+      "ID": "1",
+      "LABELS": "test_label",
+      "FILENAME": "liquibase\/harness\/compatibility\/foundational\/changelogs\/createTable.xml",
+      "TAG": ""
+    },
+    {
+      "EXECTYPE": "EXECUTED",
+      "COMMENTS": "test_comment",
+      "AUTHOR": "as",
+      "CONTEXTS": "test_context",
+      "DESCRIPTION": "createTable tableName=test_table_yaml",
+      "ID": "1",
+      "LABELS": "test_label",
+      "FILENAME": "liquibase\/harness\/compatibility\/foundational\/changelogs\/createTable.yml",
+      "TAG": ""
+    },
+    {
+      "EXECTYPE": "EXECUTED",
+      "COMMENTS": "test_comment",
+      "AUTHOR": "as",
+      "CONTEXTS": "test_context",
+      "DESCRIPTION": "createTable tableName=test_table_json",
+      "ID": "1",
+      "LABELS": "test_label",
+      "FILENAME": "liquibase\/harness\/compatibility\/foundational\/changelogs\/createTable.json",
+      "TAG": ""
+    },
+    {
+      "EXECTYPE": "EXECUTED",
+      "COMMENTS": "test_comment",
+      "AUTHOR": "as",
+      "CONTEXTS": "test_context",
+      "DESCRIPTION": "sql",
+      "ID": "1",
+      "LABELS": "test_label",
+      "FILENAME": "liquibase\/harness\/compatibility\/foundational\/changelogs\/createTable.sql",
+      "TAG": "test_tag"
+    }
+  ]
+}

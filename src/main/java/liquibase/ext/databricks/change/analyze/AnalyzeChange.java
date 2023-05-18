@@ -1,21 +1,26 @@
-package liquibase.ext.databricks.change.optimize;
+package liquibase.ext.databricks.change.analyze;
 
 
 import liquibase.change.AbstractChange;
 import liquibase.change.ChangeMetaData;
 import liquibase.change.DatabaseChange;
 import liquibase.database.Database;
+import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.statement.SqlStatement;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Map;
 
-@DatabaseChange(name = "optimize", description = "Optimize and ZOrder Table", priority = ChangeMetaData.PRIORITY_DEFAULT)
-public class OptimizeChange extends AbstractChange {
+@DatabaseChange(name = "analyze", description = "Analyze Table Stats", priority = ChangeMetaData.PRIORITY_DEFAULT)
+public class AnalyzeChange extends AbstractChange {
 
     private String catalogName;
     private String schemaName;
     private String tableName;
-    private String zorderColumns;
+    private Map<String, String> partition;
+
+    private ArrayList<String> analyzeColumns;
 
     public String getCatalogName() {
         return catalogName;
@@ -41,28 +46,37 @@ public class OptimizeChange extends AbstractChange {
         this.schemaName = schemaName;
     }
 
-    public String getZorderColumns () {
-        return zorderColumns;
+    public Map<String, String> getPartition () {
+        return this.partition;
     }
 
-    public void setZorderColumns (String zorderColumns) {
-        this.zorderColumns = zorderColumns;
+    public ArrayList<String> getAnalyzeColumns () {return this.analyzeColumns;}
+
+    public void setPartition (Map<String, String> partition) {this.partition = partition;}
+
+    public void setAnalyzeColumns (ArrayList<String> analyzeColumns) {this.analyzeColumns = analyzeColumns;}
+
+
+    @Override
+    public boolean supports(Database database) {
+        return database instanceof DatabricksDatabase;
     }
 
     @Override
     public String getConfirmationMessage() {
-        return MessageFormat.format("{0}.{1}.{2} successfully optimized.", getCatalogName(), getSchemaName(), getTableName());
+        return MessageFormat.format("{0}.{1}.{2} successfully analyzed.", getCatalogName(), getSchemaName(), getTableName());
     }
 
     @Override
     public SqlStatement[] generateStatements(Database database) {
 
-        OptimizeStatement statement = new OptimizeStatement();
+        AnalyzeStatement statement = new AnalyzeStatement();
 
         statement.setCatalogName(getCatalogName());
         statement.setSchemaName(getSchemaName());
         statement.setTableName(getTableName());
-        statement.setZorderColumns(getZorderColumns());
+        statement.setPartition(getPartition());
+        statement.setAnalyzeColumns(getAnalyzeColumns());
 
         SqlStatement[] builtStatement = new SqlStatement[] {statement};
 

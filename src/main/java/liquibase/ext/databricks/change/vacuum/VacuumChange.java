@@ -1,4 +1,4 @@
-package liquibase.ext.databricks.change.optimize;
+package liquibase.ext.databricks.change.vacuum;
 
 
 import liquibase.change.AbstractChange;
@@ -9,13 +9,13 @@ import liquibase.statement.SqlStatement;
 
 import java.text.MessageFormat;
 
-@DatabaseChange(name = "optimize", description = "Optimize and ZOrder Table", priority = ChangeMetaData.PRIORITY_DEFAULT)
-public class OptimizeChange extends AbstractChange {
+@DatabaseChange(name = "vacuum", description = "Vacuum Old Files from Table", priority = ChangeMetaData.PRIORITY_DEFAULT + 200)
+public class VacuumChange extends AbstractChange {
 
     private String catalogName;
     private String schemaName;
     private String tableName;
-    private String zorderColumns;
+    private Integer retentionHours;
 
     public String getCatalogName() {
         return catalogName;
@@ -41,28 +41,28 @@ public class OptimizeChange extends AbstractChange {
         this.schemaName = schemaName;
     }
 
-    public String getZorderColumns () {
-        return zorderColumns;
+    public Integer getRetentionHours () {
+        return this.retentionHours;
     }
 
-    public void setZorderColumns (String zorderColumns) {
-        this.zorderColumns = zorderColumns;
+    public void setRetentionHours (Integer retentionHours) {
+        this.retentionHours = retentionHours;
     }
 
     @Override
     public String getConfirmationMessage() {
-        return MessageFormat.format("{0}.{1}.{2} successfully optimized.", getCatalogName(), getSchemaName(), getTableName());
+        return MessageFormat.format("{0}.{1}.{2} successfully vacuumed.", getCatalogName(), getSchemaName(), getTableName());
     }
 
     @Override
     public SqlStatement[] generateStatements(Database database) {
 
-        OptimizeStatement statement = new OptimizeStatement();
+        VacuumStatement statement = new VacuumStatement();
 
         statement.setCatalogName(getCatalogName());
         statement.setSchemaName(getSchemaName());
         statement.setTableName(getTableName());
-        statement.setZorderColumns(getZorderColumns());
+        statement.setRetentionHours(getRetentionHours());
 
         SqlStatement[] builtStatement = new SqlStatement[] {statement};
 
