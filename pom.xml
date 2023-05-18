@@ -8,7 +8,12 @@
     <version>1.0.0-SNAPSHOT</version>
 
     <description>Liquibase Extension for Databricks.</description>
-    <url>https://docs.liquibase.com</url>
+    <url>https://github.com/liquibase/liquibase-databricks</url>
+
+    <organization>
+        <name>Liquibase</name>
+        <url>http://www.liquibase.com</url>
+    </organization>
 
     <issueManagement>
         <url>https://github.com/liquibase/liquibase-databricks/issues</url>
@@ -32,13 +37,16 @@
 
     <scm>
         <connection>scm:git:git://github.com/liquibase/liquibase-databricks.git</connection>
-        <developerConnection>scm:git:ssh://github.com:liquibase/liquibase-databricks.git</developerConnection>
         <url>https://github.com/liquibase/liquibase-databricks</url>
     </scm>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <liquibase.version>4.22.0</liquibase.version>
+
         <sonar.organization>liquibase</sonar.organization>
         <sonar.projectKey>${sonar.organization}_${project.artifactId}</sonar.projectKey>
         <sonar.projectName>${project.name}</sonar.projectName>
@@ -46,6 +54,9 @@
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.scm.provider>git</sonar.scm.provider>
         <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
+        <sonar.sources>src/main/java</sonar.sources>
+        <sonar.tests>src/test/groovy</sonar.tests>
+
         <groovy.version>2.4.17</groovy.version>
         <dependency.spock.version>1.3-groovy-2.4</dependency.spock.version>
 
@@ -56,7 +67,7 @@
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
-            <version>4.22.0</version>
+            <version>${liquibase.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -68,17 +79,19 @@
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-test-harness</artifactId>
             <version>1.0.9</version>
-
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.skyscreamer</groupId>
             <artifactId>jsonassert</artifactId>
             <version>1.5.1</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.databricks</groupId>
             <artifactId>databricks-jdbc</artifactId>
             <version>2.6.33</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -114,7 +127,7 @@
             <plugin>
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-maven-plugin</artifactId>
-                <version>4.19.0</version>
+                <version>${liquibase.version}</version>
                 <configuration>
                     <propertyFileWillOverride>true</propertyFileWillOverride>
                     <propertyFile>target/classes/liquibase.properties</propertyFile>
@@ -129,34 +142,42 @@
 
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
+                <version>3.1.0</version>
                 <configuration>
                     <redirectTestOutputToFile>true</redirectTestOutputToFile>
                     <reportFormat>plain</reportFormat>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>default-test</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <includes>
-                                <include>**/*Test.java</include>
-                                <include>**/*Test.groovy</include>
-                                <include>**/*IT.java</include>
-                                <include>**/*IT.groovy</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
 
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <version>3.3.0</version>
+            </plugin>
+
+  <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.5.0</version>
+                <configuration>
+                    <attach>true</attach>
+                    <author>false</author>
+                    <doctitle>Liquibase Databricks ${version} API</doctitle>
+                    <quiet>true</quiet>
+                    <doclint>none</doclint>
+                    <encoding>UTF-8</encoding>
+
+                    <includeDependencySources>false</includeDependencySources>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>javadoc-default</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>
@@ -215,6 +236,36 @@
                 <artifactId>liquibase-sdk-maven-plugin</artifactId>
                 <version>0.10.20</version>
             </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.4.1</version>
+                <configuration>
+                    <embedBuildProfileDependencies>true</embedBuildProfileDependencies>
+                    <updatePomFile>true</updatePomFile>
+                    <flattenMode>ossrh</flattenMode>
+                    <outputDirectory>${project.build.directory}</outputDirectory>
+                    <flattenedPomFilename>${project.artifactId}-${project.version}.pom</flattenedPomFilename>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 </project>
