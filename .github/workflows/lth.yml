@@ -62,7 +62,9 @@ jobs:
       - name: Test Debug
         run: |
           ls -l target/surefire-reports
-          find target/surefire-reports -name * | xargs cat
+          cat target/surefire-reports/liquibase.ext.databricks.FoundationalExtensionHarnessTestSuite-output.txt
+          cat target/surefire-reports/liquibase.ext.databricks.FoundationalExtensionHarnessTestSuite.txt
+          cat target/surefire-reports/TEST-liquibase.ext.databricks.FoundationalExtensionHarnessTestSuite.xml
 
         if: always() # Run the action even if the previous steps fail
 
