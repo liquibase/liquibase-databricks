@@ -1,19 +1,16 @@
 package liquibase.ext.databricks.change.analyze;
 
 
-import java.lang.reflect.Array;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Map;
-
-
 import liquibase.change.AbstractChange;
 import liquibase.change.ChangeMetaData;
 import liquibase.change.DatabaseChange;
 import liquibase.database.Database;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.statement.SqlStatement;
-import liquibase.ext.databricks.change.vacuum.VacuumStatement;
+
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Map;
 
 @DatabaseChange(name = "analyze", description = "Analyze Table Stats", priority = ChangeMetaData.PRIORITY_DEFAULT)
 public class AnalyzeChange extends AbstractChange {

@@ -2,15 +2,14 @@ package liquibase.ext.databricks.change.analyze;
 
 
 import liquibase.database.Database;
-import liquibase.ext.databricks.change.analyze.AnalyzeStatement;
-import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.exception.ValidationErrors;
+import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.sql.Sql;
 import liquibase.sql.UnparsedSql;
 import liquibase.sqlgenerator.SqlGeneratorChain;
 import liquibase.sqlgenerator.core.AbstractSqlGenerator;
+
 import java.util.Map;
-import java.util.Optional;
 
 public class AnalyzeGenerator extends AbstractSqlGenerator<AnalyzeStatement> {
 

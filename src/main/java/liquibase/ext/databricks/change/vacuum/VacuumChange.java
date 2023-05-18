@@ -1,15 +1,13 @@
 package liquibase.ext.databricks.change.vacuum;
 
 
-import java.text.MessageFormat;
-
-
 import liquibase.change.AbstractChange;
 import liquibase.change.ChangeMetaData;
 import liquibase.change.DatabaseChange;
 import liquibase.database.Database;
 import liquibase.statement.SqlStatement;
-import liquibase.ext.databricks.change.vacuum.VacuumStatement;
+
+import java.text.MessageFormat;
 
 @DatabaseChange(name = "vacuum", description = "Vacuum Old Files from Table", priority = ChangeMetaData.PRIORITY_DEFAULT + 200)
 public class VacuumChange extends AbstractChange {

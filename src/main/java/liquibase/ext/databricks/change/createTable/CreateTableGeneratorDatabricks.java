@@ -27,13 +27,8 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
     @Override
     public Sql[] generateSql(CreateTableStatement statement, Database database, SqlGeneratorChain sqlGeneratorChain) {
 
-        // New Code
-
         Sql[] sqls = super.generateSql(statement, database, sqlGeneratorChain);
-
-
         String finalsql = sqls[0].toSql();
-
 
         if (statement instanceof CreateTableStatementDatabricks) {
             CreateTableStatementDatabricks thisStatement = (CreateTableStatementDatabricks) statement;

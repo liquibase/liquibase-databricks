@@ -1,10 +1,10 @@
 package liquibase.ext.databricks.change.optimize;
 
 
+import liquibase.statement.AbstractSqlStatement;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import liquibase.statement.AbstractSqlStatement;
 
 
 
@@ -52,7 +52,7 @@ public class OptimizeStatement extends AbstractSqlStatement {
             this.zorderColumns = new ArrayList<>();
             return;
         }
-        this.zorderColumns = new ArrayList<String>(Arrays.asList(zorderColumns.split("\\s*,\\s*")));
+        this.zorderColumns = new ArrayList<>(Arrays.asList(zorderColumns.split("\\s*,\\s*")));
     }
 
 }

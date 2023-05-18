@@ -1,24 +1,13 @@
 package liquibase.ext.databricks.change.optimize;
 
 
-
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import liquibase.change.AbstractChange;
 import liquibase.change.ChangeMetaData;
-import liquibase.change.ChangeWithColumns;
-import liquibase.change.ColumnConfig;
 import liquibase.change.DatabaseChange;
-import liquibase.change.DatabaseChangeProperty;
 import liquibase.database.Database;
-import liquibase.exception.ValidationErrors;
-import liquibase.sql.Sql;
 import liquibase.statement.SqlStatement;
-import liquibase.ext.databricks.change.optimize.OptimizeStatement;
-import liquibase.ext.databricks.change.optimize.OptimizeGenerator;
+
+import java.text.MessageFormat;
 
 @DatabaseChange(name = "optimize", description = "Optimize and ZOrder Table", priority = ChangeMetaData.PRIORITY_DEFAULT)
 public class OptimizeChange extends AbstractChange {

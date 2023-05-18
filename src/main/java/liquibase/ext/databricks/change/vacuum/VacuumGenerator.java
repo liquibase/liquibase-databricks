@@ -2,9 +2,8 @@ package liquibase.ext.databricks.change.vacuum;
 
 
 import liquibase.database.Database;
-import liquibase.ext.databricks.change.vacuum.VacuumStatement;
-import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.exception.ValidationErrors;
+import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.sql.Sql;
 import liquibase.sql.UnparsedSql;
 import liquibase.sqlgenerator.SqlGeneratorChain;

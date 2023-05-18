@@ -14,7 +14,4 @@ public class DatabricksConnection extends JdbcConnection {
         // no-op for Databricks since there is not a concept of committing
 
     }
-
-
-
 }

@@ -1,16 +1,13 @@
 package liquibase.ext.databricks.change.optimize;
 
 import liquibase.database.Database;
+import liquibase.exception.ValidationErrors;
 import liquibase.exception.Warnings;
 import liquibase.ext.databricks.database.DatabricksDatabase;
-import liquibase.exception.ValidationErrors;
 import liquibase.sql.Sql;
 import liquibase.sql.UnparsedSql;
 import liquibase.sqlgenerator.SqlGeneratorChain;
 import liquibase.sqlgenerator.core.AbstractSqlGenerator;
-import liquibase.util.StringUtil;
-
-import java.sql.Struct;
 
 public class OptimizeGenerator extends AbstractSqlGenerator<OptimizeStatement> {
 
@@ -30,11 +27,6 @@ public class OptimizeGenerator extends AbstractSqlGenerator<OptimizeStatement> {
         // if zorder columns if null, dont add to sql statement
 
         return validationErrors;
-    }
-
-    @Override
-    public Warnings warn(OptimizeStatement statementType, Database database, SqlGeneratorChain<OptimizeStatement> sqlGeneratorChain) {
-        return super.warn(statementType, database, sqlGeneratorChain);
     }
 
     @Override
