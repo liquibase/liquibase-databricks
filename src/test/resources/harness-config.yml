@@ -3,7 +3,6 @@ context: testContext
 
 databasesUnderTest:
   - name: databricks
-    version: 999
     url: <url>
     username: token
     password: <dbx_token>
