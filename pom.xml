@@ -57,7 +57,7 @@
         <sonar.sources>src/main/java</sonar.sources>
         <sonar.tests>src/test/groovy</sonar.tests>
 
-        <groovy.version>2.4.21</groovy.version>
+        <groovy.version>3.0.17</groovy.version>
         <dependency.spock.version>1.3-groovy-2.4</dependency.spock.version>
 
         <jacoco.fileset.directory>target</jacoco.fileset.directory>
