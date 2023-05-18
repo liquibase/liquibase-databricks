@@ -4,7 +4,7 @@ import liquibase.change.ChangeMetaData;
 import liquibase.change.DatabaseChange;
 import liquibase.change.DatabaseChangeProperty;
 import liquibase.change.core.CreateTableChange;
-
+import liquibase.statement.core.CreateTableStatement;
 
 
 @DatabaseChange(name = "createTable", description = "Create Table", priority = ChangeMetaData.PRIORITY_DATABASE +500)
@@ -28,7 +28,7 @@ public class CreateTableChangeDatabricks extends CreateTableChange {
 
 
     @Override
-    protected CreateTableStatementDatabricks generateCreateTableStatement() {
+    protected CreateTableStatement generateCreateTableStatement() {
 
         CreateTableStatementDatabricks ctas = new CreateTableStatementDatabricks(getCatalogName(), getSchemaName(), getTableName());
 
