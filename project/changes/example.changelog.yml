@@ -1,0 +1,24 @@
+databaseChangeLog:
+
+ - changeSet:
+    id: 1
+    author: codydavis
+    changes:
+      - createTable:
+          catalogName: main
+          schemaName: liquibase
+          tableName: test_yml
+          columns:
+             - column:
+                 name: id
+                 type: bigint
+                 autoIncrement: true
+
+             - column:
+                 name: name_of_col
+                 type: string
+
+             - column:
+                name: test_struct
+                type: STRUCT<ID string, name string>
+

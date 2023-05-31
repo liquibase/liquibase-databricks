@@ -6,14 +6,14 @@
                    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
-    <changeSet id="1" author="example">
+    <changeSet id="3" author="example">
         <ext:createTable tableName="managed_system" tableFormat="delta">
             <column name="id" type="int"/>
             <column name="name" type="varchar(20)"/>
         </ext:createTable>
     </changeSet>
 
-    <changeSet id="2" author="example">
+    <changeSet id="4" author="example">
         <createTable tableName="user_table">
             <column name="id" type="int"/>
             <column name="username" type="varchar(20)"/>
@@ -21,8 +21,8 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="3" author="example">
-        <ext:optimize tableName="secure_user_table" zorderColumns="col1"/>
+    <changeSet id="5" author="example">
+        <ext:optimize tableName="user_table" zorderColumns="id"/>
     </changeSet>
 
 </databaseChangeLog>
