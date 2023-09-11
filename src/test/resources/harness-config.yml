@@ -3,6 +3,6 @@ context: testContext
 
 databasesUnderTest:
   - name: databricks
-    url: jdbc:databricks://<host-name>:443/default;transportMode=http;ssl=1;httpPath=/sql/1.0/warehouses/<warehouse-id>;AuthMech=3;ConnCatalog=main;ConnSchema=liquibase_harness_test_ds;
+    url: <url>
     username: token
-    password: <token>
+    password: <dbx_token>

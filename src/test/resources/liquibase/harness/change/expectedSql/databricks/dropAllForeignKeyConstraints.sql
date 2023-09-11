@@ -1,0 +1,2 @@
+ALTER TABLE main.liquibase_harness_test_ds.posts ADD CONSTRAINT fk_posts_authors_test_1 FOREIGN KEY (author_id) REFERENCES main.liquibase_harness_test_ds.authors (id)
+ALTER TABLE main.liquibase_harness_test_ds.posts ADD CONSTRAINT fk_posts_authors_test_2 FOREIGN KEY (id) REFERENCES main.liquibase_harness_test_ds.authors (id)

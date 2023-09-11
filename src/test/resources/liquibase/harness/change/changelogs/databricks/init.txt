@@ -34,8 +34,7 @@ CREATE TABLE main.liquibase_harness_test_ds.posts (
                          `title` varchar(255) NOT NULL,
                          `description` varchar(500) NOT NULL,
                          `content` STRING NOT NULL,
-                         `inserted_date` DATE,
-                         CONSTRAINT author_posts_fk FOREIGN KEY (author_id) REFERENCES main.liquibase_harness_test_ds.authors
+                         `inserted_date` DATE
 )
 USING delta TBLPROPERTIES('delta.feature.allowColumnDefaults' = 'supported', 'delta.columnMapping.mode' = 'name');
 
