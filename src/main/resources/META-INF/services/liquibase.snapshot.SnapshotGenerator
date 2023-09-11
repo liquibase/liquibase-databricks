@@ -1,0 +1,3 @@
+liquibase.ext.databricks.snapshot.jvm.SchemaSnapshotGeneratorDatabricks
+liquibase.ext.databricks.snapshot.jvm.SequenceSnapshotGeneratorDatabricks
+liquibase.ext.databricks.snapshot.jvm.UniqueConstraintSnapshotGeneratorDatabricks

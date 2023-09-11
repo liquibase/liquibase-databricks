@@ -10,7 +10,7 @@ Databricks specific change types that are added are listed below along with thei
 
 1. Add unit tests with liquibase test harness - Cody Davis - Done
 2. Pass Foundational Test Harness - Cody Davis - Done
-3. Pass Base Test Harness - Cody Davis - In Progress - ETA May 15, 2023
+3. Pass Contributed Test Harness - Cody Davis - In Progress - ETA May 15, 2023
 4. Pass Advanced Test Harness - Unassigned - Not Started
 
 ## Change Types to Add: 
@@ -19,11 +19,12 @@ Databricks specific change types that are added are listed below along with thei
 2. MERGE
 3. RESTORE VERSION AS OF
 4. ANALYZE TABLE - Code Complete - Cody Davis
-5. SET TBL PROPERTIES - In Progress - Cody Davis
+5. SET TBL PROPERTIES - In Progress - Cody Davis (Defaults are in createTable change type with min required table props to support Liquibase)
 6. CLONE
 7. BLOOM FILTERS
 8. OPTIMIZE / ZORDER - Code Complete - No Test Yet - Cody Davis
 9. VACUUM - Code Complete - Cody Davis
+10. SYNC IDENTITY - Not Started -
 
 
 

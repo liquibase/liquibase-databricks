@@ -1,4 +1,5 @@
-liquibase.ext.databricks.change.createTable.CreateTableGeneratorDatabricks
+liquibase.ext.databricks.sqlgenerator.CreateTableGeneratorDatabricks
 liquibase.ext.databricks.change.optimize.OptimizeGenerator
 liquibase.ext.databricks.change.vacuum.VacuumGenerator
 liquibase.ext.databricks.change.analyze.AnalyzeGenerator
+liquibase.ext.databricks.sqlgenerator.AddColumnGeneratorDatabricks

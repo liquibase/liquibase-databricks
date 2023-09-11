@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="3" author="example">
+        <ext:createTable tableName="managed_system" tableFormat="delta">
+            <column name="id" type="int"/>
+            <column name="name" type="varchar(20)"/>
+        </ext:createTable>
+    </changeSet>
+
+    <changeSet id="4" author="example">
+        <createTable tableName="user_table">
+            <column name="id" type="int"/>
+            <column name="username" type="varchar(20)"/>
+            <column name="password" type="varchar(20)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="5" author="example">
+        <ext:optimize tableName="user_table" zorderColumns="id"/>
+    </changeSet>
+
+</databaseChangeLog>

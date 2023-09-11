@@ -1,6 +1,7 @@
-package liquibase.ext.databricks.change.createTable;
+package liquibase.ext.databricks.sqlgenerator;
 
 
+import liquibase.ext.databricks.change.createTable.CreateTableStatementDatabricks;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.sqlgenerator.core.CreateTableGenerator;
 import liquibase.database.Database;
@@ -36,7 +37,7 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
             if ((!StringUtil.isEmpty(thisStatement.getTableFormat()))) {
                 finalsql += " USING " + thisStatement.getTableFormat();
             } else {
-                finalsql += " USING delta ";
+                finalsql += " USING delta TBLPROPERTIES('delta.feature.allowColumnDefaults' = 'supported', 'delta.columnMapping.mode' = 'name')";
             }
 
             // Databricks can decide to have tables live in a particular location. If null, Databricks will handle the location automatically in DBFS
@@ -45,7 +46,7 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
                 finalsql += " LOCATION '" + thisStatement.getTableLocation() + "'";
             }
         } else {
-            finalsql += " USING delta ";
+            finalsql += " USING delta TBLPROPERTIES('delta.feature.allowColumnDefaults' = 'supported', 'delta.columnMapping.mode' = 'name')";
         }
 
         //}

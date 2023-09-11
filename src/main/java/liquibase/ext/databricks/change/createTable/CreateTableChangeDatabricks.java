@@ -13,6 +13,7 @@ public class CreateTableChangeDatabricks extends CreateTableChange {
     private String tableFormat;
     private String tableLocation;
 
+
     @DatabaseChangeProperty
     public String getTableFormat() {return tableFormat;}
 
