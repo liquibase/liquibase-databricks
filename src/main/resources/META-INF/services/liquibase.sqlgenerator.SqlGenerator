@@ -3,3 +3,5 @@ liquibase.ext.databricks.change.optimize.OptimizeGenerator
 liquibase.ext.databricks.change.vacuum.VacuumGenerator
 liquibase.ext.databricks.change.analyze.AnalyzeGenerator
 liquibase.ext.databricks.sqlgenerator.AddColumnGeneratorDatabricks
+liquibase.ext.databricks.sqlgenerator.AddDefaultValueGeneratorDatabricks
+liquibase.ext.databricks.sqlgenerator.AddForeignKeyConstraintGeneratorDatabricks
