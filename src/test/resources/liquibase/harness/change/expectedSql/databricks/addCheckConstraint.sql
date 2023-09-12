@@ -1,2 +1,2 @@
 INVALID TEST
-Databricks Supports Check Constraints, but Liquibase OSS does not have the change type to extend
+-- Databricks supports check constraints but this change type is only offered in PRO liquibase.

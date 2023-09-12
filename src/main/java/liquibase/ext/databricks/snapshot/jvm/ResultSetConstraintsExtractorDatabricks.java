@@ -74,7 +74,7 @@ public class ResultSetConstraintsExtractorDatabricks extends ResultSetCacheDatab
                 ((AbstractJdbcDatabase) this.database).getJdbcSchemaName(catalogAndSchema), Schema.class);
 
         String sql = "select CONSTRAINT_NAME, CONSTRAINT_TYPE, TABLE_NAME from "
-                + this.catalogName + ".INFORMATION_SCHEMA.TABLE_CONSTRAINTS " + "where TABLE_SCHEMA='" + jdbcSchemaName + "'";
+                + catalog + ".INFORMATION_SCHEMA.TABLE_CONSTRAINTS " + "where TABLE_SCHEMA='" + schema + "'";
           //      + "' and CONSTRAINT_TYPE='UNIQUE'";
         if (table != null) {
             sql += " and TABLE_NAME='" + table + "'";
