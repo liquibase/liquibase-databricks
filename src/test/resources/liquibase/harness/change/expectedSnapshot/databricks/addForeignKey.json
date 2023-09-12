@@ -1,0 +1,14 @@
+{"snapshot": {
+   "objects": {
+     "liquibase.structure.core.ForeignKey": [
+       {
+         "foreignKey": {
+           "deferrable": true,
+           "initiallyDeferred": true,
+           "name": "fk_posts_authors_test"
+         }
+       }
+     ]
+   }
+ }
+}

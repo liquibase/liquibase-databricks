@@ -37,7 +37,7 @@ public class UniqueConstraintSnapshotGeneratorDatabricks extends UniqueConstrain
     @Override
     protected List<CachedRow> listConstraints(Table table, DatabaseSnapshot snapshot, Schema schema) throws DatabaseException, SQLException {
         Scope.getCurrentScope().getLog(this.getClass()).info("Constraints not supported by Databricks");
-        return new ArrayList<>(); //new DatabricksResultSetConstraintsExtractor(snapshot, schema.getCatalogName(), schema.getName(), table.getName())).fastFetch();
+        return new ResultSetConstraintsExtractorDatabricks(snapshot, schema.getCatalogName(), schema.getName(), table.getName()).fastFetch();
     }
 
     @Override
