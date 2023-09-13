@@ -168,7 +168,7 @@
                 <configuration>
                     <attach>true</attach>
                     <author>false</author>
-                    <doctitle>Liquibase Databricks ${version} API</doctitle>
+                    <doctitle>Liquibase Databricks ${project.version} API</doctitle>
                     <quiet>true</quiet>
                     <doclint>none</doclint>
                     <encoding>UTF-8</encoding>

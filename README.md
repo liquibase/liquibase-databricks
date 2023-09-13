@@ -10,7 +10,7 @@ Databricks tables creates with liquibase are automatically created with the Delt
 
 
 ## NOTE! ONLY TABLES CREATED WITH UNITY CATALOG ARE SUPPORTED FOR MOST ADVANCED OPERATIONS
-This extension utilizes Unity Catalog System tables for many advanced operations such as snapshotting, idedentifying various constraints (PK/FK/NOT NULL, etc.)
+This extension utilizes Unity Catalog System tables for many advanced operations such as snapshotting, identifying various constraints (PK/FK/NOT NULL, etc.)
 If hive_metastore is used, this is not tested and may not provide all the below functionality.
 
 
@@ -19,7 +19,7 @@ If hive_metastore is used, this is not tested and may not provide all the below 
 1. Add unit tests with liquibase test harness - Cody Davis - DONE
 2. Pass Foundational Test Harness - Cody Davis - DONE 4/1/2023
 3. Pass Contributed Test Harness - Cody Davis - IN PROGRESS 9/15/2023
-4. Pass Advanced Test Harness - <> - NOT STARTED
+4. Pass Advanced Test Harness - Cody Davis - IN PROGRESS
 
 
 ## Currently Supported Change Types:
@@ -47,7 +47,7 @@ If hive_metastore is used, this is not tested and may not provide all the below 
 22. Change Data Test: apply loadData
 
 
-## Remaining Relevant Change Types to Finish in Base/Contributed
+## Remaining Required Change Types to Finish in Base/Contributed
 1. createFunction/dropFunction - in Liquibase Pro, should work in Databricks, but change type not accessible from Liquibase Core
 2. addCheckConstraint/dropCheckConstraint - in Liquibase Pro, should work in Databricks, but change type not accessible from Liquibase Core
 3. addLookupTable (executing out of order/dropping FK before creation)

@@ -1,6 +1,7 @@
 package liquibase.ext.databricks.snapshot.jvm;
 
 import liquibase.ext.databricks.database.DatabricksDatabase;
+import liquibase.snapshot.*;
 import liquibase.snapshot.jvm.JdbcSnapshotGenerator;
 import liquibase.CatalogAndSchema;
 import liquibase.database.AbstractJdbcDatabase;
@@ -13,10 +14,8 @@ import liquibase.database.core.SybaseDatabase;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.diff.compare.DatabaseObjectComparatorFactory;
 import liquibase.exception.DatabaseException;
-import liquibase.snapshot.CachedRow;
-import liquibase.snapshot.DatabaseSnapshot;
-import liquibase.snapshot.InvalidExampleException;
-import liquibase.snapshot.JdbcDatabaseSnapshot;
+import liquibase.snapshot.jvm.SequenceSnapshotGenerator;
+import liquibase.snapshot.jvm.UniqueConstraintSnapshotGenerator;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.core.*;
 import java.sql.DatabaseMetaData;
@@ -24,8 +23,9 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import liquibase.snapshot.jvm.ForeignKeySnapshotGenerator;
 
-public class ForeignKeySnapshotGeneratorDatabricks extends JdbcSnapshotGenerator {
+public class ForeignKeySnapshotGeneratorDatabricks extends ForeignKeySnapshotGenerator {
 
     protected static final String METADATA_DEFERRABILITY = "DEFERRABILITY";
     public static final String METADATA_FKTABLE_CAT = "FKTABLE_CAT";
@@ -40,8 +40,9 @@ public class ForeignKeySnapshotGeneratorDatabricks extends JdbcSnapshotGenerator
     public static final String METADATA_DELETE_RULE = "DELETE_RULE";
 
 
-    public ForeignKeySnapshotGeneratorDatabricks() {
-        super(ForeignKey.class, new Class[]{Table.class});
+    @Override
+    public Class<? extends SnapshotGenerator>[] replaces() {
+        return new Class[]{ForeignKeySnapshotGenerator.class};
     }
 
 
@@ -167,10 +168,15 @@ public class ForeignKeySnapshotGeneratorDatabricks extends JdbcSnapshotGenerator
                 }
                 setValidateOptionIfAvailable(database, foreignKey, row);
 
+                /*
+                DATABRICKS does not support indexes, see OPTIMIZE / CLUSTER BY change types for that behavior
+
                 Index exampleIndex = new Index().setRelation(foreignKey.getForeignKeyTable());
                 exampleIndex.getColumns().addAll(foreignKey.getForeignKeyColumns());
                 exampleIndex.addAssociatedWith(Index.MARK_FOREIGN_KEY);
                 foreignKey.setBackingIndex(exampleIndex);
+
+                 */
 
             }
             if (snapshot.get(ForeignKey.class).contains(foreignKey)) {

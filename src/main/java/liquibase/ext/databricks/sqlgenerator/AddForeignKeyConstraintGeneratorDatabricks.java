@@ -12,10 +12,8 @@ import liquibase.structure.core.Column;
 import liquibase.structure.core.ForeignKey;
 import liquibase.structure.core.Table;
 import liquibase.sqlgenerator.core.AddForeignKeyConstraintGenerator;
-import liquibase.sqlgenerator.core.AbstractSqlGenerator;
 
-
-public class AddForeignKeyConstraintGeneratorDatabricks extends AbstractSqlGenerator<AddForeignKeyConstraintStatement> {
+public class AddForeignKeyConstraintGeneratorDatabricks extends AddForeignKeyConstraintGenerator {
 
     @Override
     @SuppressWarnings({"SimplifiableIfStatement"})
