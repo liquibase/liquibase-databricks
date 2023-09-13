@@ -10,3 +10,5 @@ liquibase.ext.databricks.sqlgenerator.RenameTableGeneratorDatabricks
 liquibase.ext.databricks.sqlgenerator.RenameViewGeneratorDatabricks
 liquibase.ext.databricks.sqlgenerator.RenameColumnGeneratorDatabricks
 liquibase.ext.databricks.sqlgenerator.AddPrimaryKeyGeneratorDatabricks
+liquibase.ext.databricks.sqlgenerator.SetTableRemarksGeneratorDatabricks
+liquibase.ext.databricks.sqlgenerator.SetColumnRemarksGeneratorDatabricks
