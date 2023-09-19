@@ -49,9 +49,10 @@ If hive_metastore is used, this is not tested and may not provide all the below 
 
 
 ## Remaining Required Change Types to Finish in Advanced
-1. [ ]
-2. [ ]
-3. [ ]
+1. [ ] generateChangelog
+2. [ ] addForeignKey
+3. [ ] addUniqueConstraint
+4. [ ] createIndex
 
 ## Remaining Required Change Types to Finish in Base/Contributed
 1. [ ] (nice to have, not required) createFunction/dropFunction - in Liquibase Pro, should work in Databricks, but change type not accessible from Liquibase Core
