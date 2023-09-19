@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="1" author="cody">
+        <createTable tableName="test_table">
+            <column name="test_column" type="INT"/>
+        </createTable>
+        <rollback/>
+    </changeSet>
+    <changeSet id="2" author="as">
+        <addColumn tableName="test_table">
+            <column name="varcharColumn" type="STRING" value="INITIAL_VALUE"/>
+            <column name="intColumn" type="INT" valueNumeric="5"/>
+            <column name="dateColumn" type="date" valueDate="2020-09-21"/>
+        </addColumn>
+        <rollback>
+            <dropTable tableName="test_table"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

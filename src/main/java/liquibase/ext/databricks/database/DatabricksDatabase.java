@@ -108,6 +108,8 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
         return false;
     }
 
+    @Override
+    public boolean supportsSequences() { return false; }
 
     @Override
     public String getAutoIncrementClause(final BigInteger startWith, final BigInteger incrementBy, final String generationType, final Boolean defaultOnNull) {

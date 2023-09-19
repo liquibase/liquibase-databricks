@@ -21,6 +21,7 @@ jobs:
       WORKSPACE_ID: ${{ secrets.TH_DATABRICKS_WORKSPACE_ID }}
 
     strategy:
+      max-parallel: 1
       matrix:
         liquibase-support-level: [Foundational, Contributed, Advanced] # Define the different test levels to run
       fail-fast: false # Set fail-fast to false to run all test levels even if some of them fail

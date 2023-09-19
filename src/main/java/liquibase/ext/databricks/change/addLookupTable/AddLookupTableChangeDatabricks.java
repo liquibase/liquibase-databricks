@@ -4,35 +4,39 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import liquibase.change.core.*;
 import liquibase.ext.databricks.database.DatabricksDatabase;
+import liquibase.ext.databricks.change.createTable.CreateTableStatementDatabricks;
+import liquibase.ext.databricks.change.createTable.CreateTableChangeDatabricks;
 import liquibase.Scope;
 import liquibase.change.*;
 import liquibase.database.Database;
+import liquibase.database.core.DB2Database;
 import liquibase.database.core.Db2zDatabase;
+import liquibase.database.core.HsqlDatabase;
+import liquibase.database.core.InformixDatabase;
+import liquibase.database.core.MSSQLDatabase;
+import liquibase.database.core.OracleDatabase;
+import liquibase.database.core.SybaseASADatabase;
+import liquibase.datatype.DataTypeFactory;
 import liquibase.exception.ValidationErrors;
 import liquibase.snapshot.SnapshotGeneratorFactory;
 import liquibase.statement.NotNullConstraint;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.CreateTableStatement;
 import liquibase.statement.core.RawSqlStatement;
+import liquibase.statement.core.ReorganizeTableStatement;
 import liquibase.structure.core.Column;
 import liquibase.structure.core.ForeignKey;
 import liquibase.structure.core.Table;
 import liquibase.change.core.AddLookupTableChange;
-import liquibase.change.core.DropForeignKeyConstraintChange;
-import liquibase.change.core.DropTableChange;
-import liquibase.change.core.AddNotNullConstraintChange;
-import liquibase.change.core.AddPrimaryKeyChange;
-import liquibase.change.core.AddForeignKeyConstraintChange;
-
 import static liquibase.statement.SqlStatement.EMPTY_SQL_STATEMENT;
 
 /**
  * Extracts data from an existing column to create a lookup table.
  * A foreign key is created between the old column and the new lookup table.
  */
-
-@DatabaseChange(name = "addLookupTable", priority = ChangeMetaData.PRIORITY_DATABASE +500, appliesTo = "column",
+@DatabaseChange(name = "addLookupTable", priority = DatabricksDatabase.PRIORITY_DATABASE + 500, appliesTo = "column",
         description = "Creates a lookup table containing values stored in a column and creates a foreign key to the new table.")
 public class AddLookupTableChangeDatabricks extends AddLookupTableChange {
 
@@ -97,7 +101,7 @@ public class AddLookupTableChangeDatabricks extends AddLookupTableChange {
         this.existingColumnName = existingColumnName;
     }
 
-    @DatabaseChangeProperty(since = "3.0", description = "Name of the database catalog for the lookup table")
+    @DatabaseChangeProperty(description = "Name of the database catalog for the lookup table")
     public String getNewTableCatalogName() {
         return newTableCatalogName;
     }
@@ -150,7 +154,7 @@ public class AddLookupTableChangeDatabricks extends AddLookupTableChange {
 
     public String getFinalConstraintName() {
         if (constraintName == null) {
-            return ("FK_" + getExistingTableName() + "_" + getNewTableName()).toUpperCase();
+            return ("fk_" + getExistingTableName() + "_" + getNewTableName()).toLowerCase();
         } else {
             return constraintName;
         }
@@ -162,10 +166,7 @@ public class AddLookupTableChangeDatabricks extends AddLookupTableChange {
 
     @Override
     public boolean supports(Database database) {
-        if (database instanceof DatabricksDatabase) {
-            return true;
-        }
-        return super.supports(database);
+       return (database instanceof DatabricksDatabase);
     }
 
     @Override
@@ -187,7 +188,6 @@ public class AddLookupTableChangeDatabricks extends AddLookupTableChange {
 
     @Override
     public SqlStatement[] generateStatements(Database database) {
-        List<SqlStatement> statements = new ArrayList<>();
 
         String newTableCatalogName = getNewTableCatalogName();
         String newTableSchemaName = getNewTableSchemaName();
@@ -195,35 +195,33 @@ public class AddLookupTableChangeDatabricks extends AddLookupTableChange {
         String existingTableCatalogName = getExistingTableCatalogName();
         String existingTableSchemaName = getExistingTableSchemaName();
 
-        // Step 1: Create table statement CTAS as lookup table
-        SqlStatement[] createTablesSQL = {new RawSqlStatement("CREATE TABLE " + database.escapeTableName(newTableCatalogName, newTableSchemaName, getNewTableName()) + " AS SELECT DISTINCT " + database.escapeObjectName(getExistingColumnName(), Column.class) + " AS " + database.escapeObjectName(getNewColumnName(), Column.class) + " FROM " + database.escapeTableName(existingTableCatalogName, existingTableSchemaName, getExistingTableName()) + " WHERE " + database.escapeObjectName(getExistingColumnName(), Column.class) + " IS NOT NULL")};
+        SqlStatement[] createTablesSQL = {new RawSqlStatement("CREATE TABLE " + database.escapeTableName(newTableCatalogName, newTableSchemaName, getNewTableName())
+               + " USING delta TBLPROPERTIES('delta.feature.allowColumnDefaults' = 'supported', 'delta.columnMapping.mode' = 'name') "
+               + " AS SELECT DISTINCT " + database.escapeObjectName(getExistingColumnName(), Column.class)
+                + " AS " + database.escapeObjectName(getNewColumnName(), Column.class)
+                + " FROM " + database.escapeTableName(existingTableCatalogName, existingTableSchemaName, getExistingTableName())
+                + " WHERE " + database.escapeObjectName(getExistingColumnName(), Column.class)
+                + " IS NOT NULL")
+        };
 
-        statements.addAll(Arrays.asList(createTablesSQL));
+        List<SqlStatement> statements = new ArrayList<>(Arrays.asList(createTablesSQL));
 
-        // Step 2: Add not null constraint to lookup table
-        AddNotNullConstraintChange addNotNullChange = new AddNotNullConstraintChange();
-        addNotNullChange.setSchemaName(newTableSchemaName);
-        addNotNullChange.setTableName(getNewTableName());
-        addNotNullChange.setColumnName(getNewColumnName());
-        addNotNullChange.setColumnDataType(getNewColumnDataType());
-        statements.addAll(Arrays.asList(addNotNullChange.generateStatements(database)));
-
-
-        // Step 3: Add Primary Key Constraint to Lookup table
-        // Add a properly named primary key with just the column name + "_pk"
-
-        String inferred_pk_name = "pk_" + getNewColumnName();
+        if (!(database instanceof OracleDatabase) && !(database instanceof Db2zDatabase)) {
+            AddNotNullConstraintChange addNotNullChange = new AddNotNullConstraintChange();
+            addNotNullChange.setSchemaName(newTableSchemaName);
+            addNotNullChange.setTableName(getNewTableName());
+            addNotNullChange.setColumnName(getNewColumnName());
+            addNotNullChange.setColumnDataType(getNewColumnDataType());
+            statements.addAll(Arrays.asList(addNotNullChange.generateStatements(database)));
+        }
 
         AddPrimaryKeyChange addPKChange = new AddPrimaryKeyChange();
         addPKChange.setSchemaName(newTableSchemaName);
         addPKChange.setTableName(getNewTableName());
         addPKChange.setColumnNames(getNewColumnName());
-        addPKChange.setConstraintName(inferred_pk_name);
-
         statements.addAll(Arrays.asList(addPKChange.generateStatements(database)));
 
 
-        // Step 4: Add FK constraint to original table, referencing lookup table
         AddForeignKeyConstraintChange addFKChange = new AddForeignKeyConstraintChange();
         addFKChange.setBaseTableSchemaName(existingTableSchemaName);
         addFKChange.setBaseTableName(getExistingTableName());
@@ -235,7 +233,7 @@ public class AddLookupTableChangeDatabricks extends AddLookupTableChange {
         addFKChange.setConstraintName(getFinalConstraintName());
         statements.addAll(Arrays.asList(addFKChange.generateStatements(database)));
 
-        return statements.toArray(EMPTY_SQL_STATEMENT);
+        return statements.toArray(new SqlStatement[0]);
     }
 
     @Override

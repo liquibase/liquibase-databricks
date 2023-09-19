@@ -18,40 +18,45 @@ If hive_metastore is used, this is not tested and may not provide all the below 
 
 1. Add unit tests with liquibase test harness - Cody Davis - DONE
 2. Pass Foundational Test Harness - Cody Davis - DONE 4/1/2023
-3. Pass Contributed Test Harness - Cody Davis - IN PROGRESS 9/15/2023
-4. Pass Advanced Test Harness - Cody Davis - IN PROGRESS
+3. Pass Contributed Test Harness - Cody Davis - DONE 9/15/2023
+4. Pass Advanced Test Harness - Cody Davis - IN PROGRESS (3/6 testing passing)
 
 
 ## Currently Supported Change Types:
-1. createTable/dropTable
-2. addColumn/dropColumn
-3. addPrimaryKey/dropPrimaryKey
-4. addForeignKey/dropForeignKey
-5. addNotNullConstraint/dropNotNullConstraint
-6. createTable/createTableDataTypeText/createTableTimestamp/dropTable
-7. createView/dropView
-8. dropAllForeignKeyConstraints
-9. createView/dropView
-10. setTableRemarks
-11. setColumnRemarks
-12. setViewRemarks (set in TBLPROPERTIES ('comment' = '<comment>'))
-13. executeCommand
-14. mergeColumns
-15. modifySql
-16. renameColumn
-17. renameView
-18. sql
-19. sqlFile
-20. Change Data Test: apply delete
-21. Change Data Test: apply insert
-22. Change Data Test: apply loadData
+1. [x] createTable/dropTable 
+2. [x] addColumn/dropColumn
+3. [x] addPrimaryKey/dropPrimaryKey
+4. [x] addForeignKey/dropForeignKey
+5. [x] addNotNullConstraint/dropNotNullConstraint
+6. [x] createTable/createTableDataTypeText/createTableTimestamp/dropTable
+7. [x] createView/dropView
+8. [x] dropAllForeignKeyConstraints
+9. [x] createView/dropView
+10. [x] setTableRemarks
+11. [x] setColumnRemarks
+12. [x] setViewRemarks (set in TBLPROPERTIES ('comment' = '<comment>'))
+13. [x] executeCommand
+14. [x] mergeColumns
+15. [x] modifySql
+16. [x] renameColumn
+17. [x] renameView
+18. [x] sql
+19. [x] sqlFile
+20. [x] Change Data Test: apply delete
+21. [x] Change Data Test: apply insert
+22. [x] Change Data Test: apply loadData
+23. [x] Change Data Test: apply loadDataUpdate
 
+
+## Remaining Required Change Types to Finish in Advanced
+1. [ ]
+2. [ ]
+3. [ ]
 
 ## Remaining Required Change Types to Finish in Base/Contributed
-1. createFunction/dropFunction - in Liquibase Pro, should work in Databricks, but change type not accessible from Liquibase Core
-2. addCheckConstraint/dropCheckConstraint - in Liquibase Pro, should work in Databricks, but change type not accessible from Liquibase Core
-3. addLookupTable (executing out of order/dropping FK before creation)
-4. Change Data Test: apply loadUpdateData
+1. [ ] (nice to have, not required) createFunction/dropFunction - in Liquibase Pro, should work in Databricks, but change type not accessible from Liquibase Core
+2. [ ] (nice to have, not required) addCheckConstraint/dropCheckConstraint - in Liquibase Pro, should work in Databricks, but change type not accessible from Liquibase Core
+
 
 
 The remaining other change types are not relevant to Databricks and have been marked with INVALID TEST
