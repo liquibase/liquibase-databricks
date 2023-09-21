@@ -12,7 +12,7 @@ import liquibase.snapshot.jvm.UniqueConstraintSnapshotGenerator;
 import liquibase.statement.core.RawSqlStatement;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.core.*;
-
+import liquibase.ext.databricks.database.DatabricksDatabase;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ public class UniqueConstraintSnapshotGeneratorDatabricks extends UniqueConstrain
     public int getPriority(Class<? extends DatabaseObject> objectType, Database database) {
         int priority = super.getPriority(objectType, database);
         if (priority > PRIORITY_NONE && database instanceof DatabricksDatabase) {
-            priority += PRIORITY_DATABASE;
+            priority += DatabricksDatabase.PRIORITY_DATABASE;
         }
         return priority;
     }

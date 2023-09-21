@@ -50,15 +50,14 @@ If hive_metastore is used, this is not tested and may not provide all the below 
 
 ## Remaining Required Change Types to Finish in Advanced
 1. [ ] generateChangelog
-2. [ ] addForeignKey
-3. [ ] addUniqueConstraint
-4. [ ] createIndex
+2. [ ] addUniqueConstraint - Need to invalidate this test - not supported
+3. [ ] createIndex - Map to CLUSTER BY ALTER TABLE statements for Delta Tables
 
 ## Remaining Required Change Types to Finish in Base/Contributed
 1. [ ] (nice to have, not required) createFunction/dropFunction - in Liquibase Pro, should work in Databricks, but change type not accessible from Liquibase Core
 2. [ ] (nice to have, not required) addCheckConstraint/dropCheckConstraint - in Liquibase Pro, should work in Databricks, but change type not accessible from Liquibase Core
-
-
+3. [ ] addDefaultValue (of various types). Databricks/Delta tables support this, but does not get populated by databricks in the JDBC Driver (COLUMN_DEF property always None even with default)
+4. [ ] createIndex - Map to CLUSTER BY ALTER TABLE statement for delta tables. CLUSTER BY keys also need to be populated by JDBC driver. The SQL Generator has been created, but the Snapshot / expected snapshot needs to be properly created from driver.
 
 The remaining other change types are not relevant to Databricks and have been marked with INVALID TEST
 
@@ -69,14 +68,15 @@ The remaining other change types are not relevant to Databricks and have been ma
 2. MERGE
 3. RESTORE VERSION AS OF
 4. ANALYZE TABLE - Code Complete - Cody Davis
-5. SET TBL PROPERTIES - In Progress - Cody Davis (Defaults are in createTable change type with min required table props to support Liquibase)
+5. SET TBL PROPERTIES - (Defaults are in createTable change type with min required table props to support Liquibase)
 6. CLONE
-7. BLOOM FILTERS
+7. BLOOM FILTERS - Maybe do not support, CLUSTER BY should be the primary indexing mechanism long term
 8. OPTIMIZE / ZORDER - Code Complete - No Test Yet - Cody Davis
 9. VACUUM - Code Complete - No Test Yet - Cody Davis
 10. SYNC IDENTITY
 11. VOLUMES
 12. GRANT / REVOKE statements
+13. CLUSTER BY - Similar to Indexes, important to support as a create table / alter table set of change types (params in createTable change), addClusterKey new change type to ALTER TABle
 
 
 

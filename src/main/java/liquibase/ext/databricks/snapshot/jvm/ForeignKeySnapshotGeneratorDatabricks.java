@@ -152,17 +152,22 @@ public class ForeignKeySnapshotGeneratorDatabricks extends ForeignKeySnapshotGen
 
                 short deferrability = row.getShort(METADATA_DEFERRABILITY);
 
-                // Hsqldb doesn't handle setting this property correctly, it sets it to 0.
-                // it should be set to DatabaseMetaData.importedKeyNotDeferrable(7)
+                // Databricks deferrability is 5, maps to true, true
+
                 if ((deferrability == 0) || (deferrability == DatabaseMetaData.importedKeyNotDeferrable)) {
+
                     foreignKey.setDeferrable(false);
                     foreignKey.setInitiallyDeferred(false);
+
                 } else if (deferrability == DatabaseMetaData.importedKeyInitiallyDeferred) {
                     foreignKey.setDeferrable(true);
                     foreignKey.setInitiallyDeferred(true);
+
                 } else if (deferrability == DatabaseMetaData.importedKeyInitiallyImmediate) {
+
                     foreignKey.setDeferrable(true);
                     foreignKey.setInitiallyDeferred(false);
+
                 } else {
                     throw new RuntimeException("Unknown deferrability result: " + deferrability);
                 }
@@ -209,7 +214,7 @@ public class ForeignKeySnapshotGeneratorDatabricks extends ForeignKeySnapshotGen
 
     protected ForeignKeyConstraintType convertToForeignKeyConstraintType(Integer jdbcType, Database database) throws DatabaseException {
         if (jdbcType == null) {
-            return ForeignKeyConstraintType.importedKeyRestrict;
+            return ForeignKeyConstraintType.importedKeyNoAction;
         }
         if (driverUsesSpFkeys(database)) {
             if (jdbcType == 0) {

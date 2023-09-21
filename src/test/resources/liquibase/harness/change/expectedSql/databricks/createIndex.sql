@@ -1,2 +1,2 @@
 INVALID TEST
--- Databricks does not support classic indexes, use the custom change type OPTIMIZE to ZORDER tables
+-- Databricks will support index via the CLUSTER BY commands, but the createTable change type needs to be altered first

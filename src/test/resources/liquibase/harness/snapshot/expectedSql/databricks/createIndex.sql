@@ -1,0 +1,1 @@
+ALTER TABLE main.liquibase_harness_test_ds.authors CLUSTER BY (author_id)
