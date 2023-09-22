@@ -1,7 +1,7 @@
 variable "TF_VAR_TEST_SCHEMA" {
   description = "Name of Liquibase test harness database"
   type = string
-  default = "lb_test_harness"
+  default = "liquibase_harness_test_ds"
 }
 
 

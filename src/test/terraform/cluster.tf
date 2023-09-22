@@ -19,7 +19,7 @@ variable "cluster_data_security_mode" {}
 variable "custom_spark_version" {
   description = "A custom spark version for an image"
   type = string
-  default = "12.2.x-scala2.12"
+  default = "13.3.x-scala2.12"
 }
 
 # Create the cluster with the "smallest" amount
