@@ -1,4 +1,4 @@
-package liquibase.ext.databricks.change.optimize;
+package liquibase.ext.databricks.change.optimizeTable;
 
 
 import liquibase.change.AbstractChange;
@@ -6,11 +6,13 @@ import liquibase.change.ChangeMetaData;
 import liquibase.change.DatabaseChange;
 import liquibase.database.Database;
 import liquibase.statement.SqlStatement;
+import liquibase.change.Change;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 
-@DatabaseChange(name = "optimize", description = "Optimize and ZOrder Table", priority = ChangeMetaData.PRIORITY_DEFAULT)
-public class OptimizeChange extends AbstractChange {
+@DatabaseChange(name = "optimizeTable", description = "Optimize and ZOrder Table", priority = ChangeMetaData.PRIORITY_DEFAULT)
+public class OptimizeTableChange extends AbstractChange {
 
     private String catalogName;
     private String schemaName;
@@ -55,17 +57,32 @@ public class OptimizeChange extends AbstractChange {
     }
 
     @Override
+    protected Change[] createInverses() {
+        // No Op for Databricks optimize statement. there is no rolling this back.
+        // you COULD roll this back, but you do not want a system to run RESTORE version as of dynamically. That is risky.
+        return new Change[]{
+        };
+    }
+
+    @Override
     public SqlStatement[] generateStatements(Database database) {
 
-        OptimizeStatement statement = new OptimizeStatement();
+        OptimizeTableStatement statement = new OptimizeTableStatement();
 
         statement.setCatalogName(getCatalogName());
         statement.setSchemaName(getSchemaName());
         statement.setTableName(getTableName());
-        statement.setZorderColumns(getZorderColumns());
 
+        // Check for ZORDER columns
+        if (getZorderColumns() == null) {
+            ArrayList<String> noZorderCol = new ArrayList<>();
+            statement.setZorderColumns(noZorderCol);
+        } else {
+            statement.setZorderColumns(getZorderColumns());
+        }
         SqlStatement[] builtStatement = new SqlStatement[] {statement};
 
         return builtStatement;
+
     }
 }

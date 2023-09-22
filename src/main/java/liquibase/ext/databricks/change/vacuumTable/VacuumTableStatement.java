@@ -1,9 +1,9 @@
-package liquibase.ext.databricks.change.vacuum;
+package liquibase.ext.databricks.change.vacuumTable;
 
 
 import liquibase.statement.AbstractSqlStatement;
 
-public class VacuumStatement extends AbstractSqlStatement {
+public class VacuumTableStatement extends AbstractSqlStatement {
 
     private String catalogName;
 

@@ -22,7 +22,15 @@
     </changeSet>
 
     <changeSet id="3" author="example">
-        <ext:optimize tableName="secure_user_table" zorderColumns="col1"/>
+        <ext:optimizeTable tableName="user_table" zorderColumns="id"/>
+    </changeSet>
+
+    <changeSet id="4" author="example">
+        <ext:analyzeTable tableName="user_table" analyzeColumns="id"/>
+    </changeSet>
+
+    <changeSet id="5" author="example">
+        <ext:vacuumTable tableName="user_table" retentionHours="72"/>
     </changeSet>
 
 </databaseChangeLog>

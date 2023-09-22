@@ -1,4 +1,4 @@
-package liquibase.ext.databricks.change.vacuum;
+package liquibase.ext.databricks.change.vacuumTable;
 
 
 import liquibase.database.Database;
@@ -9,16 +9,16 @@ import liquibase.sql.UnparsedSql;
 import liquibase.sqlgenerator.SqlGeneratorChain;
 import liquibase.sqlgenerator.core.AbstractSqlGenerator;
 
-public class VacuumGenerator extends AbstractSqlGenerator<VacuumStatement> {
+public class VacuumTableGenerator extends AbstractSqlGenerator<VacuumTableStatement> {
 
     //check support for optimizer operation
     @Override
-    public boolean supports(VacuumStatement statement, Database database) {
+    public boolean supports(VacuumTableStatement statement, Database database) {
         return database instanceof DatabricksDatabase;
     }
 
     @Override
-    public ValidationErrors validate(VacuumStatement statement, Database database, SqlGeneratorChain chain){
+    public ValidationErrors validate(VacuumTableStatement statement, Database database, SqlGeneratorChain chain){
 
         ValidationErrors validationErrors = new ValidationErrors();
 
@@ -30,7 +30,7 @@ public class VacuumGenerator extends AbstractSqlGenerator<VacuumStatement> {
     }
 
     @Override
-    public Sql[] generateSql(VacuumStatement statement, Database database, SqlGeneratorChain chain) {
+    public Sql[] generateSql(VacuumTableStatement statement, Database database, SqlGeneratorChain chain) {
 
         StringBuilder sql = new StringBuilder("VACUUM ");
 

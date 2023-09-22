@@ -1,24 +1,23 @@
-package liquibase.ext.databricks.change.optimize;
+package liquibase.ext.databricks.change.optimizeTable;
 
 import liquibase.database.Database;
 import liquibase.exception.ValidationErrors;
-import liquibase.exception.Warnings;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.sql.Sql;
 import liquibase.sql.UnparsedSql;
 import liquibase.sqlgenerator.SqlGeneratorChain;
 import liquibase.sqlgenerator.core.AbstractSqlGenerator;
 
-public class OptimizeGenerator extends AbstractSqlGenerator<OptimizeStatement> {
+public class OptimizeTableGenerator extends AbstractSqlGenerator<OptimizeTableStatement> {
 
     @Override
     //check support for optimizer operation
-    public boolean supports(OptimizeStatement statement, Database database) {
+    public boolean supports(OptimizeTableStatement statement, Database database) {
         return database instanceof DatabricksDatabase;
     }
 
     @Override
-    public ValidationErrors validate(OptimizeStatement statement, Database database, SqlGeneratorChain chain){
+    public ValidationErrors validate(OptimizeTableStatement statement, Database database, SqlGeneratorChain chain){
 
         ValidationErrors validationErrors = new ValidationErrors();
 
@@ -30,7 +29,7 @@ public class OptimizeGenerator extends AbstractSqlGenerator<OptimizeStatement> {
     }
 
     @Override
-    public Sql[] generateSql(OptimizeStatement statement, Database database, SqlGeneratorChain chain) {
+    public Sql[] generateSql(OptimizeTableStatement statement, Database database, SqlGeneratorChain chain) {
 
         StringBuilder sql = new StringBuilder("OPTIMIZE ");
 
@@ -38,7 +37,7 @@ public class OptimizeGenerator extends AbstractSqlGenerator<OptimizeStatement> {
 
 
         if (!statement.getZorderColumns().isEmpty()) {
-            sql.append(" ZORDER BY  (" + String.join(", ", statement.getZorderColumns()) + ")");
+            sql.append(" ZORDER BY (" + String.join(", ", statement.getZorderColumns()) + ")");
         }
 
         return new Sql[] { new UnparsedSql(sql.toString()) };

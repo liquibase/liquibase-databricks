@@ -1,7 +1,7 @@
 liquibase.ext.databricks.sqlgenerator.CreateTableGeneratorDatabricks
-liquibase.ext.databricks.change.optimize.OptimizeGenerator
-liquibase.ext.databricks.change.vacuum.VacuumGenerator
-liquibase.ext.databricks.change.analyze.AnalyzeGenerator
+liquibase.ext.databricks.change.optimizeTable.OptimizeTableGenerator
+liquibase.ext.databricks.change.vacuumTable.VacuumTableGenerator
+liquibase.ext.databricks.change.analyzeTable.AnalyzeTableGenerator
 liquibase.ext.databricks.sqlgenerator.AddColumnGeneratorDatabricks
 liquibase.ext.databricks.sqlgenerator.AddDefaultValueGeneratorDatabricks
 liquibase.ext.databricks.sqlgenerator.AddForeignKeyConstraintGeneratorDatabricks
@@ -16,3 +16,5 @@ liquibase.ext.databricks.sqlgenerator.AddAutoIncrementGeneratorDatabricks
 liquibase.ext.databricks.sqlgenerator.AddUniqueConstraintGeneratorDatabricks
 liquibase.ext.databricks.sqlgenerator.InsertOrUpdateGeneratorDatabricks
 liquibase.ext.databricks.sqlgenerator.UpdateGeneratorDatabricks
+liquibase.ext.databricks.change.addCheckConstraint.AddCheckConstraintGeneratorDatabricks
+liquibase.ext.databricks.change.dropCheckConstraint.DropCheckConstraintGeneratorDatabricks

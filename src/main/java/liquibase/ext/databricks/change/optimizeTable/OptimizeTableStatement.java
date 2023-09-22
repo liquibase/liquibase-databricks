@@ -1,4 +1,4 @@
-package liquibase.ext.databricks.change.optimize;
+package liquibase.ext.databricks.change.optimizeTable;
 
 
 import liquibase.statement.AbstractSqlStatement;
@@ -8,12 +8,12 @@ import java.util.Arrays;
 
 
 
-public class OptimizeStatement extends AbstractSqlStatement {
+public class OptimizeTableStatement extends AbstractSqlStatement {
 
     private String catalogName;
     private String schemaName;
     private String tableName;
-    private ArrayList<String> zorderColumns;
+    private ArrayList<String> zorderColumns = new ArrayList<>();
 
     public String getCatalogName() {
         return catalogName;

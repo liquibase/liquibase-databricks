@@ -1,10 +1,11 @@
-package liquibase.ext.databricks.change.analyze;
+package liquibase.ext.databricks.change.analyzeTable;
 
 import liquibase.statement.AbstractSqlStatement;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Collections;
 
-public class AnalyzeStatement extends AbstractSqlStatement {
+public class AnalyzeTableStatement extends AbstractSqlStatement {
 
     private String catalogName;
 
@@ -12,9 +13,9 @@ public class AnalyzeStatement extends AbstractSqlStatement {
 
     private String tableName;
 
-    private ArrayList<String> analyzeColumns;
+    private ArrayList<String> analyzeColumns = new ArrayList<>();
 
-    private Map<String, String> partition;
+    private Map<String, String> partition = Collections.emptyMap();
 
     public String getCatalogName() {return catalogName;}
 
@@ -34,6 +35,5 @@ public class AnalyzeStatement extends AbstractSqlStatement {
     public void setAnalyzeColumns(ArrayList<String> analyzeColumns) {this.analyzeColumns = analyzeColumns;}
 
     public void setPartition(Map<String, String> partition) {this.partition = partition;}
-
 
 }

@@ -1,4 +1,4 @@
-package liquibase.ext.databricks.change.analyze;
+package liquibase.ext.databricks.change.analyzeTable;
 
 
 import liquibase.database.Database;
@@ -11,16 +11,16 @@ import liquibase.sqlgenerator.core.AbstractSqlGenerator;
 
 import java.util.Map;
 
-public class AnalyzeGenerator extends AbstractSqlGenerator<AnalyzeStatement> {
+public class AnalyzeTableGenerator extends AbstractSqlGenerator<AnalyzeTableStatement> {
 
     @Override
     //check support for optimizer operation
-    public boolean supports(AnalyzeStatement statement, Database database) {
+    public boolean supports(AnalyzeTableStatement statement, Database database) {
         return database instanceof DatabricksDatabase;
     }
 
     @Override
-    public ValidationErrors validate(AnalyzeStatement statement, Database database, SqlGeneratorChain chain){
+    public ValidationErrors validate(AnalyzeTableStatement statement, Database database, SqlGeneratorChain chain){
 
         ValidationErrors validationErrors = new ValidationErrors();
 
@@ -32,14 +32,13 @@ public class AnalyzeGenerator extends AbstractSqlGenerator<AnalyzeStatement> {
     }
 
     @Override
-    public Sql[] generateSql(AnalyzeStatement statement, Database database, SqlGeneratorChain chain) {
+    public Sql[] generateSql(AnalyzeTableStatement statement, Database database, SqlGeneratorChain chain) {
 
         StringBuilder sql = new StringBuilder("ANALYZE TABLE ");
 
         sql.append(database.escapeTableName(statement.getCatalogName(), statement.getSchemaName(), statement.getTableName()));
 
-
-        if (statement.getPartition().size() >= 1) {
+        if (!statement.getPartition().isEmpty()) {
             //only supports one partition at a time for now
              Map.Entry<String, String> partitionMap = statement.getPartition().entrySet().iterator().next();
 
@@ -52,7 +51,7 @@ public class AnalyzeGenerator extends AbstractSqlGenerator<AnalyzeStatement> {
 
         }
 
-        if (statement.getAnalyzeColumns().size() >= 1) {
+        if (!statement.getAnalyzeColumns().isEmpty()) {
             sql.append("COMPUTE STATISTICS FOR COLUMNS  (" + String.join(", ", statement.getAnalyzeColumns()) + ")");
         }
         else {

@@ -13,6 +13,7 @@ public class CreateTableChangeDatabricks extends CreateTableChange {
     private String tableFormat;
     private String tableLocation;
 
+    private String clusterColumns;
 
     @DatabaseChangeProperty
     public String getTableFormat() {return tableFormat;}
@@ -24,8 +25,17 @@ public class CreateTableChangeDatabricks extends CreateTableChange {
         return tableLocation;
     }
 
+    @DatabaseChangeProperty
+    public String getClusterColumns() {
+        return clusterColumns;
+    }
+
     public void setTableLocation(String tableLocation) {this.tableLocation = tableLocation;}
 
+    @DatabaseChangeProperty
+    public void setClusterColumns(String clusterColumns) {
+        this.clusterColumns =  clusterColumns;
+    }
 
 
     @Override
@@ -34,7 +44,8 @@ public class CreateTableChangeDatabricks extends CreateTableChange {
         CreateTableStatementDatabricks ctas = new CreateTableStatementDatabricks(getCatalogName(), getSchemaName(), getTableName());
 
         ctas.setTableFormat(this.getTableFormat());
-        ctas.setTableLocation((this.getTableLocation()));
+        ctas.setTableLocation(this.getTableLocation());
+        ctas.setClusterColumns(this.getClusterColumns());
 
         return ctas;
     }

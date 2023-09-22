@@ -1,8 +1,8 @@
-# liquibase-databricks
+# Liquibase-Databricks Connector
 
 
 ## Summary 
-This is the Liquibase Extension for Managing Delta Tables with DatabricksSQL. 
+This is the Liquibase Extension for Managing Delta Tables on DatabricksSQL. 
 
 Base/Contributed and Foundational Change types should be supported at this stage. Change types such as procedures, triggers, sequences, indexes are not supported. 
 Databricks specific change types that are added are listed below along with their completion status. 
@@ -16,13 +16,15 @@ If hive_metastore is used, this is not tested and may not provide all the below 
 
 ## TO DO: 
 
-1. Add unit tests with liquibase test harness - Cody Davis - DONE
-2. Pass Foundational Test Harness - Cody Davis - DONE 4/1/2023
-3. Pass Contributed Test Harness - Cody Davis - DONE 9/15/2023
-4. Pass Advanced Test Harness - Cody Davis - IN PROGRESS (3/6 testing passing)
+1. [x] Add unit tests with liquibase test harness - Cody Davis - DONE
+2. [x] Pass Foundational Test Harness - Cody Davis - DONE 4/1/2023
+3. [x] Pass Contributed Test Harness - Cody Davis - DONE 9/15/2023
+4. [ ] Pass Advanced Test Harness - Cody Davis - IN PROGRESS (6/9 testing passing)
 
 
 ## Currently Supported Change Types:
+
+### Contributed / Base
 1. [x] createTable/dropTable 
 2. [x] addColumn/dropColumn
 3. [x] addPrimaryKey/dropPrimaryKey
@@ -32,7 +34,7 @@ If hive_metastore is used, this is not tested and may not provide all the below 
 7. [x] createView/dropView
 8. [x] dropAllForeignKeyConstraints
 9. [x] createView/dropView
-10. [x] setTableRemarks
+10. [x] setTableRemarks - supported but not returned in snapshot as JDBC Driver not populating it
 11. [x] setColumnRemarks
 12. [x] setViewRemarks (set in TBLPROPERTIES ('comment' = '<comment>'))
 13. [x] executeCommand
@@ -46,16 +48,33 @@ If hive_metastore is used, this is not tested and may not provide all the below 
 21. [x] Change Data Test: apply insert
 22. [x] Change Data Test: apply loadData
 23. [x] Change Data Test: apply loadDataUpdate
+24. [ ] Add/Drop Check Constraints - TO DO: Need to create snapshot generator but the change type works
+
+### Advanced
+1. [x] addColumn snapshot
+2. [x] addPrimaryKey snapshot
+3. [x] addForeignKey snapshot
+4. [x] schemaAndCatalogSnapshot snapshot
+5. [x] createTable snapshot
+6. [x] createView snapshot
+
+
+### Databricks Specific:
+1. [x] OPTIMIZE - optimizeTable - optimize with zorderCols options - <b> SUPPORTED </b> in Contributed Harness
+2. [x] CLUSTER BY (DDL) - createClusteredTable - createTable with clusterColumns as additional option for liquid - <b> SUPPORTED </b> in Contributed Harness
+3. [x] ANALYZE TABLE - analyzeTable - change type with compute stats column options - <b> SUPPORTED </b> in Contributed Harness
+4. [x] VACUUM - vacuumTable - change type with retentionHours parameter (default is 168) - <b> SUPPORTED </b> in Contributed Harness
+5. [ ] ALTER CLUSTER KEY - changeClusterColumns - change type that will be used until index change types are mapped with CLUSTER BY columns for snapshot purposes
 
 
 ## Remaining Required Change Types to Finish in Advanced
-1. [ ] generateChangelog
+1. [ ] generateChangelog - 
 2. [ ] addUniqueConstraint - Need to invalidate this test - not supported
 3. [ ] createIndex - Map to CLUSTER BY ALTER TABLE statements for Delta Tables
 
 ## Remaining Required Change Types to Finish in Base/Contributed
 1. [ ] (nice to have, not required) createFunction/dropFunction - in Liquibase Pro, should work in Databricks, but change type not accessible from Liquibase Core
-2. [ ] (nice to have, not required) addCheckConstraint/dropCheckConstraint - in Liquibase Pro, should work in Databricks, but change type not accessible from Liquibase Core
+2. [x] (nice to have, not required) addCheckConstraint/dropCheckConstraint - in Liquibase Pro, should work in Databricks, but change type not accessible from Liquibase Core
 3. [ ] addDefaultValue (of various types). Databricks/Delta tables support this, but does not get populated by databricks in the JDBC Driver (COLUMN_DEF property always None even with default)
 4. [ ] createIndex - Map to CLUSTER BY ALTER TABLE statement for delta tables. CLUSTER BY keys also need to be populated by JDBC driver. The SQL Generator has been created, but the Snapshot / expected snapshot needs to be properly created from driver.
 
@@ -67,12 +86,12 @@ The remaining other change types are not relevant to Databricks and have been ma
 1. COPY INTO
 2. MERGE
 3. RESTORE VERSION AS OF
-4. ANALYZE TABLE - Code Complete - Cody Davis
+4. ANALYZE TABLE - Code Complete - Adding Tests - Cody Davis
 5. SET TBL PROPERTIES - (Defaults are in createTable change type with min required table props to support Liquibase)
 6. CLONE
 7. BLOOM FILTERS - Maybe do not support, CLUSTER BY should be the primary indexing mechanism long term
-8. OPTIMIZE / ZORDER - Code Complete - No Test Yet - Cody Davis
-9. VACUUM - Code Complete - No Test Yet - Cody Davis
+8. OPTIMIZE / ZORDER - Code Complete - Adding Tests - Cody Davis
+9. VACUUM - Code Complete - Adding Tests - Cody Davis
 10. SYNC IDENTITY
 11. VOLUMES
 12. GRANT / REVOKE statements
