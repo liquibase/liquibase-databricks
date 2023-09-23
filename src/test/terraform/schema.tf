@@ -16,6 +16,14 @@ variable "schema_force_destroy" {
   default = true
 }
 
+resource "databricks_catalog" "main_cat" {
+  name         = "main"
+  comment      = "This database is for liquibase test harness"
+  properties = {
+    purpose = "testing"
+  }
+}
+
 resource "databricks_schema" "test_harness" {
   catalog_name = var.TF_VAR_TEST_CATALOG
   name = var.TF_VAR_TEST_SCHEMA
