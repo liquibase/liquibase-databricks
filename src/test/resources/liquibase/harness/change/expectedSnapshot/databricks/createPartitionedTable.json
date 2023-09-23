@@ -1,0 +1,30 @@
+{
+  "snapshot": {
+    "objects": {
+      "liquibase.structure.core.Table": [
+        {
+          "table": {
+            "name": "test_table_partitioned"
+          }
+        }
+      ],
+      "liquibase.structure.core.Column": [
+        {
+          "column": {
+            "name": "test_id"
+          }
+        },
+        {
+          "column": {
+            "name": "test_column"
+          }
+        },
+        {
+          "column": {
+            "name": "partition_column"
+          }
+        }
+      ]
+    }
+  }
+}

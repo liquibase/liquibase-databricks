@@ -1,6 +1,7 @@
 package liquibase.ext.databricks.sqlgenerator;
 
 
+import liquibase.exception.ValidationErrors;
 import liquibase.ext.databricks.change.createTable.CreateTableStatementDatabricks;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.sqlgenerator.core.CreateTableGenerator;
@@ -28,6 +29,15 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
         return super.supports(statement, database) && (database instanceof DatabricksDatabase);
     }
 
+    public ValidationErrors validate(CreateTableStatementDatabricks createStatement, Database database, SqlGeneratorChain sqlGeneratorChain) {
+        ValidationErrors validationErrors = new ValidationErrors();
+        if (!(createStatement.getPartitionColumns().isEmpty()) && !(createStatement.getClusterColumns().isEmpty())){
+            validationErrors.addError("WARNING! Databricks does not supported creating tables with PARTITION and CLUSTER columns, please one supply one option.");
+        }
+        return validationErrors;
+    }
+
+
     @Override
     public Sql[] generateSql(CreateTableStatement statement, Database database, SqlGeneratorChain sqlGeneratorChain) {
 
@@ -49,8 +59,11 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
             }
 
             ArrayList<String> clusterCols = thisStatement.getClusterColumns();
+            ArrayList<String> partitionCols = thisStatement.getPartitionColumns();
+
 
             // If there are any cluster columns, add the clause
+            // ONLY if there are NOT cluster columns, then do partitions, but never both.
             if (clusterCols.size() >= 1 ) {
 
                 finalsql += " CLUSTER BY (";
@@ -61,6 +74,21 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
 
                     val +=1;
                     if (clusterCols.size() > val) {
+                        finalsql += ", ";
+                    }
+                    else {
+                        finalsql += ")";
+                    }
+                }
+            } else if (partitionCols.size() >=1) {
+                finalsql += " PARTITIONED BY (";
+
+                int val = 0;
+                while (partitionCols.size() > val) {
+                    finalsql += partitionCols.get(val);
+
+                    val +=1;
+                    if (partitionCols.size() > val) {
                         finalsql += ", ";
                     }
                     else {

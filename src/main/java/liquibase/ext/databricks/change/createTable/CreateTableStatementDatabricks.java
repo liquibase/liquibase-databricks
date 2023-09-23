@@ -14,6 +14,8 @@ public class CreateTableStatementDatabricks extends CreateTableStatement {
 
     private ArrayList<String> clusterColumns;
 
+    private ArrayList<String> partitionColumns;
+
 
     public CreateTableStatementDatabricks(String catalogName, String schemaName, String tableName) {
         super(catalogName, schemaName, tableName);
@@ -29,6 +31,21 @@ public class CreateTableStatementDatabricks extends CreateTableStatement {
     public ArrayList<String> getClusterColumns () {
         return clusterColumns;
     }
+
+    public ArrayList<String> getPartitionColumns () {
+        return partitionColumns;
+    }
+
+
+    public void setPartitionColumns (String partitionColumns) {
+        if (partitionColumns == null) {
+            this.partitionColumns = new ArrayList<>();
+            return;
+        }
+        this.partitionColumns = new ArrayList<>(Arrays.asList(partitionColumns.split("\\s*,\\s*")));
+    }
+
+
 
     public void setClusterColumns (String clusterColumns) {
         if (clusterColumns == null) {
