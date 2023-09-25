@@ -14,12 +14,12 @@ This extension utilizes Unity Catalog System tables for many advanced operations
 If hive_metastore is used, this is not tested and may not provide all the below functionality.
 
 
-## TO DO: 
+## Harness Status: 
 
 1. [x] Add unit tests with liquibase test harness - Cody Davis - DONE
 2. [x] Pass Foundational Test Harness - Cody Davis - DONE 4/1/2023
 3. [x] Pass Contributed Test Harness - Cody Davis - DONE 9/15/2023
-4. [ ] Pass Advanced Test Harness - Cody Davis - IN PROGRESS (6/9 testing passing)
+4. [x] Pass Advanced Test Harness - Cody Davis - DONE 9/28/2023
 
 
 ## Currently Supported Change Types:
@@ -57,6 +57,9 @@ If hive_metastore is used, this is not tested and may not provide all the below 
 4. [x] schemaAndCatalogSnapshot snapshot
 5. [x] createTable snapshot
 6. [x] createView snapshot
+7. [x] generateChangelog -
+2. [x] addUniqueConstraint -  not supported
+3. [x] createIndex - Not Supported, use changeClusterColumns change type for datbricks to Map to CLUSTER BY ALTER TABLE statements for Delta Tables
 
 
 ### Databricks Specific:
@@ -67,16 +70,10 @@ If hive_metastore is used, this is not tested and may not provide all the below 
 5. [ ] ALTER CLUSTER KEY - changeClusterColumns - change type that will be used until index change types are mapped with CLUSTER BY columns for snapshot purposes
 
 
-## Remaining Required Change Types to Finish in Advanced
-1. [ ] generateChangelog - 
-2. [ ] addUniqueConstraint - Need to invalidate this test - not supported
-3. [ ] createIndex - Map to CLUSTER BY ALTER TABLE statements for Delta Tables
-
 ## Remaining Required Change Types to Finish in Base/Contributed
 1. [ ] (nice to have, not required) createFunction/dropFunction - in Liquibase Pro, should work in Databricks, but change type not accessible from Liquibase Core
 2. [x] (nice to have, not required) addCheckConstraint/dropCheckConstraint - in Liquibase Pro, should work in Databricks, but change type not accessible from Liquibase Core
 3. [ ] addDefaultValue (of various types). Databricks/Delta tables support this, but does not get populated by databricks in the JDBC Driver (COLUMN_DEF property always None even with default)
-4. [ ] createIndex - Map to CLUSTER BY ALTER TABLE statement for delta tables. CLUSTER BY keys also need to be populated by JDBC driver. The SQL Generator has been created, but the Snapshot / expected snapshot needs to be properly created from driver.
 
 The remaining other change types are not relevant to Databricks and have been marked with INVALID TEST
 
