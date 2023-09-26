@@ -26,7 +26,7 @@ variable "custom_spark_version" {
 # of resources allowed.
 data "databricks_node_type" "smallest" {
   local_disk = true
-  min_cores = 8
+  min_cores = 4
   photon_worker_capable = true
   photon_driver_capable = true
 }

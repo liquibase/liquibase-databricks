@@ -17,7 +17,7 @@ jobs:
       TF_VAR_DBX_HOST: ${{ secrets.TH_DATABRICKS_WORKSPACE_HOST }}
       TF_VAR_DBX_TOKEN: ${{ secrets.TH_DATABRICKS_WORKSPACE_TOKEN }}
       TF_VAR_TEST_CATALOG: main
-      TF_VAR_TEST_SCHEMA: lb_test_harness
+      TF_VAR_TEST_SCHEMA: liquibase_harness_test_ds
       WORKSPACE_ID: ${{ secrets.TH_DATABRICKS_WORKSPACE_ID }}
 
     strategy:
@@ -42,9 +42,9 @@ jobs:
       - name: Collect Databricks Config
         working-directory: src/test/terraform
         run: |
-          CLUSTER_ID=$(terraform output -raw cluster_url)
+          CLUSTER_ID=$(terraform output -raw endpoint_url)
           DATABRICKS_HOST=${TF_VAR_DBX_HOST#https://}
-          echo "DATABRICKS_URL=jdbc:databricks://$DATABRICKS_HOST:443/default;transportMode=http;ssl=1;httpPath=sql/protocolv1/o/$WORKSPACE_ID/$CLUSTER_ID;AuthMech=3;ConnCatalog=$TF_VAR_TEST_CATALOG;ConnSchema=$TF_VAR_TEST_SCHEMA;EnableArrow=0" >> "$GITHUB_ENV" 
+          echo "DATABRICKS_URL=jdbc:databricks://$DATABRICKS_HOST:443/default;transportMode=http;ssl=1;httpPath=/sql/1.0/warehouses/$CLUSTER_ID;AuthMech=3;ConnCatalog=$TF_VAR_TEST_CATALOG;ConnSchema=$TF_VAR_TEST_SCHEMA;EnableArrow=0" >> "$GITHUB_ENV" 
 
       - name: Setup Temurin Java 17
         uses: actions/setup-java@v3
