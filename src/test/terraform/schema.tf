@@ -17,7 +17,7 @@ variable "schema_force_destroy" {
 }
 
 resource "databricks_schema" "test_harness" {
-  catalog_id = var.TF_VAR_TEST_CATALOG
+  catalog_name = var.TF_VAR_TEST_CATALOG
   name = var.TF_VAR_TEST_SCHEMA
   comment = "This database is for liquibase test harness"
   force_destroy = var.schema_force_destroy
