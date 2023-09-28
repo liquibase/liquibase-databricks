@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="1" author="codydavis">
+        <createTable tableName="test_table_base">
+            <column name="id" type="INT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="test_table_base"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="2" author="codydavis">
+        <createTable tableName="test_table_reference">
+            <column name="id" type="INT"/>
+            <column name="test_column" type="INT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="test_table_reference"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="3" author="codydavis">
+        <addForeignKeyConstraint  baseColumnNames="id"
+                                  baseTableName="test_table_base"
+                                  constraintName="test_fk"
+                                  onDelete="CASCADE"
+                                  onUpdate="RESTRICT"
+                                  referencedColumnNames="test_column"
+                                  referencedTableName="test_table_reference"
+                                  validate="true"/>
+        <rollback>
+            <dropForeignKeyConstraint baseTableName="test_table_base"
+                                      constraintName="test_fk"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

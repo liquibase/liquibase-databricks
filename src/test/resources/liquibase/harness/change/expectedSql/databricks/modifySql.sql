@@ -1,0 +1,1 @@
+/* prepend comment */ CREATE TABLE main.liquibase_harness_test_ds.test_table (test_id INT NOT NULL, test_column VARCHAR(50) NOT NULL, CONSTRAINT PK_cs_guaranteed_delivery PRIMARY KEY (test_id)) USING delta TBLPROPERTIES('delta.feature.allowColumnDefaults' = 'supported', 'delta.columnMapping.mode' = 'name') -- append comment

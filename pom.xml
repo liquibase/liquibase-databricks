@@ -71,6 +71,11 @@
             <version>${liquibase.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-commercial</artifactId>
+            <version>${liquibase.version}</version>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
@@ -163,7 +168,7 @@
                 <configuration>
                     <attach>true</attach>
                     <author>false</author>
-                    <doctitle>Liquibase Databricks ${version} API</doctitle>
+                    <doctitle>Liquibase Databricks ${project.version} API</doctitle>
                     <quiet>true</quiet>
                     <doclint>none</doclint>
                     <encoding>UTF-8</encoding>

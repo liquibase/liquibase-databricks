@@ -5,6 +5,7 @@ variable "DBX_HOST" {
 variable "DBX_TOKEN" {
   type  = string
 }
+
 # Initialize the Databricks Terraform provider.
 terraform {
   required_providers {

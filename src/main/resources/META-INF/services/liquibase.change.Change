@@ -1,4 +1,7 @@
 liquibase.ext.databricks.change.createTable.CreateTableChangeDatabricks
-liquibase.ext.databricks.change.optimize.OptimizeChange
-liquibase.ext.databricks.change.analyze.AnalyzeChange
-liquibase.ext.databricks.change.vacuum.VacuumChange
+liquibase.ext.databricks.change.optimizeTable.OptimizeTableChange
+liquibase.ext.databricks.change.analyzeTable.AnalyzeTableChange
+liquibase.ext.databricks.change.vacuumTable.VacuumTableChange
+liquibase.ext.databricks.change.addLookupTable.AddLookupTableChangeDatabricks
+liquibase.ext.databricks.change.addCheckConstraint.AddCheckConstraintChangeDatabricks
+liquibase.ext.databricks.change.dropCheckConstraint.DropCheckConstraintChangeDatabricks

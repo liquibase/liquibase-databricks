@@ -1,0 +1,1 @@
+CREATE TABLE main.liquibase_harness_test_ds.lms_create_table_test (lms_test_id INT, lms_test_timestamp TIMESTAMP) USING delta TBLPROPERTIES('delta.feature.allowColumnDefaults' = 'supported', 'delta.columnMapping.mode' = 'name')

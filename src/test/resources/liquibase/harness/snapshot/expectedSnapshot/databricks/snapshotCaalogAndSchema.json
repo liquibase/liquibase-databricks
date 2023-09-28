@@ -1,0 +1,20 @@
+{
+  "snapshot": {
+    "objects": {
+      "liquibase.structure.core.Catalog": [
+        {
+          "catalog": {
+            "name": "main"
+          }
+        }
+      ],
+      "liquibase.structure.core.Schema": [
+        {
+          "schema": {
+            "name": "liquibase_harness_test_ds"
+          }
+        }
+      ]
+    }
+  }
+}
