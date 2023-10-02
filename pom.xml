@@ -37,8 +37,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/liquibase/liquibase-databricks.git</connection>
+        <connection>scm:git:https://github.com/liquibase/liquibase-databricks.git</connection>
         <url>https://github.com/liquibase/liquibase-databricks</url>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>
