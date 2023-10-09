@@ -26,7 +26,7 @@
     </developers>
 
     <properties>
-        <liquibase.version>4.23.2</liquibase.version>
+        <liquibase.version>4.24.0</liquibase.version>
         <sonar.tests>src/test/groovy</sonar.tests>
         <snakeyaml.version>2.2</snakeyaml.version>
     </properties>
