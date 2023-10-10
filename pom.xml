@@ -29,6 +29,9 @@
         <groovy-all.version>2.4.21</groovy-all.version>
         <liquibase.version>4.23.2</liquibase.version>
         <gmavenplus-plugin.version>2.1.0</gmavenplus-plugin.version>
+        <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
+        <maven-resources-plugin.version>2.6</maven-resources-plugin.version>
+        <maven-surefire-plugin.version>3.1.0</maven-surefire-plugin.version>
         <sonar.tests>src/test/groovy</sonar.tests>
         <snakeyaml.version>2.2</snakeyaml.version>
         <spock-core.version.version>1.3-groovy-2.4</spock-core.version.version>
