@@ -27,7 +27,7 @@
 
     <properties>
         <groovy-all.version>2.4.21</groovy-all.version>
-        <liquibase.version>4.23.2</liquibase.version>
+        <liquibase.version>4.24.0</liquibase.version>
         <gmavenplus-plugin.version>2.1.0</gmavenplus-plugin.version>
         <sonar.tests>src/test/groovy</sonar.tests>
         <spock-core.version>1.3-groovy-2.4</spock-core.version>
