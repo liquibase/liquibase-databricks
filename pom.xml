@@ -35,6 +35,13 @@
         <junit-platform.version>1.10.0</junit-platform.version>
     </properties>
 
+    <scm>
+        <connection>scm:git:${project.scm.url}</connection>
+        <developerConnection>scm:git:${project.scm.url}</developerConnection>
+		<url>https://github.com/liquibase/liquibase-databricks.git</url>
+		<tag>HEAD</tag>
+	</scm>
+
     <dependencies>
         <dependency>
             <groupId>org.skyscreamer</groupId>
