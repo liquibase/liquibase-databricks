@@ -1,13 +1,7 @@
 package liquibase.ext.databricks.snapshot.jvm;
 
-
-import liquibase.ext.databricks.database.DatabricksDatabase;
-import liquibase.database.Database;
-import liquibase.exception.DatabaseException;
-import java.sql.SQLException;
 import liquibase.snapshot.ResultSetCache;
-import liquibase.snapshot.CachedRow;
-import java.util.List;
+import liquibase.database.Database;
 
 public class ResultSetCacheDatabricks extends ResultSetCache {
     public static class RowData extends ResultSetCache.RowData {
@@ -20,21 +14,5 @@ public class ResultSetCacheDatabricks extends ResultSetCache {
         public SingleResultSetExtractor(Database database) {
             super(database);
         }
-
-        protected boolean shouldBulkSelect(String schemaKey, ResultSetCacheDatabricks resultSetCache) {
-            return super.shouldBulkSelect(schemaKey, resultSetCache);
-        }
-
-        @Override
-        public List<CachedRow> executeAndExtract(String sql, Database database) throws DatabaseException, SQLException {
-            return super.executeAndExtract(sql, database);
-        }
-
-        @Override
-        public List<CachedRow> executeAndExtract(String sql, Database database, boolean informixTrimHint)
-                throws DatabaseException, SQLException {
-            return super.executeAndExtract(sql, database, informixTrimHint);
-        }
-
     }
 }

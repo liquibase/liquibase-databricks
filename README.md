@@ -67,16 +67,20 @@ If hive_metastore is used, this is not tested and may not provide all the below 
 2. [x] CLUSTER BY (DDL) - createClusteredTable - createTable with clusterColumns as additional option for liquid - <b> SUPPORTED </b> in Contributed Harness
 3. [x] ANALYZE TABLE - analyzeTable - change type with compute stats column options - <b> SUPPORTED </b> in Contributed Harness
 4. [x] VACUUM - vacuumTable - change type with retentionHours parameter (default is 168) - <b> SUPPORTED </b> in Contributed Harness
-5. [ ] ALTER CLUSTER KEY - changeClusterColumns - change type that will be used until index change types are mapped with CLUSTER BY columns for snapshot purposes
+5. [ ] ALTER CLUSTER KEY - changeClusterColumns - change type that will be used until index change types are mapped with CLUSTER BY columns for snapshot purposes - TO DO
 
 
 ## Remaining Required Change Types to Finish in Base/Contributed
 1. [ ] (nice to have, not required) createFunction/dropFunction - in Liquibase Pro, should work in Databricks, but change type not accessible from Liquibase Core
 2. [x] (nice to have, not required) addCheckConstraint/dropCheckConstraint - in Liquibase Pro, should work in Databricks, but change type not accessible from Liquibase Core
 3. [ ] addDefaultValue (of various types). Databricks/Delta tables support this, but does not get populated by databricks in the JDBC Driver (COLUMN_DEF property always None even with default)
-
 The remaining other change types are not relevant to Databricks and have been marked with INVALID TEST
 
+
+## General TO DO:
+1. [ ] Add support for Snapshotting complex types like STRUCT/MAP
+2. [ ] Add support for snapshotting IDENTITY KEYs
+3. [ ] Add TIMESTAMP_NTZ Data Type
 
 ## Aspirational Roadmap - Databricks Specific Additional Change Types to Add: 
 
@@ -108,7 +112,10 @@ Then put this driver jar under the liquibase/lib directory.
 3. Build this project or retrieve the jar from the latest release. 
 Then put this extension jar under the liquibase/lib directory. 
 
-4. Edit the connection parameters to your Databricks catlaog/database under the liquibase.properties file. The format will look like this:
+4. IMPORTANT: If using Linux/MaxOS - run the following command in your terminal before continuing (you can add this to the bash/zsh profile):
+   export JAVA_OPTS=--add-opens=java.base/java.nio=ALL-UNNAMED
+
+5. Edit the connection parameters to your Databricks catlaog/database under the liquibase.properties file. The format will look like this:
 
 ```
 url: jdbc:databricks://<workspace_url>:443/default;transportMode=http;ssl=1;httpPath=<http_path>;AuthMech=3;ConnCatalog=<catalog>;ConnSchema=<database>; 

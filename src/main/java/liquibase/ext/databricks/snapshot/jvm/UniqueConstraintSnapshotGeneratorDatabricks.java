@@ -12,9 +12,7 @@ import liquibase.snapshot.jvm.UniqueConstraintSnapshotGenerator;
 import liquibase.statement.core.RawSqlStatement;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.core.*;
-import liquibase.ext.databricks.database.DatabricksDatabase;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -50,27 +48,9 @@ public class UniqueConstraintSnapshotGeneratorDatabricks extends UniqueConstrain
         String constraintName = database.correctObjectName(name, UniqueConstraint.class);
         String tableName = database.correctObjectName(table.getName(), Table.class);
 
-        /*
-        Sample Query on Databricks Unity Catalog:
-
-            SELECT *
-            FROM main.information_schema.table_constraints
-            WHERE constraint_catalog = 'main'
-            AND constraint_schema = 'liquibase_harness_test_ds'
-            AND constraint_type = 'UNIQUE'
-            AND table_name = 'databasechangelog'
-
-         */
-
-        String sql = "select CONSTRAINT_NAME, CONSTRAINT_NAME as COLUMN_NAME FROM " + schema.getCatalogName() + "." + "INFORMATION_SCHEMA" + ".TABLE_CONSTRAINTS WHERE CONSTRAINT_TYPE='UNIQUE'";
-
-        // Databricks system tables are for each catalog, and then filtered down to database level
-        if (schema.getCatalogName() != null) {
-            sql = sql + "and CONSTRAINT_CATALOG='" + schema.getCatalogName() + "' ";
-        }
-
+        String sql = "SELECT CONSTRAINT_NAME, CONSTRAINT_NAME as COLUMN_NAME FROM " + database.getSystemSchema() + ".TABLE_CONSTRAINTS WHERE CONSTRAINT_TYPE='UNIQUE'";
         if (schemaName != null) {
-            sql = sql + "and CONSTRAINT_SCHEMA='" + schemaName + "' ";
+            sql = sql + "AND CONSTRAINT_SCHEMA='" + schemaName + "' ";
         }
 
         if (tableName != null) {
@@ -82,5 +62,4 @@ public class UniqueConstraintSnapshotGeneratorDatabricks extends UniqueConstrain
         }
 
         return Scope.getCurrentScope().getSingleton(ExecutorService.class).getExecutor("jdbc", database).queryForList(new RawSqlStatement(sql));
-    }
-}
+    }}

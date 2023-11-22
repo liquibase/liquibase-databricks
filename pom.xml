@@ -5,7 +5,7 @@
 
     <groupId>org.liquibase.ext</groupId>
     <artifactId>liquibase-databricks</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.1.0</version>
 
     <name>Liquibase Extension: Databricks support</name>
     <description>Liquibase Extension for Databricks.</description>
@@ -96,7 +96,7 @@
         <dependency>
             <groupId>com.databricks</groupId>
             <artifactId>databricks-jdbc</artifactId>
-            <version>2.6.33</version>
+            <version>2.6.34</version>
             <scope>test</scope>
         </dependency>
 
@@ -136,10 +136,10 @@
                 <version>${liquibase.version}</version>
                 <configuration>
                     <propertyFileWillOverride>true</propertyFileWillOverride>
-                    <propertyFile>target/classes/liquibase.properties</propertyFile>
+                    <propertyFile>dev_db.properties</propertyFile>
                     <logging>DEBUG</logging>
-                    <changeLogFile>target/classes/changelog.sql</changeLogFile>
-                    <outputChangeLogFile>target/classes/generatedChangelog.databricks.sql</outputChangeLogFile>
+                    <changeLogFile>dev_setup.xml</changeLogFile>
+                    <outputChangeLogFile>generatedChangelog.databricks.sql</outputChangeLogFile>
                     <diffTypes>tables,views</diffTypes>
                     <diffIncludeCatalog>true</diffIncludeCatalog>
                     <diffIncludeSchema>true</diffIncludeSchema>

@@ -13,6 +13,7 @@ import liquibase.sqlgenerator.SqlGeneratorChain;
 import liquibase.statement.DatabaseFunction;
 import liquibase.statement.core.AddDefaultValueStatement;
 import liquibase.sqlgenerator.core.AddDefaultValueGenerator;
+
 public class AddDefaultValueGeneratorDatabricks extends AddDefaultValueGenerator {
     @Override
     public int getPriority() {
