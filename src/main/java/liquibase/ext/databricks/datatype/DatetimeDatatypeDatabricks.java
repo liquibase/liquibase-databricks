@@ -13,7 +13,7 @@ import static liquibase.servicelocator.PrioritizedService.PRIORITY_DATABASE;
         name = "timestamp",
         aliases = {"java.sql.Types.DATETIME", "datetime"},
         minParameters = 0,
-        maxParameters = 2,
+        maxParameters = 0,
         priority = PRIORITY_DATABASE
 )
 public class DatetimeDatatypeDatabricks extends LiquibaseDataType {
@@ -23,7 +23,7 @@ public class DatetimeDatatypeDatabricks extends LiquibaseDataType {
     public DatabaseDataType toDatabaseDataType(Database database) {
 
         if (database instanceof DatabricksDatabase) {
-            return new DatabaseDataType("TIMESTAMP", getParameters());
+            return new DatabaseDataType("TIMESTAMP");
         }
 
         return super.toDatabaseDataType(database);

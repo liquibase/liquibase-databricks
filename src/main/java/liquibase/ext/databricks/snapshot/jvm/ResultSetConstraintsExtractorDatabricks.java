@@ -1,17 +1,16 @@
 package liquibase.ext.databricks.snapshot.jvm;
 
-import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.CatalogAndSchema;
 import liquibase.database.AbstractJdbcDatabase;
 import liquibase.database.Database;
 import liquibase.exception.DatabaseException;
 import liquibase.snapshot.CachedRow;
-import liquibase.snapshot.DatabaseSnapshot;
-import liquibase.ext.databricks.snapshot.jvm.ResultSetCacheDatabricks;
+import liquibase.snapshot.DatabaseSnapshot;;
 import liquibase.structure.core.Schema;
 
 import java.sql.SQLException;
 import java.util.List;
+import liquibase.ext.databricks.snapshot.jvm.ResultSetCacheDatabricks;
 
 public class ResultSetConstraintsExtractorDatabricks extends ResultSetCacheDatabricks.SingleResultSetExtractor {
 
@@ -50,10 +49,9 @@ public class ResultSetConstraintsExtractorDatabricks extends ResultSetCacheDatab
         CatalogAndSchema catalogAndSchema = new CatalogAndSchema(this.catalogName, this.schemaName)
                 .customize(this.database);
 
-        return executeAndExtract(
+        return executeAndExtract(this.database,
                 createSql(((AbstractJdbcDatabase) this.database).getJdbcCatalogName(catalogAndSchema),
-                        ((AbstractJdbcDatabase) this.database).getJdbcSchemaName(catalogAndSchema), this.tableName),
-                this.database, false);
+                        ((AbstractJdbcDatabase) this.database).getJdbcSchemaName(catalogAndSchema), this.tableName));
     }
 
     @Override
@@ -61,10 +59,9 @@ public class ResultSetConstraintsExtractorDatabricks extends ResultSetCacheDatab
         CatalogAndSchema catalogAndSchema = new CatalogAndSchema(this.catalogName, this.schemaName)
                 .customize(this.database);
 
-        return executeAndExtract(
+        return executeAndExtract(this.database,
                 createSql(((AbstractJdbcDatabase) this.database).getJdbcCatalogName(catalogAndSchema),
-                        ((AbstractJdbcDatabase) this.database).getJdbcSchemaName(catalogAndSchema), null),
-                this.database);
+                        ((AbstractJdbcDatabase) this.database).getJdbcSchemaName(catalogAndSchema), null));
     }
 
     private String createSql(String catalog, String schema, String table) {
@@ -73,14 +70,13 @@ public class ResultSetConstraintsExtractorDatabricks extends ResultSetCacheDatab
         String jdbcSchemaName = this.database.correctObjectName(
                 ((AbstractJdbcDatabase) this.database).getJdbcSchemaName(catalogAndSchema), Schema.class);
 
-        String sql = "select CONSTRAINT_NAME, CONSTRAINT_TYPE, TABLE_NAME from "
-                + catalog + ".INFORMATION_SCHEMA.TABLE_CONSTRAINTS " + "where TABLE_SCHEMA='" + schema + "'";
-          //      + "' and CONSTRAINT_TYPE='UNIQUE'";
+        String sql = "SELECT CONSTRAINT_NAME, CONSTRAINT_TYPE, TABLE_NAME FROM "
+                + this.database.getSystemSchema() + ".TABLE_CONSTRAINTS " + " WHERE TABLE_SCHEMA='" + jdbcSchemaName
+                + "' AND CONSTRAINT_TYPE='UNIQUE'";
         if (table != null) {
-            sql += " and TABLE_NAME='" + table + "'";
+            sql += " AND TABLE_NAME='" + table + "'";
         }
 
         return sql;
     }
-
 }
