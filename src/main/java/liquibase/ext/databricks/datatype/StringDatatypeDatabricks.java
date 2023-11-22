@@ -27,19 +27,10 @@ public class StringDatatypeDatabricks extends LiquibaseDataType {
     public DatabaseDataType toDatabaseDataType(Database database) {
         if (database instanceof DatabricksDatabase) {
 
-            DatabaseDataType type = new DatabaseDataType("STRING", this.getParameters());
-            if (this.getParameters().length == 0) {
-                type.setType("STRING");
-            } else {
-                String firstParameter = String.valueOf(this.getParameters()[0]);
-                int stringSize = Integer.parseInt(firstParameter);
-                if (stringSize == 65535) {
-                    type.setType("STRING");
-                }
-                else {
-                    type.setType("STRING");
-                }
-            }
+            DatabaseDataType type = new DatabaseDataType("STRING");
+
+            type.setType("STRING");
+
             return type;
         } else {
             return super.toDatabaseDataType(database);
