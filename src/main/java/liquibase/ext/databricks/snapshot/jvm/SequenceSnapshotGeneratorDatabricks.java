@@ -11,6 +11,8 @@ import liquibase.snapshot.SnapshotGenerator;
 import liquibase.snapshot.jvm.SequenceSnapshotGenerator;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.core.Schema;
+import liquibase.statement.SqlStatement;
+import liquibase.statement.core.RawSqlStatement;
 
 public class SequenceSnapshotGeneratorDatabricks extends SequenceSnapshotGenerator {
 
@@ -35,7 +37,7 @@ public class SequenceSnapshotGeneratorDatabricks extends SequenceSnapshotGenerat
     }
 
     @Override
-    protected String getSelectSequenceSql(Schema schema, Database database) {
+    protected SqlStatement getSelectSequenceStatement(Schema schema, Database database) {
         if (database instanceof DatabricksDatabase) {
             // Databricks does not support sequences
 
@@ -50,8 +52,9 @@ public class SequenceSnapshotGeneratorDatabricks extends SequenceSnapshotGenerat
                     "AND table_schema = '" + schema.getName() +"' " +
                     "AND 1=0";
 
-            return databricksSequenceSql;
-        }
-        return super.getSelectSequenceSql(schema, database);
+            return new RawSqlStatement(databricksSequenceSql);
+            }
+
+        return super.getSelectSequenceStatement(schema, database);
     }
 }
