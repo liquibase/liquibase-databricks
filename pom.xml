@@ -10,7 +10,7 @@
 
     <groupId>org.liquibase.ext</groupId>
     <artifactId>liquibase-databricks</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.1.1</version>
 
     <name>Liquibase Extension Databricks</name>
     <description>Liquibase Extension for Databricks.</description>
@@ -36,7 +36,7 @@
         <connection>scm:git:${project.scm.url}</connection>
         <developerConnection>scm:git:${project.scm.url}</developerConnection>
 		<url>https://github.com/liquibase/liquibase-databricks.git</url>
-		<tag>HEAD</tag>
+		<tag>liquibase-databricks-1.1.1</tag>
 	</scm>
 
     <dependencies>
