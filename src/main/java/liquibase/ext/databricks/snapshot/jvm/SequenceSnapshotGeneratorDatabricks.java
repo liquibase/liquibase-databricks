@@ -36,6 +36,7 @@ public class SequenceSnapshotGeneratorDatabricks extends SequenceSnapshotGenerat
         return null;
     }
 
+
     @Override
     protected SqlStatement getSelectSequenceStatement(Schema schema, Database database) {
         if (database instanceof DatabricksDatabase) {
@@ -55,6 +56,6 @@ public class SequenceSnapshotGeneratorDatabricks extends SequenceSnapshotGenerat
             return new RawSqlStatement(databricksSequenceSql);
             }
 
-        return super.getSelectSequenceStatement(schema, database);
+        return getSelectSequenceStatement(schema, database);
     }
 }
