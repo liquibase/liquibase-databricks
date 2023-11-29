@@ -37,6 +37,7 @@ public class SequenceSnapshotGeneratorDatabricks extends SequenceSnapshotGenerat
     }
 
 
+    @Override
     protected SqlStatement getSelectSequenceStatement(Schema schema, Database database) {
         if (database instanceof DatabricksDatabase) {
             // Databricks does not support sequences
