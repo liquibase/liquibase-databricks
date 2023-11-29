@@ -65,30 +65,15 @@
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>${maven-surefire-plugin.version}</version>
-                  <dependencies>
-                    <dependency>
-                        <groupId>org.apache.maven.surefire</groupId>
-                        <artifactId>surefire-junit4</artifactId>
-                        <version>3.1.2</version>
-                    </dependency>
-                  </dependencies>
-                <configuration>
-                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
-                    <reportFormat>plain</reportFormat>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-maven-plugin</artifactId>
                 <version>${liquibase.version}</version>
                 <configuration>
                     <propertyFileWillOverride>true</propertyFileWillOverride>
-                    <propertyFile>target/classes/liquibase.properties</propertyFile>
+                    <propertyFile>dev_db.properties</propertyFile>
                     <logging>DEBUG</logging>
-                    <changeLogFile>target/classes/changelog.sql</changeLogFile>
-                    <outputChangeLogFile>target/classes/generatedChangelog.databricks.sql</outputChangeLogFile>
+                    <changeLogFile>dev_setup.xml</changeLogFile>
+                    <outputChangeLogFile>generatedChangelog.databricks.sql</outputChangeLogFile>
                     <diffTypes>tables,views</diffTypes>
                     <diffIncludeCatalog>true</diffIncludeCatalog>
                     <diffIncludeSchema>true</diffIncludeSchema>
