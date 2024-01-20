@@ -1,5 +1,6 @@
 package liquibase.ext.databricks.sqlgenerator;
 
+import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.sqlgenerator.core.CreateIndexGenerator;
 
 
@@ -23,6 +24,11 @@ Only supported on delta 3.0 + and DBR 13.2+ and DBSQL
 
  */
 public class CreateIndexGeneratorDatabricks extends CreateIndexGenerator {
+
+    @Override
+    public boolean supports(CreateIndexStatement statement, Database database) {
+        return super.supports(statement, database) && (database instanceof DatabricksDatabase);
+    }
 
     @Override
     public ValidationErrors validate(CreateIndexStatement createIndexStatement, Database database,
@@ -60,15 +66,13 @@ public class CreateIndexGeneratorDatabricks extends CreateIndexGenerator {
 
         buffer.append("ALTER TABLE ");
 
-        //System.out.println("INDEX CREATE SQL: " + fullyQualifiedTableName);
-
         buffer.append(database.escapeTableName(statement.getTableCatalogName(), statement.getTableSchemaName(), statement.getTableName())).append(" CLUSTER BY ");
 
         // get columns to cluster by
         Iterator<AddColumnConfig> iterator = Arrays.asList(statement.getColumns()).iterator();
 
         // if no cluster columns, then cluster by NONE - un-clustered Delta Table
-        if (iterator.hasNext() == false) {
+        if (!iterator.hasNext()) {
 
             buffer.append(" NONE ");
         }
@@ -91,6 +95,7 @@ public class CreateIndexGeneratorDatabricks extends CreateIndexGenerator {
         return new Sql[] {new UnparsedSql(buffer.toString(), getAffectedIndex(statement))};
     }
 
+    @Override
     protected Index getAffectedIndex(CreateIndexStatement statement) {
         return new Index().setName(statement.getIndexName()).setRelation(new Table().setName(statement.getTableName()).setSchema(statement.getTableCatalogName(), statement.getTableSchemaName()));
     }
