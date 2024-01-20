@@ -12,7 +12,6 @@ import liquibase.sqlgenerator.SqlGeneratorChain;
 import liquibase.statement.core.CreateTableStatement;
 import liquibase.structure.DatabaseObject;
 import liquibase.util.StringUtil;
-import org.yaml.snakeyaml.util.ArrayUtils;
 
 import java.util.ArrayList;
 

@@ -1,5 +1,6 @@
 package liquibase.ext.databricks.database;
 
+import liquibase.Scope;
 import liquibase.database.AbstractJdbcDatabase;
 import liquibase.database.DatabaseConnection;
 import liquibase.database.jvm.JdbcConnection;
@@ -7,8 +8,10 @@ import liquibase.exception.DatabaseException;
 import liquibase.structure.DatabaseObject;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.RawCallStatement;
+import liquibase.structure.core.Schema;
 import liquibase.util.StringUtil;
 import java.math.BigInteger;
+import java.sql.ResultSet;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -21,6 +24,8 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
     // define env variables for database
     public static final String PRODUCT_NAME = "databricks";
     // Set default catalog - must be unity Catalog Enabled
+
+    public String systemSchema = "information_schema";
 
     // This is from the new INFORMATION_SCHEMA() database
     private Set<String> systemTablesAndViews = new HashSet<>();
@@ -65,6 +70,12 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
         return systemTablesAndViews;
     }
 
+    // Static Value
+    @Override
+    public String getSystemSchema() {
+        return this.systemSchema;
+    }
+
     @Override
     public Integer getDefaultPort() {
         return 443;
@@ -82,11 +93,13 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
 
     @Override
     public String getDefaultDriver(String url) {
-        if (url.startsWith("jdbc:databricks:") || url.startsWith("jdbc:spark:")) {
+        if (url.startsWith("jdbc:databricks") || url.startsWith("jdbc:spark")) {
+
             return "com.databricks.client.jdbc.Driver";
         }
         return null;
     }
+
 
     @Override
     public boolean supportsInitiallyDeferrableColumns() {
@@ -173,6 +186,56 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
     protected SqlStatement getConnectionSchemaNameCallStatement() {
         return new RawCallStatement("select current_schema()");
     }
+
+    @Override
+    protected String getConnectionSchemaName() {
+        DatabaseConnection connection = getConnection();
+
+        if (connection == null) {
+            return null;
+        }
+        try (ResultSet resultSet = ((JdbcConnection) connection).createStatement().executeQuery("SELECT CURRENT_SCHEMA()")) {
+            resultSet.next();
+            return resultSet.getString(1);
+        } catch (Exception e) {
+            Scope.getCurrentScope().getLog(getClass()).info("Error getting default schema", e);
+        }
+
+        String foundSchema = parseUrlForSchema(connection.getURL());
+        System.out.println("SCHEMA IDENFIED: "+ foundSchema);
+
+        return foundSchema;
+    }
+
+    private String parseUrlForSchema(String url) {
+
+        String schemaToken = "ConnSchema=";
+
+        int startIndex = url.indexOf(schemaToken);
+
+        // If ConnSchema not found, find the default value
+        if (startIndex == -1) {
+
+            return "default";
+        }
+
+        startIndex += schemaToken.length();
+        int endIndex = url.indexOf(";", startIndex);
+
+        if (endIndex == -1) {
+            return url.substring(startIndex);
+        }
+
+        return url.substring(startIndex, endIndex);
+    }
+
+    @Override
+    public void setDefaultSchemaName(final String schemaName) {
+        this.defaultSchemaName = correctObjectName(schemaName, Schema.class);
+    }
+
+    public void setSystemSchema(String systemSchema) {this.systemSchema = systemSchema;}
+
 
     private Set<String> getDatabricksReservedWords() {
 
