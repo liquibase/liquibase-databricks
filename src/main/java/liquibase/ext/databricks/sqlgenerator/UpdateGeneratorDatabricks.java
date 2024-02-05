@@ -21,6 +21,11 @@ public class UpdateGeneratorDatabricks extends UpdateGenerator {
     }
 
     @Override
+    public boolean supports(UpdateStatement statement, Database database) {
+        return super.supports(statement, database) && (database instanceof DatabricksDatabase);
+    }
+
+    @Override
     public int getPriority() {
         return DatabricksDatabase.PRIORITY_DATABASE;
     }
@@ -36,7 +41,7 @@ public class UpdateGeneratorDatabricks extends UpdateGenerator {
             sql.append(" ")
                     .append(database.escapeColumnName(statement.getCatalogName(), statement.getSchemaName(), statement.getTableName(), column))
                     .append(" = ")
-                    .append(this.convertToString(statement.getNewColumnValues().get(column), database))
+                    .append(this.convertObjectToString(statement.getNewColumnValues().get(column), database))
                     .append(",");
         }
 
@@ -54,7 +59,7 @@ public class UpdateGeneratorDatabricks extends UpdateGenerator {
         };
     }
 
-    private String convertToString(Object newValue, Database database) {
+    private String convertObjectToString(Object newValue, Database database) {
         String sqlString;
         if ((newValue == null) || "NULL".equalsIgnoreCase(newValue.toString())) {
             sqlString = "NULL";
@@ -69,7 +74,7 @@ public class UpdateGeneratorDatabricks extends UpdateGenerator {
 
             sqlString = database.getDateLiteral(date);
         } else if (newValue instanceof Boolean) {
-            if (((Boolean) newValue)) {
+            if ((Boolean) newValue) {
                 sqlString = DataTypeFactory.getInstance().getTrueBooleanValue(database);
             } else {
                 sqlString = DataTypeFactory.getInstance().getFalseBooleanValue(database);

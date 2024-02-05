@@ -18,7 +18,7 @@ public class AddForeignKeyConstraintGeneratorDatabricks extends AddForeignKeyCon
     @Override
     @SuppressWarnings({"SimplifiableIfStatement"})
     public boolean supports(AddForeignKeyConstraintStatement statement, Database database) {
-        return ((database instanceof DatabricksDatabase));
+        return (database instanceof DatabricksDatabase);
     }
 
     @Override
@@ -69,6 +69,7 @@ public class AddForeignKeyConstraintGeneratorDatabricks extends AddForeignKeyCon
         };
     }
 
+    @Override
     protected ForeignKey getAffectedForeignKey(AddForeignKeyConstraintStatement statement) {
         return new ForeignKey().setName(statement.getConstraintName()).setForeignKeyColumns(Column.listFromNames(statement.getBaseColumnNames())).setForeignKeyTable((Table) new Table().setName(statement.getBaseTableName()).setSchema(statement.getBaseTableCatalogName(), statement.getBaseTableSchemaName()));
     }
