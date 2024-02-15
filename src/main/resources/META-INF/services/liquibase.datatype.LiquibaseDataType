@@ -2,3 +2,6 @@ liquibase.ext.databricks.datatype.DatetimeDatatypeDatabricks
 liquibase.ext.databricks.datatype.BigintDatatypeDatabricks
 liquibase.ext.databricks.datatype.StringDatatypeDatabricks
 liquibase.ext.databricks.datatype.IntegerDatatypeDatabricks
+liquibase.ext.databricks.datatype.BooleanDatatypeDatabricks
+liquibase.ext.databricks.datatype.FloatDatatypeDatabricks
+liquibase.ext.databricks.datatype.DoubleDatatypeDatabricks

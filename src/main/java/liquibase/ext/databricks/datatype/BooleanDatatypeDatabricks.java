@@ -8,15 +8,15 @@ import liquibase.datatype.LiquibaseDataType;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.servicelocator.PrioritizedService;
 
-
 @DataTypeInfo(
-        name = "int",
+        name = "boolean",
         minParameters = 0,
         maxParameters = 0,
         priority = PrioritizedService.PRIORITY_DATABASE
 )
-public class IntegerDatatypeDatabricks extends LiquibaseDataType {
-    public IntegerDatatypeDatabricks() {
+public class BooleanDatatypeDatabricks extends LiquibaseDataType {
+
+    public BooleanDatatypeDatabricks() {
         // empty constructor
     }
 
@@ -29,8 +29,8 @@ public class IntegerDatatypeDatabricks extends LiquibaseDataType {
     public DatabaseDataType toDatabaseDataType(Database database) {
         if (database instanceof DatabricksDatabase) {
 
-            DatabaseDataType type = new DatabaseDataType("INT", this.getParameters());
-            type.setType("INT");
+            DatabaseDataType type = new DatabaseDataType("BOOLEAN", this.getParameters());
+            type.setType("BOOLEAN");
             return type;
         } else {
             return super.toDatabaseDataType(database);
@@ -39,6 +39,6 @@ public class IntegerDatatypeDatabricks extends LiquibaseDataType {
     }
 
     public LoadDataChange.LOAD_DATA_TYPE getLoadTypeName() {
-        return LoadDataChange.LOAD_DATA_TYPE.NUMERIC;
+        return LoadDataChange.LOAD_DATA_TYPE.BOOLEAN;
     }
 }
