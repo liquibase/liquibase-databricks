@@ -6,22 +6,26 @@ import liquibase.datatype.DataTypeInfo;
 import liquibase.datatype.DatabaseDataType;
 import liquibase.datatype.LiquibaseDataType;
 import liquibase.ext.databricks.database.DatabricksDatabase;
+import liquibase.servicelocator.PrioritizedService;
 
 
 @DataTypeInfo(
         name = "float",
         minParameters = 0,
         maxParameters = 0,
-        priority = DatabricksDatabase.PRIORITY_DATABASE
+        priority = PrioritizedService.PRIORITY_DATABASE
 )
 public class FloatDatatypeDatabricks extends LiquibaseDataType {
     public FloatDatatypeDatabricks() {
+        // empty constructor
     }
 
+    @Override
     public boolean supports(Database database) {
         return database instanceof DatabricksDatabase;
     }
 
+    @Override
     public DatabaseDataType toDatabaseDataType(Database database) {
         if (database instanceof DatabricksDatabase) {
 
