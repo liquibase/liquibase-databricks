@@ -9,13 +9,13 @@ import liquibase.ext.databricks.database.DatabricksDatabase;
 
 
 @DataTypeInfo(
-        name = "int",
+        name = "float",
         minParameters = 0,
         maxParameters = 0,
         priority = DatabricksDatabase.PRIORITY_DATABASE
 )
-public class IntegerDatatypeDatabricks extends LiquibaseDataType {
-    public IntegerDatatypeDatabricks() {
+public class FloatDatatypeDatabricks extends LiquibaseDataType {
+    public FloatDatatypeDatabricks() {
     }
 
     public boolean supports(Database database) {
@@ -25,8 +25,8 @@ public class IntegerDatatypeDatabricks extends LiquibaseDataType {
     public DatabaseDataType toDatabaseDataType(Database database) {
         if (database instanceof DatabricksDatabase) {
 
-            DatabaseDataType type = new DatabaseDataType("INT", this.getParameters());
-            type.setType("INT");
+            DatabaseDataType type = new DatabaseDataType("FLOAT", this.getParameters());
+            type.setType("FLOAT");
             return type;
         } else {
             return super.toDatabaseDataType(database);
