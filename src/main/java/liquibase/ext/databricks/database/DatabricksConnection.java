@@ -57,7 +57,9 @@ public class DatabricksConnection extends JdbcConnection {
     public void open(String url, Driver driverObject, Properties driverProperties) throws DatabaseException {
 
         driverProperties.setProperty("UserAgentEntry", "Liquibase");
-        String updatedUrl = url + "UserAgentEntry=Liquibase;";
+        // Set UserAgent to specify to Databricks that liquibase is the tool running these commands
+        // Set EnableArrow because the arrow results break everything. And the JDBC release notes say to just disable it.
+        String updatedUrl = url + "UserAgentEntry=Liquibase;EnableArrow=0";
         this.openConn(updatedUrl, driverObject, driverProperties);
     }
 
