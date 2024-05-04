@@ -18,15 +18,17 @@ import liquibase.util.StringUtil;
 import liquibase.sqlgenerator.core.SetColumnRemarksGenerator;
 
 public class SetColumnRemarksGeneratorDatabricks extends SetColumnRemarksGenerator {
-    @Override
-    public int getPriority() {
-        return DatabricksDatabase.PRIORITY_DATABASE;
-    }
 
     @Override
     public boolean supports(SetColumnRemarksStatement statement, Database database) {
         return (database instanceof DatabricksDatabase);
     }
+
+    @Override
+    public int getPriority() {
+        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
+    }
+
 
     @Override
     public ValidationErrors validate(SetColumnRemarksStatement setColumnRemarksStatement, Database database, SqlGeneratorChain sqlGeneratorChain) {

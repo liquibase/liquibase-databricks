@@ -13,6 +13,7 @@ import liquibase.snapshot.InvalidExampleException;
 import liquibase.snapshot.jvm.SchemaSnapshotGenerator;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.core.Catalog;
+import liquibase.structure.core.Data;
 import liquibase.structure.core.Schema;
 import liquibase.util.JdbcUtils;
 
@@ -27,7 +28,7 @@ public class SchemaSnapshotGeneratorDatabricks extends SchemaSnapshotGenerator {
     public int getPriority(Class<? extends DatabaseObject> objectType, Database database) {
         int priority = super.getPriority(objectType, database);
         if (priority > PRIORITY_NONE && database instanceof DatabricksDatabase) {
-            priority += PRIORITY_DATABASE;
+            priority += DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
         }
         return priority;
     }

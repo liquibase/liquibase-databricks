@@ -21,6 +21,12 @@ public class RenameViewGeneratorDatabricks extends RenameViewGenerator {
     }
 
     @Override
+    public int getPriority() {
+        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
+    }
+
+
+    @Override
     public ValidationErrors validate(RenameViewStatement renameViewStatement, Database database, SqlGeneratorChain sqlGeneratorChain) {
         ValidationErrors validationErrors = new ValidationErrors();
         validationErrors.checkRequiredField("oldViewName", renameViewStatement.getOldViewName());

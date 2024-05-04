@@ -20,7 +20,7 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
 
     @Override
     public int getPriority() {
-        return PRIORITY_DATABASE;
+        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
     }
 
     @Override
@@ -49,7 +49,7 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
             if ((!StringUtil.isEmpty(thisStatement.getTableFormat()))) {
                 finalsql += " USING " + thisStatement.getTableFormat();
             } else {
-                finalsql += " USING delta TBLPROPERTIES('delta.feature.allowColumnDefaults' = 'supported', 'delta.columnMapping.mode' = 'name')";
+                finalsql += " USING delta TBLPROPERTIES('delta.feature.allowColumnDefaults' = 'supported', 'delta.columnMapping.mode' = 'name', 'delta.enableDeletionVectors' = true)";
             }
 
             // Databricks can decide to have tables live in a particular location. If null, Databricks will handle the location automatically in DBFS

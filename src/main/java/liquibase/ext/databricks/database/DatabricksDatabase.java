@@ -8,8 +8,8 @@ import liquibase.exception.DatabaseException;
 import liquibase.structure.DatabaseObject;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.RawCallStatement;
+import liquibase.structure.core.Catalog;
 import liquibase.structure.core.Schema;
-import liquibase.util.StringUtil;
 import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.util.Arrays;
@@ -21,6 +21,8 @@ import java.util.Collections;
 
 public class DatabricksDatabase extends AbstractJdbcDatabase {
 
+
+    public static final int DATABRICKS_PRIORITY_DATABASE = 1515;
     // define env variables for database
     public static final String PRODUCT_NAME = "databricks";
     // Set default catalog - must be unity Catalog Enabled
@@ -83,12 +85,12 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
 
     @Override
     public int getPriority() {
-        return PRIORITY_DATABASE;
+        return this.DATABRICKS_PRIORITY_DATABASE;
     }
 
     @Override
     public boolean isCorrectDatabaseImplementation(DatabaseConnection conn) throws DatabaseException {
-        return PRODUCT_NAME.equalsIgnoreCase(conn.getDatabaseProductName()) || conn.getDatabaseProductName().equalsIgnoreCase("SparkSQL");
+        return PRODUCT_NAME.equalsIgnoreCase(conn.getDatabaseProductName()) || conn.getDatabaseProductName().equalsIgnoreCase("SparkSQL") || conn.getDatabaseProductName().equalsIgnoreCase("spark");
     }
 
     @Override
@@ -194,44 +196,84 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
         if (connection == null) {
             return null;
         }
-        try (ResultSet resultSet = ((JdbcConnection) connection).createStatement().executeQuery("SELECT CURRENT_SCHEMA()")) {
+
+        try (ResultSet resultSet = ((DatabricksConnection) connection).createStatement().executeQuery("SELECT CURRENT_SCHEMA()")) {
             resultSet.next();
             return resultSet.getString(1);
+
         } catch (Exception e) {
-            Scope.getCurrentScope().getLog(getClass()).info("Error getting default schema", e);
+            Scope.getCurrentScope().getLog(getClass()).info("Error getting default schema via existing context, going to pull from URL", e);
         }
 
-        String foundSchema = parseUrlForSchema(connection.getURL());
-        System.out.println("SCHEMA IDENFIED: "+ foundSchema);
+        try {
+            String foundSchema = parseUrlForSchema(connection.getURL());
+            System.out.println("SCHEMA IDENTIFIED: " + foundSchema);
 
-        return foundSchema;
+            return foundSchema;
+        } catch (Exception e) {
+            Scope.getCurrentScope().getLog(getClass()).warning("Cannot get default / defined schema from URL or current session.");
+        }
+        // Return null, not default to force user to supply the schema
+        return null;
+
+    }
+
+    @Override
+    protected String getConnectionCatalogName() {
+        DatabaseConnection connection = getConnection();
+
+        if (connection == null) {
+            return null;
+        }
+
+        try{
+            return connection.getCatalog();
+        } catch (Exception e) {
+            Scope.getCurrentScope().getLog(getClass()).warning("Cannot get default / defined CATALOG from current session.");
+        }
+
+        try (ResultSet resultSet = ((DatabricksConnection) connection).createStatement().executeQuery("SELECT CURRENT_CATALOG()")) {
+            resultSet.next();
+            return resultSet.getString(1);
+
+        } catch (Exception e) {
+            Scope.getCurrentScope().getLog(getClass()).info("Error getting default catalog via existing context, going to pull from URL", e);
+        }
+
+        try {
+            String foundCatalog = parseUrlForCatalog(connection.getURL());
+            System.out.println("CATALOG IDENTIFIED: " + foundCatalog);
+
+            return foundCatalog;
+
+        } catch (Exception e) {
+            Scope.getCurrentScope().getLog(getClass()).warning("Cannot get default / defined CATALOG from URL");
+        }
+        // Return null, not default to force user to supply the catalog
+        return null;
+
     }
 
     private String parseUrlForSchema(String url) {
+        String schemaToken = "ConnSchema";
+        String currentSchema = DatabricksConnection.getUrlParamValue(url, schemaToken, this.defaultSchemaName);
+        return currentSchema;
+    }
 
-        String schemaToken = "ConnSchema=";
-
-        int startIndex = url.indexOf(schemaToken);
-
-        // If ConnSchema not found, find the default value
-        if (startIndex == -1) {
-
-            return "default";
-        }
-
-        startIndex += schemaToken.length();
-        int endIndex = url.indexOf(";", startIndex);
-
-        if (endIndex == -1) {
-            return url.substring(startIndex);
-        }
-
-        return url.substring(startIndex, endIndex);
+    private String parseUrlForCatalog(String url) {
+        String schemaToken = "ConnCatalog";
+        String currentCatalog = DatabricksConnection.getUrlParamValue(url, schemaToken, this.defaultCatalogName);
+        return currentCatalog;
     }
 
     @Override
     public void setDefaultSchemaName(final String schemaName) {
         this.defaultSchemaName = correctObjectName(schemaName, Schema.class);
+    }
+
+    @Override
+    public void setDefaultCatalogName(final String catalogName) {
+        this.defaultCatalogName = correctObjectName(catalogName, Catalog.class);
     }
 
     public void setSystemSchema(String systemSchema) {this.systemSchema = systemSchema;}
@@ -296,15 +338,4 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
         ));
     }
 
-    @Override
-    public void setConnection(DatabaseConnection conn) {
-        DatabaseConnection dbConn;
-        if (conn instanceof JdbcConnection) {
-            // (see Databricks Connection for details)
-            dbConn = new DatabricksConnection(((JdbcConnection) conn).getWrappedConnection());
-        } else {
-            dbConn = conn;
-        }
-        super.setConnection(dbConn);
-    }
 }

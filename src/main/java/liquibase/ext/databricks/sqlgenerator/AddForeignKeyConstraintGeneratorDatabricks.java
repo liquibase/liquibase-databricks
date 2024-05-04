@@ -22,6 +22,11 @@ public class AddForeignKeyConstraintGeneratorDatabricks extends AddForeignKeyCon
     }
 
     @Override
+    public int getPriority() {
+        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
+    }
+
+    @Override
     public ValidationErrors validate(AddForeignKeyConstraintStatement addForeignKeyConstraintStatement, Database database, SqlGeneratorChain sqlGeneratorChain) {
         ValidationErrors validationErrors = new ValidationErrors();
 

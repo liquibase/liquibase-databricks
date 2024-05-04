@@ -23,6 +23,12 @@ public class RenameColumnGeneratorDatabricks extends RenameColumnGenerator {
     }
 
     @Override
+    public int getPriority() {
+        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
+    }
+
+
+    @Override
     public ValidationErrors validate(RenameColumnStatement renameColumnStatement, Database database, SqlGeneratorChain sqlGeneratorChain) {
         ValidationErrors validationErrors = new ValidationErrors();
         validationErrors.checkRequiredField("tableName", renameColumnStatement.getTableName());

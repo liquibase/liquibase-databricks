@@ -5,3 +5,5 @@ liquibase.ext.databricks.datatype.IntegerDatatypeDatabricks
 liquibase.ext.databricks.datatype.BooleanDatatypeDatabricks
 liquibase.ext.databricks.datatype.FloatDatatypeDatabricks
 liquibase.ext.databricks.datatype.DoubleDatatypeDatabricks
+liquibase.ext.databricks.datatype.TinyintDatatypeDatabricks
+liquibase.ext.databricks.datatype.SmallintDatatypeDatabricks

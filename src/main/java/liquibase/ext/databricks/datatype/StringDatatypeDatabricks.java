@@ -7,14 +7,11 @@ import liquibase.datatype.DatabaseDataType;
 import liquibase.datatype.LiquibaseDataType;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 
-import static liquibase.ext.databricks.database.DatabricksDatabase.PRIORITY_DATABASE;
-
-
 @DataTypeInfo(
         name = "string",
         minParameters = 0,
         maxParameters = 0,
-        priority = PRIORITY_DATABASE
+        priority = DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE
 )
 public class StringDatatypeDatabricks extends LiquibaseDataType {
     public StringDatatypeDatabricks() {
@@ -37,6 +34,12 @@ public class StringDatatypeDatabricks extends LiquibaseDataType {
         }
 
     }
+
+    @Override
+    public int getPriority() {
+        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
+    }
+
 
     public LoadDataChange.LOAD_DATA_TYPE getLoadTypeName() {
         return LoadDataChange.LOAD_DATA_TYPE.STRING;

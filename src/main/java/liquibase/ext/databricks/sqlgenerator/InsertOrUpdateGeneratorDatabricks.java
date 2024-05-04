@@ -13,12 +13,18 @@ import java.util.Date;
 
 public class InsertOrUpdateGeneratorDatabricks extends InsertOrUpdateGenerator {
 
-        @Override
-        public boolean supports(InsertOrUpdateStatement statement, Database database) {
-            return database instanceof DatabricksDatabase;
-        }
+    @Override
+    public boolean supports(InsertOrUpdateStatement statement, Database database) {
+        return database instanceof DatabricksDatabase;
+    }
 
-        @Override
+    @Override
+    public int getPriority() {
+        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
+    }
+
+
+    @Override
         protected String getInsertStatement(InsertOrUpdateStatement insertOrUpdateStatement, Database database, SqlGeneratorChain sqlGeneratorChain) {
             StringBuilder columns = new StringBuilder();
             StringBuilder values = new StringBuilder();

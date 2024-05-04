@@ -27,7 +27,7 @@ public class UpdateGeneratorDatabricks extends UpdateGenerator {
 
     @Override
     public int getPriority() {
-        return DatabricksDatabase.PRIORITY_DATABASE;
+        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
     }
 
 

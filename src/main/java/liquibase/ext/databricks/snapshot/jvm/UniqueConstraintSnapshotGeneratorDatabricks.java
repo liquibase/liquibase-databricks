@@ -22,7 +22,7 @@ public class UniqueConstraintSnapshotGeneratorDatabricks extends UniqueConstrain
     public int getPriority(Class<? extends DatabaseObject> objectType, Database database) {
         int priority = super.getPriority(objectType, database);
         if (priority > PRIORITY_NONE && database instanceof DatabricksDatabase) {
-            priority += DatabricksDatabase.PRIORITY_DATABASE;
+            priority += DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
         }
         return priority;
     }

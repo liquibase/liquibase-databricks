@@ -12,7 +12,7 @@ import liquibase.servicelocator.PrioritizedService;
         name = "boolean",
         minParameters = 0,
         maxParameters = 0,
-        priority = PrioritizedService.PRIORITY_DATABASE
+        priority = DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE
 )
 public class BooleanDatatypeDatabricks extends LiquibaseDataType {
 
@@ -37,6 +37,12 @@ public class BooleanDatatypeDatabricks extends LiquibaseDataType {
         }
 
     }
+
+    @Override
+    public int getPriority() {
+        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
+    }
+
 
     public LoadDataChange.LOAD_DATA_TYPE getLoadTypeName() {
         return LoadDataChange.LOAD_DATA_TYPE.BOOLEAN;

@@ -12,8 +12,9 @@ public class AddUniqueConstraintGeneratorDatabricks extends AddUniqueConstraintG
 
     @Override
     public int getPriority() {
-        return DatabricksDatabase.PRIORITY_DATABASE;
+        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
     }
+
 
     @Override
     public boolean supports(AddUniqueConstraintStatement statement, Database database) {

@@ -7,14 +7,12 @@ import liquibase.datatype.DatabaseDataType;
 import liquibase.datatype.LiquibaseDataType;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 
-import static liquibase.servicelocator.PrioritizedService.PRIORITY_DATABASE;
-
 @DataTypeInfo(
         name = "timestamp",
         aliases = {"java.sql.Types.DATETIME", "datetime"},
         minParameters = 0,
         maxParameters = 0,
-        priority = PRIORITY_DATABASE
+        priority = DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE
 )
 public class DatetimeDatatypeDatabricks extends LiquibaseDataType {
 
@@ -34,8 +32,9 @@ public class DatetimeDatatypeDatabricks extends LiquibaseDataType {
         return LoadDataChange.LOAD_DATA_TYPE.DATE;
     }
 
+    @Override
     public int getPriority() {
-        return PRIORITY_DATABASE;
+        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
     }
 
     @Override

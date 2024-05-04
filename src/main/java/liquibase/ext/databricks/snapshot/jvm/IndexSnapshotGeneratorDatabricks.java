@@ -21,7 +21,7 @@ public class IndexSnapshotGeneratorDatabricks extends IndexSnapshotGenerator {
     @Override
     public int getPriority(Class<? extends DatabaseObject> objectType, Database database) {
         if (super.getPriority(objectType, database) > 0 && database instanceof DatabricksDatabase) {
-            return DatabricksDatabase.PRIORITY_DATABASE;
+            return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
         } else {
             return PRIORITY_NONE;
         }

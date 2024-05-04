@@ -11,7 +11,7 @@ public class AddAutoIncrementGeneratorDatabricks extends AddAutoIncrementGenerat
 
     @Override
     public int getPriority() {
-        return DatabricksDatabase.PRIORITY_DATABASE;
+        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
     }
 
     @Override
