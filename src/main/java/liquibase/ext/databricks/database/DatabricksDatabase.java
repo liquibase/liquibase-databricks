@@ -338,4 +338,18 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
         ));
     }
 
+
+
+    @Override
+    public void setConnection(DatabaseConnection conn) {
+        DatabaseConnection dbConn;
+        if (conn instanceof JdbcConnection) {
+            // (see Databricks Connection for details)
+            dbConn = new DatabricksConnection(((JdbcConnection) conn).getWrappedConnection());
+        } else {
+            dbConn = conn;
+        }
+        super.setConnection(dbConn);
+    }
+
 }

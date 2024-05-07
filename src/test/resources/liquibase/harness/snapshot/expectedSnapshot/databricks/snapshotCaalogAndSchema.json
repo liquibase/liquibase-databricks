@@ -11,7 +11,7 @@
       "liquibase.structure.core.Schema": [
         {
           "schema": {
-            "name": "liquibase_harness_test_ds"
+            "name": "liquibase_test"
           }
         }
       ]

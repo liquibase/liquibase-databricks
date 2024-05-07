@@ -21,9 +21,8 @@ public class DatabricksConnection extends JdbcConnection {
     private S42Connection con;
     public DatabricksConnection() {}
 
-    public DatabricksConnection(Connection conn) throws SQLException {
+    public DatabricksConnection(Connection conn) {
         this.con = (S42Connection) conn;
-        String url = conn.getMetaData().getURL();
     }
 
     @Override
@@ -46,7 +45,6 @@ public class DatabricksConnection extends JdbcConnection {
         }
         return null;
     }
-
 
     @Override
     public Connection getUnderlyingConnection() {
@@ -85,6 +83,7 @@ public class DatabricksConnection extends JdbcConnection {
     public int getPriority() {
         return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
     }
+
     @Override
     public boolean getAutoCommit() throws DatabaseException {
         return true;
@@ -144,7 +143,9 @@ public class DatabricksConnection extends JdbcConnection {
     /////////////////////////////////////////////////// copy from parent ///////////////////////////////////////////////////
     @Override
     protected String getConnectionUrl() throws SQLException {
-        return con.getMetaData().getURL();
+        String rawUrl = con.getMetaData().getURL();
+        String updatedUrl = rawUrl + "UserAgentEntry=Liquibase;EnableArrow=0";
+        return updatedUrl;
     }
 
     @Override
