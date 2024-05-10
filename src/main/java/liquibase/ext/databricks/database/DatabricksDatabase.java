@@ -207,7 +207,7 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
 
         try {
             String foundSchema = parseUrlForSchema(connection.getURL());
-            System.out.println("SCHEMA IDENTIFIED: " + foundSchema);
+            Scope.getCurrentScope().getLog(getClass()).info("SCHEMA IDENTIFIED: " + foundSchema);
 
             return foundSchema;
         } catch (Exception e) {
@@ -242,7 +242,7 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
 
         try {
             String foundCatalog = parseUrlForCatalog(connection.getURL());
-            System.out.println("CATALOG IDENTIFIED: " + foundCatalog);
+            Scope.getCurrentScope().getLog(getClass()).info("CATALOG IDENTIFIED: " + foundCatalog);
 
             return foundCatalog;
 
