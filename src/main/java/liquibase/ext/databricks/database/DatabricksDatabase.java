@@ -2,6 +2,7 @@ package liquibase.ext.databricks.database;
 
 import liquibase.Scope;
 import liquibase.database.AbstractJdbcDatabase;
+import liquibase.database.Database;
 import liquibase.database.DatabaseConnection;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.DatabaseException;
@@ -11,6 +12,7 @@ import liquibase.statement.core.RawCallStatement;
 import liquibase.structure.core.Catalog;
 import liquibase.structure.core.Schema;
 import java.math.BigInteger;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -206,6 +208,7 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
         }
 
         try {
+
             String foundSchema = parseUrlForSchema(connection.getURL());
             Scope.getCurrentScope().getLog(getClass()).info("SCHEMA IDENTIFIED: " + foundSchema);
 
@@ -337,8 +340,6 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
                 "WHEN", "WHERE", "WINDOW", "WITH"
         ));
     }
-
-
 
     @Override
     public void setConnection(DatabaseConnection conn) {

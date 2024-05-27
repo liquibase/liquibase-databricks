@@ -3,6 +3,7 @@ package liquibase.ext.databricks.database;
 import com.databricks.client.jdbc.jdbc42.S42Connection;
 import com.databricks.client.spark.core.SparkJDBCConnection;
 import liquibase.Scope;
+import liquibase.database.DatabaseConnection;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.DatabaseException;
 import liquibase.exception.UnexpectedLiquibaseException;
@@ -55,12 +56,18 @@ public class DatabricksConnection extends JdbcConnection {
     public void open(String url, Driver driverObject, Properties driverProperties) throws DatabaseException {
 
         driverProperties.setProperty("UserAgentEntry", "Liquibase");
+        driverProperties.setProperty("EnableArrow", "0");
         // Set UserAgent to specify to Databricks that liquibase is the tool running these commands
         // Set EnableArrow because the arrow results break everything. And the JDBC release notes say to just disable it.
-        //String updatedUrl = url + "UserAgentEntry=Liquibase;EnableArrow=0";
-        // This is done in getConnectionUrl()
 
-        this.openConn(url, driverObject, driverProperties);
+        // Ensure there's a terminating semicolon for consistent parsing
+        if (!url.endsWith(";")) {
+            url += ";";
+        }
+
+        String updatedUrl = url + "UserAgentEntry=Liquibase;EnableArrow=0";
+
+        this.openConn(updatedUrl, driverObject, driverProperties);
     }
 
     public void openConn(String url, Driver driverObject, Properties driverProperties) throws DatabaseException {
@@ -96,23 +103,32 @@ public class DatabricksConnection extends JdbcConnection {
     }
 
     protected static String getUrlParamValue(String url, String paramName, String defaultValue) {
+
+        //System.out.println("PARSE URL - url" + url);
+
         if (url == null) {
             return null;
         }
-
-        // Get catalog of connection and schema of connection
+        // Ensure there's a terminating semicolon for consistent parsing
+        if (!url.endsWith(";")) {
+            url += ";";
+        }
+        // Remove spaces and split by semicolon
         String[] uriArgs = url.replace(" ", "").split(";");
+
+       // System.out.println("PARSE URL - url args" + uriArgs.toString());
+
+        // Use Java Streams to find the parameter value
         Optional<String> paramString = Arrays.stream(uriArgs)
                 .filter(x -> x.startsWith(paramName + "="))
                 .findFirst();
-
+        // Return the parameter value if found, otherwise return the default value
         if (!paramString.isPresent()) {
             return defaultValue;
         }
         String[] defaultParamsArr = paramString.get().split("=");
-        return defaultParamsArr[1];
+        return defaultParamsArr.length > 1 ? defaultParamsArr[1] : defaultValue; // Check to avoid index out of bound
     }
-
 
 
     @Override
