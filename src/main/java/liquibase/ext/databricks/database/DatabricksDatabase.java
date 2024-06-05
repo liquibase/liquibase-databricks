@@ -55,6 +55,16 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
     }
 
     @Override
+    public String getDatabaseChangeLogTableName() {
+        return super.getDatabaseChangeLogTableName().toLowerCase(Locale.US);
+    }
+
+    @Override
+    public String getDatabaseChangeLogLockTableName() {
+        return super.getDatabaseChangeLogLockTableName().toLowerCase(Locale.US);
+    }
+
+    @Override
     public String getShortName() {
         return PRODUCT_NAME;
     }
