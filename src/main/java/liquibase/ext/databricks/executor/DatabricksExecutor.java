@@ -8,13 +8,13 @@ import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.sql.visitor.SqlVisitor;
 import liquibase.statement.SqlStatement;
 import java.util.List;
-import static liquibase.ext.databricks.database.DatabricksDatabase.PRIORITY_DATABASE;
+import static liquibase.ext.databricks.database.DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
 
 public class DatabricksExecutor extends JdbcExecutor {
 
     @Override
     public int getPriority() {
-        return PRIORITY_DATABASE;
+        return DATABRICKS_PRIORITY_DATABASE;
     }
 
     @Override

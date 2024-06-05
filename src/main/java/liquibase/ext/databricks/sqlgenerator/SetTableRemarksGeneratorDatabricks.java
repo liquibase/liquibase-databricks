@@ -2,7 +2,6 @@ package liquibase.ext.databricks.sqlgenerator;
 
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.database.Database;
-import liquibase.database.core.*;
 import liquibase.exception.ValidationErrors;
 import liquibase.sql.Sql;
 import liquibase.sql.UnparsedSql;
@@ -19,6 +18,12 @@ public class SetTableRemarksGeneratorDatabricks extends SetTableRemarksGenerator
     public boolean supports(SetTableRemarksStatement statement, Database database) {
         return (database instanceof DatabricksDatabase);
     }
+
+    @Override
+    public int getPriority() {
+        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
+    }
+
 
     @Override
     public ValidationErrors validate(SetTableRemarksStatement setTableRemarksStatement, Database database, SqlGeneratorChain sqlGeneratorChain) {

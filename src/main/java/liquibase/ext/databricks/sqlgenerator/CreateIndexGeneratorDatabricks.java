@@ -31,6 +31,12 @@ public class CreateIndexGeneratorDatabricks extends CreateIndexGenerator {
     }
 
     @Override
+    public int getPriority() {
+        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
+    }
+
+
+    @Override
     public ValidationErrors validate(CreateIndexStatement createIndexStatement, Database database,
                                      SqlGeneratorChain sqlGeneratorChain) {
         ValidationErrors validationErrors = new ValidationErrors();

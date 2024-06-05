@@ -21,6 +21,12 @@ public class RenameTableGeneratorDatabricks extends RenameTableGenerator {
     }
 
     @Override
+    public int getPriority() {
+        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
+    }
+
+
+    @Override
     public ValidationErrors validate(RenameTableStatement renameTableStatement, Database database, SqlGeneratorChain sqlGeneratorChain) {
         ValidationErrors validationErrors = new ValidationErrors();
         validationErrors.checkRequiredField("newTableName", renameTableStatement.getNewTableName());

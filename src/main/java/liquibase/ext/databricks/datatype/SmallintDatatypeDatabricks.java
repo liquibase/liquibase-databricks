@@ -7,16 +7,34 @@ import liquibase.datatype.DatabaseDataType;
 import liquibase.datatype.LiquibaseDataType;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 
-
 @DataTypeInfo(
-        name = "int",
+        name = "smallint",
+        aliases = {"java.sql.Types.SMALLINT", "short"},
         minParameters = 0,
         maxParameters = 0,
         priority = DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE
 )
-public class IntegerDatatypeDatabricks extends LiquibaseDataType {
-    public IntegerDatatypeDatabricks() {
-        // empty constructor
+public class SmallintDatatypeDatabricks extends LiquibaseDataType {
+
+
+    @Override
+    public DatabaseDataType toDatabaseDataType(Database database) {
+
+        if (database instanceof DatabricksDatabase) {
+            return new DatabaseDataType("SMALLINT");
+        }
+
+        return super.toDatabaseDataType(database);
+    }
+
+    @Override
+    public LoadDataChange.LOAD_DATA_TYPE getLoadTypeName() {
+        return LoadDataChange.LOAD_DATA_TYPE.NUMERIC;
+    }
+
+    @Override
+    public int getPriority() {
+        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
     }
 
     @Override
@@ -24,20 +42,5 @@ public class IntegerDatatypeDatabricks extends LiquibaseDataType {
         return database instanceof DatabricksDatabase;
     }
 
-    @Override
-    public DatabaseDataType toDatabaseDataType(Database database) {
-        if (database instanceof DatabricksDatabase) {
 
-            DatabaseDataType type = new DatabaseDataType("INT", this.getParameters());
-            type.setType("INT");
-            return type;
-        } else {
-            return super.toDatabaseDataType(database);
-        }
-
-    }
-
-    public LoadDataChange.LOAD_DATA_TYPE getLoadTypeName() {
-        return LoadDataChange.LOAD_DATA_TYPE.NUMERIC;
-    }
 }

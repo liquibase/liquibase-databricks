@@ -5,31 +5,21 @@ import liquibase.database.Database;
 import liquibase.datatype.DataTypeInfo;
 import liquibase.datatype.DatabaseDataType;
 import liquibase.datatype.LiquibaseDataType;
+import liquibase.datatype.core.BlobType;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 
-@DataTypeInfo(
-        name = "timestamp",
-        aliases = {"java.sql.Types.DATETIME", "datetime"},
-        minParameters = 0,
-        maxParameters = 0,
-        priority = DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE
-)
-public class DatetimeDatatypeDatabricks extends LiquibaseDataType {
+
+public class BinaryDataTypeDatabricks extends BlobType {
 
 
     @Override
     public DatabaseDataType toDatabaseDataType(Database database) {
 
         if (database instanceof DatabricksDatabase) {
-            return new DatabaseDataType("TIMESTAMP");
+            return new DatabaseDataType("BINARY");
         }
 
         return super.toDatabaseDataType(database);
-    }
-
-    @Override
-    public LoadDataChange.LOAD_DATA_TYPE getLoadTypeName() {
-        return LoadDataChange.LOAD_DATA_TYPE.DATE;
     }
 
     @Override
@@ -37,10 +27,9 @@ public class DatetimeDatatypeDatabricks extends LiquibaseDataType {
         return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
     }
 
+
     @Override
     public boolean supports(Database database) {
         return database instanceof DatabricksDatabase;
     }
-
-
 }

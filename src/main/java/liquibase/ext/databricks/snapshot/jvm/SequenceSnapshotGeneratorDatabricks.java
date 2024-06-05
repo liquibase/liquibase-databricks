@@ -20,7 +20,7 @@ public class SequenceSnapshotGeneratorDatabricks extends SequenceSnapshotGenerat
     public int getPriority(Class<? extends DatabaseObject> objectType, Database database) {
         int priority = super.getPriority(objectType, database);
         if (priority > PRIORITY_NONE && database instanceof DatabricksDatabase) {
-            priority += PRIORITY_DATABASE;
+            priority += DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
         }
         return priority;
     }

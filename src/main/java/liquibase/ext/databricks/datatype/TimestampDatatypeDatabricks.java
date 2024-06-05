@@ -9,7 +9,6 @@ import liquibase.database.Database;
 import liquibase.database.core.*;
 import liquibase.datatype.DataTypeInfo;
 import liquibase.datatype.DatabaseDataType;
-import liquibase.datatype.LiquibaseDataType;
 import liquibase.exception.DatabaseIncapableOfOperation;
 import liquibase.util.StringUtil;
 import liquibase.util.grammar.ParseException;
@@ -19,7 +18,7 @@ import liquibase.ext.databricks.database.DatabricksDatabase;
  * year, month, day, hour, minute and second parts. Optionally, fractional seconds and time zone information can be
  * specified as well.
  */
-@DataTypeInfo(name = "timestamp", aliases = {"java.sql.Types.TIMESTAMP", "java.sql.Types.TIMESTAMP_WITH_TIMEZONE", "java.sql.Timestamp", "timestamptz"}, minParameters = 0, maxParameters = 0, priority = DatabricksDatabase.PRIORITY_DATABASE)
+@DataTypeInfo(name = "timestamp", aliases = {"java.sql.Types.TIMESTAMP", "java.sql.Types.TIMESTAMP_WITH_TIMEZONE", "java.sql.Timestamp", "timestamptz"}, minParameters = 0, maxParameters = 0, priority = DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE)
 public class TimestampDatatypeDatabricks extends TimestampType {
 
     /**
@@ -182,6 +181,12 @@ public class TimestampDatatypeDatabricks extends TimestampType {
 
         return super.toDatabaseDataType(database);
     }
+
+    @Override
+    public int getPriority() {
+        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
+    }
+
 
     @Override
     public LoadDataChange.LOAD_DATA_TYPE getLoadTypeName() {
