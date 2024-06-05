@@ -89,7 +89,7 @@ public class ViewSnapshotGeneratorDatabricks extends ViewSnapshotGenerator {
 
                 String definition = rawViewDefinition;
 
-                if (definition.isEmpty()) {
+                if (definition == null || definition.isEmpty()) {
                     definition = (String) row.get("view_definition");
 
                 }

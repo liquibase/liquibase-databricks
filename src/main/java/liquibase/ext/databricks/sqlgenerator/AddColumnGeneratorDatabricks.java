@@ -44,7 +44,7 @@ public class AddColumnGeneratorDatabricks extends AddColumnGenerator {
             alterTable.append(" ").append(database.getAutoIncrementClause(autoIncrementConstraint.getStartWith(), autoIncrementConstraint.getIncrementBy(), autoIncrementConstraint.getGenerationType(), autoIncrementConstraint.getDefaultOnNull()));
         }
 
-        alterTable.append(this.getDefaultClause(statement, database));
+        alterTable.append(this.getDefaultClauseForColumn(statement, database));
         if (!statement.isNullable()) {
             Iterator<ColumnConstraint> var8 = statement.getConstraints().iterator();
 
@@ -90,7 +90,7 @@ public class AddColumnGeneratorDatabricks extends AddColumnGenerator {
     }
 
 
-    private String getDefaultClause(AddColumnStatement statement, Database database) {
+    private String getDefaultClauseForColumn(AddColumnStatement statement, Database database) {
         StringBuilder clause = new StringBuilder();
         Object defaultValue = statement.getDefaultValue();
         if (defaultValue != null) {
