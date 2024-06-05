@@ -3,19 +3,15 @@ package liquibase.ext.databricks.database;
 import com.databricks.client.jdbc.jdbc42.S42Connection;
 import com.databricks.client.spark.core.SparkJDBCConnection;
 import liquibase.Scope;
-import liquibase.database.DatabaseConnection;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.DatabaseException;
 import liquibase.exception.UnexpectedLiquibaseException;
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.SQLException;
-import java.util.Properties;
-import java.util.Optional;
-import java.util.Arrays;
+
 import java.sql.*;
+import java.util.Arrays;
 import java.util.Map;
-import liquibase.ext.databricks.database.DatabricksDatabase;
+import java.util.Optional;
+import java.util.Properties;
 
 public class DatabricksConnection extends JdbcConnection {
 
