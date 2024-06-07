@@ -5,12 +5,11 @@ import liquibase.database.AbstractJdbcDatabase;
 import liquibase.database.Database;
 import liquibase.exception.DatabaseException;
 import liquibase.snapshot.CachedRow;
-import liquibase.snapshot.DatabaseSnapshot;;
+import liquibase.snapshot.DatabaseSnapshot;
 import liquibase.structure.core.Schema;
 
 import java.sql.SQLException;
 import java.util.List;
-import liquibase.ext.databricks.snapshot.jvm.ResultSetCacheDatabricks;
 
 public class ResultSetConstraintsExtractorDatabricks extends ResultSetCacheDatabricks.SingleResultSetExtractor {
 
