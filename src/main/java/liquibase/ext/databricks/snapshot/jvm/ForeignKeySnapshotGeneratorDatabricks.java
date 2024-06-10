@@ -41,6 +41,15 @@ public class ForeignKeySnapshotGeneratorDatabricks extends ForeignKeySnapshotGen
 
 
     @Override
+    public int getPriority(Class<? extends DatabaseObject> objectType, Database database) {
+        if (database instanceof DatabricksDatabase) {
+            return super.getPriority(objectType, database) + PRIORITY_DATABASE;
+        } else {
+            return PRIORITY_NONE;
+        }
+    }
+
+    @Override
     public Class<? extends SnapshotGenerator>[] replaces() {
         return new Class[]{ForeignKeySnapshotGenerator.class};
     }
