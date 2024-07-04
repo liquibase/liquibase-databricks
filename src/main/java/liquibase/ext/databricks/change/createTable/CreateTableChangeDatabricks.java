@@ -1,17 +1,15 @@
 package liquibase.ext.databricks.change.createTable;
 
-import liquibase.change.ChangeMetaData;
 import liquibase.change.DatabaseChange;
 import liquibase.change.DatabaseChangeProperty;
 import liquibase.change.core.CreateTableChange;
 import liquibase.database.Database;
 import liquibase.exception.ValidationErrors;
-import liquibase.ext.databricks.database.DatabricksDatabase;
+import liquibase.servicelocator.PrioritizedService;
 import liquibase.statement.core.CreateTableStatement;
-import liquibase.util.ObjectUtil;
 
 
-@DatabaseChange(name = "createTable", description = "Create Table", priority = ChangeMetaData.PRIORITY_DATABASE +500)
+@DatabaseChange(name = "createTable", description = "Create Table", priority = PrioritizedService.PRIORITY_DATABASE +500)
 public class CreateTableChangeDatabricks extends CreateTableChange {
 
     private String tableFormat;
@@ -25,7 +23,7 @@ public class CreateTableChangeDatabricks extends CreateTableChange {
         ValidationErrors validationErrors = new ValidationErrors();
         validationErrors.addAll(super.validate(database));
 
-        if (partitionColumns != null & clusterColumns != null) {
+        if (partitionColumns != null && clusterColumns != null) {
                     validationErrors.addError("Databricks does not support CLUSTER columns AND PARTITION BY columns, please pick one. And do not supply the other");
         }
         return validationErrors;
