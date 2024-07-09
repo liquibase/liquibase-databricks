@@ -3,7 +3,15 @@ variable "DBX_HOST" {
 }
 
 variable "DBX_TOKEN" {
-  type  = string
+  type = string
+}
+
+variable "client_id" {
+  type = string
+}
+
+variable "client_secret" {
+  type = string
 }
 
 # Initialize the Databricks Terraform provider.
@@ -17,7 +25,9 @@ terraform {
 
 ## Use environment variables for Github actions
 provider "databricks" {
-  host  = var.DBX_HOST
-  token = var.DBX_TOKEN
+  host          = var.DBX_HOST
+  token         = var.DBX_TOKEN
+  client_id     = var.client_id
+  client_secret = var.client_secret
 }
 

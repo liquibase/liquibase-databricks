@@ -18,6 +18,8 @@ jobs:
       TF_VAR_DBX_TOKEN: ${{ secrets.TH_DATABRICKS_WORKSPACE_TOKEN }}
       TF_VAR_TEST_CATALOG: main
       TF_VAR_TEST_SCHEMA: liquibase_harness_test_ds
+      TF_VAR_CLIENT_ID: ${{ secrets.TH_DATABRICKS_CLIENT_ID }}
+      TF_VAR_CLIENT_SECRET: ${{ secrets.TH_DATABRICKS_CLIENT_SECRET }}
       WORKSPACE_ID: ${{ secrets.TH_DATABRICKS_WORKSPACE_ID }}
 
     strategy:
