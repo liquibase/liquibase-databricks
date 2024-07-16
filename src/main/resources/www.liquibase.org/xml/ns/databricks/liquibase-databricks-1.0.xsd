@@ -1,0 +1,14 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.liquibase.org/xml/ns/databricks"
+            xmlns="http://www.liquibase.org/xml/ns/databricks"
+            elementFormDefault="qualified">
+
+    <xsd:element name="extendedTableProperties">
+        <xsd:complexType>
+            <xsd:attribute name="tableLocation" type="xsd:string"/>
+            <xsd:attribute name="tblProperties" type="xsd:string"/>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>
