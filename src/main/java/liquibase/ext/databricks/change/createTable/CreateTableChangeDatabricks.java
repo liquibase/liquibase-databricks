@@ -16,6 +16,7 @@ public class CreateTableChangeDatabricks extends CreateTableChange {
     private String tableLocation;
     private String clusterColumns;
     private String partitionColumns;
+    private ExtendedTableProperties extendedTableProperties;
 
 
     @Override
@@ -66,7 +67,17 @@ public class CreateTableChangeDatabricks extends CreateTableChange {
         ctas.setTableLocation(this.getTableLocation());
         ctas.setClusterColumns(this.getClusterColumns());
         ctas.setPartitionColumns(this.getPartitionColumns());
+        ctas.setExtendedTableProperties(this.getExtendedTableProperties());
 
         return ctas;
+    }
+
+    @DatabaseChangeProperty
+    public ExtendedTableProperties getExtendedTableProperties() {
+        return extendedTableProperties;
+    }
+
+    public void setExtendedTableProperties(ExtendedTableProperties extendedTableProperties) {
+        this.extendedTableProperties = extendedTableProperties;
     }
 }
