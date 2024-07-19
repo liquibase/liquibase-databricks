@@ -6,6 +6,11 @@ on:
   push:
     branches:
       - main
+      -
+# ensure only one run or job within the group runs at a time.
+  concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
   liquibase-test-harness:
