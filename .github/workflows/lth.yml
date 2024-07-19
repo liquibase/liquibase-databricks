@@ -1,6 +1,7 @@
 name: Liquibase Test Harness
 
 on:
+  workflow_dispatch:
   pull_request:
   push:
     branches:
