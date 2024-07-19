@@ -57,7 +57,7 @@ jobs:
         run: mvn -B -ntp -Dmaven.test.skip package
 
       - name: Run ${{ matrix.liquibase-support-level }} Liquibase Test Harness # Run the Liquibase test harness at each test level
-        continue-on-error: true # Continue to run the action even if the previous steps fail
+        if: always() # Run the action even if the previous steps fail
         run: mvn -B -ntp -DdbPassword=${{env.TF_VAR_DBX_TOKEN}} -DdbUrl='${{env.DATABRICKS_URL}}' -Dtest=liquibase.ext.databricks.${{ matrix.liquibase-support-level }}ExtensionHarnessTestSuite test # Run the Liquibase test harness at each test level
 
       - name: Test Reporter # Generate a test report using the Test Reporter action

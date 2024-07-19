@@ -1,1 +1,1 @@
-CREATE TABLE main.liquibase_harness_test_ds.createTableDataTypeText (textCol STRING) USING delta TBLPROPERTIES('delta.feature.allowColumnDefaults' = 'supported', 'delta.columnMapping.mode' = 'name')
+CREATE TABLE main.liquibase_harness_test_ds.createTableDataTypeText (textCol STRING) USING delta TBLPROPERTIES('delta.feature.allowColumnDefaults' = 'supported', 'delta.columnMapping.mode' = 'name', 'delta.enableDeletionVectors' = true)
