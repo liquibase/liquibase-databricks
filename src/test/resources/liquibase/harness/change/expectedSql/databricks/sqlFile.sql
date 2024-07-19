@@ -1,4 +1,4 @@
-CREATE TABLE main.liquibase_harness_test_ds.sqltest (id INT) USING delta TBLPROPERTIES('delta.feature.allowColumnDefaults' = 'supported', 'delta.columnMapping.mode' = 'name')
+CREATE TABLE main.liquibase_harness_test_ds.sqltest (id INT) USING delta TBLPROPERTIES('delta.feature.allowColumnDefaults' = 'supported', 'delta.columnMapping.mode' = 'name', 'delta.enableDeletionVectors' = true)
 insert into sqltest (id) values (1)
 insert into sqltest (id) values (2)
 insert into sqltest (id) values (3)
