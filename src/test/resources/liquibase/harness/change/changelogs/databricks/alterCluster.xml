@@ -24,12 +24,12 @@
 
     <changeSet id="2" author="as">
         <databricks:alterCluster tableName="test_table_alter_cluster">
-<!--            <databricks:column name="test_id"/>-->
-                <databricks:clusterBy none="true"/>
+            <databricks:column name="test_id"/>
         </databricks:alterCluster>
         <rollback>
-<!--            <databricks:alterCluster tableName="test_table_alter_cluster">-->
-<!--            </databricks:alterCluster>-->
+            <databricks:alterCluster tableName="test_table_alter_cluster">
+                <databricks:clusterBy none="true"/>
+            </databricks:alterCluster>
         </rollback>
     </changeSet>
 
