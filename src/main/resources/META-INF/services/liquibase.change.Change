@@ -6,3 +6,4 @@ liquibase.ext.databricks.change.addLookupTable.AddLookupTableChangeDatabricks
 liquibase.ext.databricks.change.addCheckConstraint.AddCheckConstraintChangeDatabricks
 liquibase.ext.databricks.change.dropCheckConstraint.DropCheckConstraintChangeDatabricks
 liquibase.ext.databricks.change.alterTableProperties.AlterTablePropertiesChangeDatabricks
+liquibase.ext.databricks.change.alterCluster.AlterClusterChangeDatabricks

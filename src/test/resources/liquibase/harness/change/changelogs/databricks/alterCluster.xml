@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:databricks="http://www.liquibase.org/xml/ns/databricks"
+
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+            http://www.liquibase.org/xml/ns/databricks
+            http://www.liquibase.org/xml/ns/databricks/liquibase-databricks-latest.xsd">
+
+    <changeSet id="1" author="as">
+        <createTable tableName="test_table_alter_cluster" >
+            <column name="test_id" type="int">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="test_new" type="int">
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="test_table_alter_cluster"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="2" author="as">
+        <databricks:alterCluster tableName="test_table_alter_cluster">
+<!--            <databricks:column name="test_id"/>-->
+                <databricks:clusterBy none="true"/>
+        </databricks:alterCluster>
+        <rollback>
+<!--            <databricks:alterCluster tableName="test_table_alter_cluster">-->
+<!--            </databricks:alterCluster>-->
+        </rollback>
+    </changeSet>
+
+    <changeSet id="3" author="as">
+        <databricks:alterCluster tableName="test_table_alter_cluster">
+            <databricks:column name="test_id"/>
+            <databricks:column name="test_new"/>
+        </databricks:alterCluster>
+        <rollback>
+            <databricks:alterCluster tableName="test_table_alter_cluster">
+                <databricks:clusterBy none="true"/>
+            </databricks:alterCluster>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
