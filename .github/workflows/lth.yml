@@ -39,14 +39,19 @@ jobs:
       - run: terraform init
         working-directory: src/test/terraform
 
-      - name: Stop test database # Stop the test database if it is still running
-        if: always() # Always destroy, even if the previous steps fail
-        working-directory: src/test/terraform
-        run: terraform destroy -auto-approve
-
       - run: terraform plan
         working-directory: src/test/terraform
 
+      - name: Apply Terraform
+        id: apply
+        run: terraform apply -auto-approve
+        working-directory: src/test/terraform
+        continue-on-error: true
+
+      - name: Destroy Terraform if Apply Failed
+        if: steps.apply.outcome == 'failure'
+        run: terraform destroy -auto-approve
+        working-directory: src/test/terraform
 
       - run: terraform apply -auto-approve
         working-directory: src/test/terraform
