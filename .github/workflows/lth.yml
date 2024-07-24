@@ -36,13 +36,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - run: terraform init
+        working-directory: src/test/terraform
+
       - name: Stop test database # Stop the test database if it is still running
         if: always() # Always destroy, even if the previous steps fail
         working-directory: src/test/terraform
         run: terraform destroy -auto-approve
-
-      - run: terraform init
-        working-directory: src/test/terraform
 
       - run: terraform plan
         working-directory: src/test/terraform
