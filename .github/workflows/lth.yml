@@ -7,10 +7,10 @@ on:
     branches:
       - main
 
-# ensure only one run or job within the group runs at a time.
+# static value to the workflow group to ensure only one run of the workflow can be in progress at a time.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: liquibase-test-harness
+  cancel-in-progress: false
 
 jobs:
   liquibase-test-harness:
