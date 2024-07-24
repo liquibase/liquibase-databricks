@@ -8,7 +8,7 @@ on:
       - main
       
 # ensure only one run or job within the group runs at a time.
-  check_run:
+  concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}
     cancel-in-progress: true
 
