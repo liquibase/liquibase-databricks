@@ -47,6 +47,7 @@ jobs:
       - run: terraform plan
         working-directory: src/test/terraform
 
+
       - run: terraform apply -auto-approve
         working-directory: src/test/terraform
 
