@@ -11,7 +11,7 @@ import liquibase.sql.UnparsedSql;
 import liquibase.sqlgenerator.SqlGeneratorChain;
 import liquibase.statement.core.CreateTableStatement;
 import liquibase.structure.DatabaseObject;
-import liquibase.util.StringUtil;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 
@@ -46,14 +46,16 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
         if (statement instanceof CreateTableStatementDatabricks) {
             CreateTableStatementDatabricks thisStatement = (CreateTableStatementDatabricks) statement;
 
-            if ((!StringUtil.isEmpty(thisStatement.getTableFormat()))) {
+            if ((!StringUtils.isEmpty(thisStatement.getTableFormat()))) {
                 finalsql += " USING " + thisStatement.getTableFormat();
+            } else if (thisStatement.getExtendedTableProperties() != null && StringUtils.isNoneEmpty(thisStatement.getExtendedTableProperties().getTblProperties())) {
+                finalsql += " TBLPROPERTIES (" + thisStatement.getExtendedTableProperties().getTblProperties() + ")";
             } else {
                 finalsql += " USING delta TBLPROPERTIES('delta.feature.allowColumnDefaults' = 'supported', 'delta.columnMapping.mode' = 'name', 'delta.enableDeletionVectors' = true)";
             }
 
             // Databricks can decide to have tables live in a particular location. If null, Databricks will handle the location automatically in DBFS
-            if (!StringUtil.isEmpty(thisStatement.getTableLocation())) {
+            if (!StringUtils.isEmpty(thisStatement.getTableLocation())) {
                 finalsql += " LOCATION '" + thisStatement.getTableLocation() + "'";
             }
 
