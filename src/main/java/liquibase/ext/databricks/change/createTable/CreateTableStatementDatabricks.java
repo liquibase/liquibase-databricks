@@ -5,7 +5,6 @@ import liquibase.statement.core.CreateTableStatement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class CreateTableStatementDatabricks extends CreateTableStatement {
 
@@ -15,6 +14,8 @@ public class CreateTableStatementDatabricks extends CreateTableStatement {
     private ArrayList<String> clusterColumns;
 
     private ArrayList<String> partitionColumns;
+
+    private ExtendedTableProperties extendedTableProperties;
 
 
     public CreateTableStatementDatabricks(String catalogName, String schemaName, String tableName) {
@@ -55,5 +56,11 @@ public class CreateTableStatementDatabricks extends CreateTableStatement {
         this.clusterColumns = new ArrayList<>(Arrays.asList(clusterColumns.split("\\s*,\\s*")));
     }
 
+    public ExtendedTableProperties getExtendedTableProperties() {
+        return extendedTableProperties;
+    }
 
+    public void setExtendedTableProperties(ExtendedTableProperties extendedTableProperties) {
+        this.extendedTableProperties = extendedTableProperties;
+    }
 }
