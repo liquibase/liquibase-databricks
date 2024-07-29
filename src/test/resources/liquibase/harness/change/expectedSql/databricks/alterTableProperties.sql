@@ -1,0 +1,2 @@
+CREATE TABLE main.liquibase_harness_test_ds.test_alter_table_properties (test_id INT NOT NULL, test_column VARCHAR(50) NOT NULL, CONSTRAINT PK_TEST_ALTER_TABLE_PROPERTIES PRIMARY KEY (test_id)) USING delta TBLPROPERTIES('delta.feature.allowColumnDefaults' = 'supported', 'delta.columnMapping.mode' = 'name', 'delta.enableDeletionVectors' = true)
+ALTER TABLE main.liquibase_harness_test_ds.test_alter_table_properties SET TBLPROPERTIES ('external.location'='s3://mybucket/mytable','this.is.my.key'=12,'this.is.my.key2'=true)
