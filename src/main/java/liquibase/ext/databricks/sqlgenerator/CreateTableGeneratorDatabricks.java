@@ -57,6 +57,8 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
             // Databricks can decide to have tables live in a particular location. If null, Databricks will handle the location automatically in DBFS
             if (!StringUtils.isEmpty(thisStatement.getTableLocation())) {
                 finalsql += " LOCATION '" + thisStatement.getTableLocation() + "'";
+            } else if (thisStatement.getExtendedTableProperties() != null && StringUtils.isNotEmpty(thisStatement.getExtendedTableProperties().getTableLocation())) {
+                finalsql += " LOCATION '" + thisStatement.getExtendedTableProperties().getTableLocation() + "'";
             }
 
             ArrayList<String> clusterCols = thisStatement.getClusterColumns();
