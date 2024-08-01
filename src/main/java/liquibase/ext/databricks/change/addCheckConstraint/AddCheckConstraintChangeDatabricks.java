@@ -4,13 +4,14 @@ import liquibase.change.*;
 import liquibase.database.Database;
 import liquibase.ext.databricks.change.dropCheckConstraint.DropCheckConstraintChangeDatabricks;
 import liquibase.ext.databricks.database.DatabricksDatabase;
+import liquibase.servicelocator.PrioritizedService;
 import liquibase.statement.SqlStatement;
+
 import java.text.MessageFormat;
-import liquibase.ext.databricks.database.DatabricksDatabase;
 
 @DatabaseChange(name = "addCheckConstraint",
         description = "Adds check constraint to Delta Table",
-        priority = DatabricksDatabase.PRIORITY_DEFAULT + 200,
+        priority = PrioritizedService.PRIORITY_DATABASE,
         appliesTo = {"column"}
 )
 public class AddCheckConstraintChangeDatabricks extends AbstractChange {
@@ -23,11 +24,17 @@ public class AddCheckConstraintChangeDatabricks extends AbstractChange {
 
     private String constraintBody;
 
+
+    @Override
+    public boolean supports(Database database) {
+        return database instanceof DatabricksDatabase;
+    }
+
     public String getCatalogName() {
         return catalogName;
     }
 
-    public void setCatalogName (String catalogName) {
+    public void setCatalogName(String catalogName) {
         this.catalogName = catalogName;
     }
 
@@ -35,7 +42,7 @@ public class AddCheckConstraintChangeDatabricks extends AbstractChange {
         return tableName;
     }
 
-    public void setTableName (String tableName) {
+    public void setTableName(String tableName) {
         this.tableName = tableName;
     }
 
@@ -43,15 +50,12 @@ public class AddCheckConstraintChangeDatabricks extends AbstractChange {
         return schemaName;
     }
 
-    public void setSchemaName (String schemaName) {
+    public void setSchemaName(String schemaName) {
         this.schemaName = schemaName;
     }
 
-
     // Name of Delta Table Constraint
-    @DatabaseChangeProperty(
-            description = "Name of the check constraint"
-    )
+    @DatabaseChangeProperty(description = "Name of the check constraint")
     public String getConstraintName() {
         return this.constraintName;
     }
@@ -60,9 +64,7 @@ public class AddCheckConstraintChangeDatabricks extends AbstractChange {
         this.constraintName = name;
     }
 
-
-    // The is the SQL expression involving the contraint
-
+    // This is the SQL expression involving the constraint
     @DatabaseChangeProperty(
             serializationType = SerializationType.DIRECT_VALUE
     )
@@ -76,7 +78,8 @@ public class AddCheckConstraintChangeDatabricks extends AbstractChange {
 
     @Override
     public String getConfirmationMessage() {
-        return MessageFormat.format("{0}.{1}.{2} successfully Added check constraint {3}.", getCatalogName(), getSchemaName(), getTableName(), getConstraintName());
+        return MessageFormat.format("{0}.{1}.{2} successfully Added check constraint {3}.", getCatalogName(), getSchemaName(), getTableName(),
+                getConstraintName());
     }
 
     protected Change[] createInverses() {
@@ -100,6 +103,6 @@ public class AddCheckConstraintChangeDatabricks extends AbstractChange {
         statement.setConstraintName(getConstraintName());
         statement.setConstraintBody(getConstraintBody());
 
-        return new SqlStatement[] {statement};
+        return new SqlStatement[]{statement};
     }
 }

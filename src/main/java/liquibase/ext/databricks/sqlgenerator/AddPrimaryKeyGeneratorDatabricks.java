@@ -16,12 +16,12 @@ public class AddPrimaryKeyGeneratorDatabricks extends AddPrimaryKeyGenerator {
 
     @Override
     public boolean supports(AddPrimaryKeyStatement statement, Database database) {
-        return (database instanceof DatabricksDatabase);
+        return database instanceof DatabricksDatabase;
     }
 
     @Override
     public int getPriority() {
-        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
+        return PRIORITY_DATABASE;
     }
 
 

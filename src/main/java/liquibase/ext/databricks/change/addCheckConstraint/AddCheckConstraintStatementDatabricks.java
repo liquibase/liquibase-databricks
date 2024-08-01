@@ -8,8 +8,6 @@ public class AddCheckConstraintStatementDatabricks extends AbstractSqlStatement 
     private String tableName;
     private String constraintName;
     private String constraintBody;
-    private boolean validate = true;
-    private boolean disabled;
 
 
     public String getCatalogName() {

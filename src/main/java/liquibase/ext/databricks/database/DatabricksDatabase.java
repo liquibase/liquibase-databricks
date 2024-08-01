@@ -18,8 +18,6 @@ import java.util.*;
 
 public class DatabricksDatabase extends AbstractJdbcDatabase {
 
-
-    public static final int DATABRICKS_PRIORITY_DATABASE = 1515;
     // define env variables for database
     public static final String PRODUCT_NAME = "databricks";
     // Set default catalog - must be unity Catalog Enabled
@@ -92,7 +90,7 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
 
     @Override
     public int getPriority() {
-        return DATABRICKS_PRIORITY_DATABASE;
+        return PRIORITY_DATABASE;
     }
 
     @Override
