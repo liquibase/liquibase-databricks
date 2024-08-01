@@ -13,7 +13,8 @@ import liquibase.servicelocator.PrioritizedService;
         name = "float",
         minParameters = 0,
         maxParameters = 0,
-        priority = DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE
+        aliases = {"java.sql.Types.FLOAT", "java.lang.Float"},
+        priority = PrioritizedService.PRIORITY_DATABASE
 )
 public class FloatDatatypeDatabricks extends LiquibaseDataType {
     public FloatDatatypeDatabricks() {
@@ -39,10 +40,6 @@ public class FloatDatatypeDatabricks extends LiquibaseDataType {
     }
 
     @Override
-    public int getPriority() {
-        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
-    }
-
     public LoadDataChange.LOAD_DATA_TYPE getLoadTypeName() {
         return LoadDataChange.LOAD_DATA_TYPE.NUMERIC;
     }

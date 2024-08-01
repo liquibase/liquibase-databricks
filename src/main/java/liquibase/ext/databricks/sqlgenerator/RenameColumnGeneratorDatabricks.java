@@ -24,7 +24,7 @@ public class RenameColumnGeneratorDatabricks extends RenameColumnGenerator {
 
     @Override
     public int getPriority() {
-        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
+        return PRIORITY_DATABASE;
     }
 
 

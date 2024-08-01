@@ -3,26 +3,34 @@ package liquibase.ext.databricks.datatype;
 import liquibase.datatype.core.TimestampType;
 import liquibase.Scope;
 import liquibase.change.core.LoadDataChange;
+
 import java.util.Locale;
+
 import liquibase.GlobalConfiguration;
 import liquibase.database.Database;
 import liquibase.database.core.*;
 import liquibase.datatype.DataTypeInfo;
 import liquibase.datatype.DatabaseDataType;
 import liquibase.exception.DatabaseIncapableOfOperation;
+import liquibase.servicelocator.PrioritizedService;
 import liquibase.util.StringUtil;
 import liquibase.util.grammar.ParseException;
 import liquibase.ext.databricks.database.DatabricksDatabase;
+
 /**
  * Data type support for TIMESTAMP data types in various DBMS. All DBMS are at least expected to support the
  * year, month, day, hour, minute and second parts. Optionally, fractional seconds and time zone information can be
  * specified as well.
  */
-@DataTypeInfo(name = "timestamp", aliases = {"java.sql.Types.TIMESTAMP", "java.sql.Types.TIMESTAMP_WITH_TIMEZONE", "java.sql.Timestamp", "timestamptz"}, minParameters = 0, maxParameters = 0, priority = DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE)
+
+//TODO refactor to simplify this class
+@DataTypeInfo(name = "timestamp", aliases = {"java.sql.Types.TIMESTAMP", "java.sql.Types.TIMESTAMP_WITH_TIMEZONE", "java.sql.Timestamp", "timestamptz"},
+        minParameters = 0, maxParameters = 0, priority = PrioritizedService.PRIORITY_DATABASE)
 public class TimestampDatatypeDatabricks extends TimestampType {
 
     /**
      * Returns a DBMS-specific String representation of this TimestampType for use in SQL statements.
+     *
      * @param database the database for which the String must be generated
      * @return a String with the DBMS-specific type specification
      */
@@ -58,41 +66,6 @@ public class TimestampDatatypeDatabricks extends TimestampType {
             }
         }
 
-        if (database instanceof MySQLDatabase) {
-            if (originalDefinition.contains(" ") || originalDefinition.contains("(")) {
-                return new DatabaseDataType(getRawDefinition());
-            }
-            return super.toDatabaseDataType(database);
-        }
-        if (database instanceof MSSQLDatabase) {
-            if (Boolean.TRUE.equals(!GlobalConfiguration.CONVERT_DATA_TYPES.getCurrentValue())
-                    && originalDefinition.toLowerCase(Locale.US).startsWith("timestamp")) {
-                return new DatabaseDataType(database.escapeDataTypeName("timestamp"));
-            }
-            Object[] parameters = getParameters();
-            if (parameters.length >= 1) {
-                final int paramValue = Integer.parseInt(parameters[0].toString());
-                // If the scale for datetime2 is the database default anyway, omit it.
-                // If the scale is 8, omit it since it's not a valid value for datetime2
-                if (paramValue > 7 || paramValue == (database.getDefaultScaleForNativeDataType("datetime2"))) {
-                    parameters = new Object[0];
-
-                }
-
-            }
-            return new DatabaseDataType(database.escapeDataTypeName("datetime2"), parameters);
-        }
-        if (database instanceof SybaseDatabase) {
-            return new DatabaseDataType(database.escapeDataTypeName("datetime"));
-        }
-        if (database instanceof AbstractDb2Database) {
-            Object[] parameters = getParameters();
-            if ((parameters != null) && (parameters.length > 1)) {
-                parameters = new Object[] {parameters[1]};
-            }
-            return new DatabaseDataType(database.escapeDataTypeName("timestamp"), parameters);
-        }
-
         /*
          * From here on, we assume that we have a SQL standard compliant database that supports the
          * TIMESTAMP[(p)] [WITH TIME ZONE|WITHOUT TIME ZONE] syntax. p is the number of fractional digits,
@@ -121,7 +94,7 @@ public class TimestampDatatypeDatabricks extends TimestampType {
                 fractionalDigits = maxFractionalDigits;
             }
             // Do not return parameter p for Databricks
-            type =  new DatabaseDataType("TIMESTAMP");
+            type = new DatabaseDataType("TIMESTAMP");
         } else {
             type = new DatabaseDataType("TIMESTAMP");
         }
@@ -149,7 +122,7 @@ public class TimestampDatatypeDatabricks extends TimestampType {
                 || database instanceof OracleDatabase)
                 || database instanceof H2Database
                 || database instanceof HsqlDatabase
-                || database instanceof SybaseASADatabase){
+                || database instanceof SybaseASADatabase) {
             String additionalInformation = this.getAdditionalInformation();
 
             if (additionalInformation != null) {
@@ -183,10 +156,9 @@ public class TimestampDatatypeDatabricks extends TimestampType {
     }
 
     @Override
-    public int getPriority() {
-        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
+    public boolean supports(Database database) {
+        return database instanceof DatabricksDatabase;
     }
-
 
     @Override
     public LoadDataChange.LOAD_DATA_TYPE getLoadTypeName() {

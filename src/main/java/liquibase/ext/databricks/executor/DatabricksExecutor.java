@@ -5,16 +5,16 @@ import liquibase.database.Database;
 import liquibase.exception.DatabaseException;
 import liquibase.executor.jvm.JdbcExecutor;
 import liquibase.ext.databricks.database.DatabricksDatabase;
+import liquibase.servicelocator.PrioritizedService;
 import liquibase.sql.visitor.SqlVisitor;
 import liquibase.statement.SqlStatement;
 import java.util.List;
-import static liquibase.ext.databricks.database.DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
 
 public class DatabricksExecutor extends JdbcExecutor {
 
     @Override
     public int getPriority() {
-        return DATABRICKS_PRIORITY_DATABASE;
+        return PrioritizedService.PRIORITY_DATABASE;
     }
 
     @Override
