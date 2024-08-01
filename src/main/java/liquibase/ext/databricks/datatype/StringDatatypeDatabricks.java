@@ -4,7 +4,7 @@ import liquibase.change.core.LoadDataChange;
 import liquibase.database.Database;
 import liquibase.datatype.DataTypeInfo;
 import liquibase.datatype.DatabaseDataType;
-import liquibase.datatype.LiquibaseDataType;
+import liquibase.datatype.core.VarcharType;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.servicelocator.PrioritizedService;
 
@@ -13,9 +13,9 @@ import liquibase.servicelocator.PrioritizedService;
         minParameters = 0,
         maxParameters = 0,
         priority = PrioritizedService.PRIORITY_DATABASE,
-        aliases = { "varchar", "clob", "java.lang.String" }
+        aliases = {"clob", "java.lang.String" }
 )
-public class StringDatatypeDatabricks extends LiquibaseDataType {
+public class StringDatatypeDatabricks extends VarcharType {
     public StringDatatypeDatabricks() {
     }
 
