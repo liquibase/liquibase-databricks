@@ -11,7 +11,7 @@ import liquibase.statement.ColumnConstraint;
 import liquibase.statement.DatabaseFunction;
 import liquibase.statement.NotNullConstraint;
 import liquibase.statement.core.AddColumnStatement;
-import liquibase.util.StringUtil;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Iterator;
 
@@ -52,7 +52,7 @@ public class AddColumnGeneratorDatabricks extends AddColumnGenerator {
                 ColumnConstraint constraint = var8.next();
                 if (constraint instanceof NotNullConstraint) {
                     NotNullConstraint notNullConstraint = (NotNullConstraint)constraint;
-                    if (StringUtil.isNotEmpty(notNullConstraint.getConstraintName())) {
+                    if (StringUtils.isNotEmpty(notNullConstraint.getConstraintName())) {
                         alterTable.append(" CONSTRAINT ").append(database.escapeConstraintName(notNullConstraint.getConstraintName()));
                         break;
                     }
@@ -75,7 +75,7 @@ public class AddColumnGeneratorDatabricks extends AddColumnGenerator {
         }
 
         if (database instanceof MySQLDatabase && statement.getRemarks() != null) {
-            alterTable.append(" COMMENT '").append(database.escapeStringForDatabase(StringUtil.trimToEmpty(statement.getRemarks()))).append("' ");
+            alterTable.append(" COMMENT '").append(database.escapeStringForDatabase(StringUtils.trimToEmpty(statement.getRemarks()))).append("' ");
         }
 
         if (statement.getAddBeforeColumn() != null && !statement.getAddBeforeColumn().isEmpty()) {

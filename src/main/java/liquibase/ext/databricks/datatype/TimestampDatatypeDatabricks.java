@@ -13,9 +13,9 @@ import liquibase.datatype.DataTypeInfo;
 import liquibase.datatype.DatabaseDataType;
 import liquibase.exception.DatabaseIncapableOfOperation;
 import liquibase.servicelocator.PrioritizedService;
-import liquibase.util.StringUtil;
 import liquibase.util.grammar.ParseException;
 import liquibase.ext.databricks.database.DatabricksDatabase;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Data type support for TIMESTAMP data types in various DBMS. All DBMS are at least expected to support the
@@ -36,7 +36,7 @@ public class TimestampDatatypeDatabricks extends TimestampType {
      */
     @Override
     public DatabaseDataType toDatabaseDataType(Database database) {
-        String originalDefinition = StringUtil.trimToEmpty(getRawDefinition());
+        String originalDefinition = StringUtils.trimToEmpty(getRawDefinition());
         // If a fractional precision is given, check is the DBMS supports the length
         if (getParameters().length > 0) {
             Integer desiredLength = null;
