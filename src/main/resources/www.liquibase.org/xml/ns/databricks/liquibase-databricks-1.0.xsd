@@ -11,4 +11,30 @@
             <xsd:attribute name="tblProperties" type="xsd:string"/>
         </xsd:complexType>
     </xsd:element>
+
+    <xsd:element name="alterTableProperties">
+        <xsd:complexType>
+            <xsd:choice maxOccurs="1" minOccurs="1">
+                <xsd:sequence >
+                    <xsd:element ref="setExtendedTableProperties" maxOccurs="1" minOccurs="1"/>
+                </xsd:sequence>
+                <xsd:sequence >
+                    <xsd:element ref="unsetExtendedTableProperties" maxOccurs="1" minOccurs="1"/>
+                </xsd:sequence>
+            </xsd:choice>
+            <xsd:attribute name="tableName" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="setExtendedTableProperties">
+        <xsd:complexType>
+            <xsd:attribute name="tblProperties" type="xsd:string"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="unsetExtendedTableProperties">
+        <xsd:complexType>
+            <xsd:attribute name="tblProperties" type="xsd:string"/>
+        </xsd:complexType>
+    </xsd:element>
 </xsd:schema>
