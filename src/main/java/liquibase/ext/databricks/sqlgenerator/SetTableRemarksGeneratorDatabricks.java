@@ -9,8 +9,8 @@ import liquibase.sqlgenerator.SqlGeneratorChain;
 import liquibase.statement.core.SetTableRemarksStatement;
 import liquibase.structure.core.Relation;
 import liquibase.structure.core.Table;
-import liquibase.util.StringUtil;
 import liquibase.sqlgenerator.core.SetTableRemarksGenerator;
+import org.apache.commons.lang3.StringUtils;
 
 public class SetTableRemarksGeneratorDatabricks extends SetTableRemarksGenerator {
 
@@ -21,7 +21,7 @@ public class SetTableRemarksGeneratorDatabricks extends SetTableRemarksGenerator
 
     @Override
     public int getPriority() {
-        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
+        return PRIORITY_DATABASE;
     }
 
 
@@ -35,7 +35,7 @@ public class SetTableRemarksGeneratorDatabricks extends SetTableRemarksGenerator
     @Override
     public Sql[] generateSql(SetTableRemarksStatement statement, Database database, SqlGeneratorChain sqlGeneratorChain) {
         String sql;
-        String remarksEscaped = database.escapeStringForDatabase(StringUtil.trimToEmpty(statement.getRemarks()));
+        String remarksEscaped = database.escapeStringForDatabase(StringUtils.trimToEmpty(statement.getRemarks()));
 
         sql = "COMMENT ON TABLE " + database.escapeTableName(statement.getCatalogName(), statement.getSchemaName(), statement.getTableName()) + " IS '"
                     + remarksEscaped + "'";

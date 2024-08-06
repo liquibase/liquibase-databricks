@@ -18,7 +18,7 @@ public class GetViewDefinitionGeneratorDatabricks extends GetViewDefinitionGener
 
     @Override
     public int getPriority() {
-        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
+        return PRIORITY_DATABASE;
     }
 
 

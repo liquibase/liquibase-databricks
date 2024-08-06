@@ -6,8 +6,9 @@ import liquibase.datatype.DataTypeInfo;
 import liquibase.datatype.DatabaseDataType;
 import liquibase.datatype.LiquibaseDataType;
 import liquibase.ext.databricks.database.DatabricksDatabase;
+import liquibase.servicelocator.PrioritizedService;
 
-@DataTypeInfo(name = "array<int>", minParameters = 0, maxParameters = 0, priority = DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE)
+@DataTypeInfo(name = "array<int>", minParameters = 0, maxParameters = 0, priority = PrioritizedService.PRIORITY_DATABASE)
 public class ArrayIntegerDataTypeDatabricks extends LiquibaseDataType {
 
 
@@ -28,12 +29,6 @@ public class ArrayIntegerDataTypeDatabricks extends LiquibaseDataType {
     public boolean supports(Database database) {
         return database instanceof DatabricksDatabase;
     }
-
-    @Override
-    public int getPriority() {
-        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
-    }
-
 
     @Override
     public LoadDataChange.LOAD_DATA_TYPE getLoadTypeName() {

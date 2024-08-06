@@ -5,13 +5,15 @@ import liquibase.change.AbstractChange;
 import liquibase.change.ChangeMetaData;
 import liquibase.change.DatabaseChange;
 import liquibase.database.Database;
+import liquibase.ext.databricks.database.DatabricksDatabase;
+import liquibase.servicelocator.PrioritizedService;
 import liquibase.statement.SqlStatement;
 import liquibase.change.Change;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
 
-@DatabaseChange(name = "optimizeTable", description = "Optimize and ZOrder Table", priority = ChangeMetaData.PRIORITY_DEFAULT)
+@DatabaseChange(name = "optimizeTable", description = "Optimize and ZOrder Table", priority =  PrioritizedService.PRIORITY_DATABASE)
 public class OptimizeTableChange extends AbstractChange {
 
     private String catalogName;
@@ -54,6 +56,11 @@ public class OptimizeTableChange extends AbstractChange {
     @Override
     public String getConfirmationMessage() {
         return MessageFormat.format("{0}.{1}.{2} successfully optimized.", getCatalogName(), getSchemaName(), getTableName());
+    }
+
+    @Override
+    public boolean supports(Database database) {
+        return database instanceof DatabricksDatabase;
     }
 
     @Override

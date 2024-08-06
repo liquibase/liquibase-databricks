@@ -1,14 +1,15 @@
 package liquibase.ext.databricks.datatype;
 
-import liquibase.change.core.LoadDataChange;
 import liquibase.database.Database;
 import liquibase.datatype.DataTypeInfo;
 import liquibase.datatype.DatabaseDataType;
-import liquibase.datatype.LiquibaseDataType;
 import liquibase.datatype.core.BlobType;
 import liquibase.ext.databricks.database.DatabricksDatabase;
+import liquibase.servicelocator.PrioritizedService;
 
-
+@DataTypeInfo(name = "binary", aliases = {"longblob", "java.sql.Types.BLOB",
+       "java.sql.Types.BINARY", "tinyblob", "mediumblob"}, minParameters = 0, maxParameters = 0
+        , priority = PrioritizedService.PRIORITY_DATABASE)
 public class BinaryDataTypeDatabricks extends BlobType {
 
 
@@ -21,12 +22,6 @@ public class BinaryDataTypeDatabricks extends BlobType {
 
         return super.toDatabaseDataType(database);
     }
-
-    @Override
-    public int getPriority() {
-        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
-    }
-
 
     @Override
     public boolean supports(Database database) {

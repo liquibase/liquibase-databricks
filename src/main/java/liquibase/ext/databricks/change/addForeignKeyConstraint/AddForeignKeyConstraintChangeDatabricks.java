@@ -1,11 +1,11 @@
 package liquibase.ext.databricks.change.addForeignKeyConstraint;
 
-import liquibase.ext.databricks.database.DatabricksDatabase;
-
 import liquibase.change.*;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.exception.UnexpectedLiquibaseException;
+import liquibase.ext.databricks.database.DatabricksDatabase;
+import liquibase.servicelocator.PrioritizedService;
 import liquibase.snapshot.SnapshotGeneratorFactory;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.AddForeignKeyConstraintStatement;
@@ -23,8 +23,9 @@ import java.util.List;
  */
 @DatabaseChange(name = "addForeignKeyConstraint",
         description = "Adds a foreign key constraint to an existing column",
-        priority = DatabricksDatabase.PRIORITY_DATABASE,
+        priority = PrioritizedService.PRIORITY_DATABASE,
         appliesTo = "column")
+//TODO this class need refactoring as it copies parent class instead of properly inheriting it.
 public class AddForeignKeyConstraintChangeDatabricks extends AddForeignKeyConstraintChange {
 
     private String baseTableCatalogName;
@@ -46,6 +47,10 @@ public class AddForeignKeyConstraintChangeDatabricks extends AddForeignKeyConstr
     private String onUpdate;
     private String onDelete;
 
+    @Override
+    public boolean supports(Database database) {
+        return database instanceof DatabricksDatabase;
+    }
 
     @Override
     protected String[] createSupportedDatabasesMetaData(

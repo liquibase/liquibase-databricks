@@ -6,37 +6,27 @@ import java.util.List;
 
 import liquibase.change.core.*;
 import liquibase.ext.databricks.database.DatabricksDatabase;
-import liquibase.ext.databricks.change.createTable.CreateTableStatementDatabricks;
-import liquibase.ext.databricks.change.createTable.CreateTableChangeDatabricks;
 import liquibase.Scope;
 import liquibase.change.*;
 import liquibase.database.Database;
-import liquibase.database.core.DB2Database;
 import liquibase.database.core.Db2zDatabase;
-import liquibase.database.core.HsqlDatabase;
-import liquibase.database.core.InformixDatabase;
-import liquibase.database.core.MSSQLDatabase;
 import liquibase.database.core.OracleDatabase;
-import liquibase.database.core.SybaseASADatabase;
-import liquibase.datatype.DataTypeFactory;
 import liquibase.exception.ValidationErrors;
+import liquibase.servicelocator.PrioritizedService;
 import liquibase.snapshot.SnapshotGeneratorFactory;
-import liquibase.statement.NotNullConstraint;
 import liquibase.statement.SqlStatement;
-import liquibase.statement.core.CreateTableStatement;
 import liquibase.statement.core.RawSqlStatement;
-import liquibase.statement.core.ReorganizeTableStatement;
 import liquibase.structure.core.Column;
 import liquibase.structure.core.ForeignKey;
 import liquibase.structure.core.Table;
 import liquibase.change.core.AddLookupTableChange;
-import static liquibase.statement.SqlStatement.EMPTY_SQL_STATEMENT;
 
 /**
  * Extracts data from an existing column to create a lookup table.
  * A foreign key is created between the old column and the new lookup table.
  */
-@DatabaseChange(name = "addLookupTable", priority = DatabricksDatabase.PRIORITY_DATABASE + 500, appliesTo = "column",
+//TODO this class need refactoring as it copies parent class instead of properly inheriting it.
+@DatabaseChange(name = "addLookupTable", priority =  PrioritizedService.PRIORITY_DATABASE, appliesTo = "column",
         description = "Creates a lookup table containing values stored in a column and creates a foreign key to the new table.")
 public class AddLookupTableChangeDatabricks extends AddLookupTableChange {
 

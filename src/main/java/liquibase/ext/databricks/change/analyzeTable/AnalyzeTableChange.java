@@ -3,17 +3,17 @@ package liquibase.ext.databricks.change.analyzeTable;
 
 import liquibase.change.AbstractChange;
 import liquibase.change.Change;
-import liquibase.change.ChangeMetaData;
 import liquibase.change.DatabaseChange;
 import liquibase.database.Database;
 import liquibase.ext.databricks.database.DatabricksDatabase;
+import liquibase.servicelocator.PrioritizedService;
 import liquibase.statement.SqlStatement;
 import java.util.Collections;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Map;
 
-@DatabaseChange(name = "analyzeTable", description = "Analyze Table Stats", priority = ChangeMetaData.PRIORITY_DEFAULT)
+@DatabaseChange(name = "analyzeTable", description = "Analyze Table Stats", priority =  PrioritizedService.PRIORITY_DATABASE)
 public class AnalyzeTableChange extends AbstractChange {
 
     private String catalogName;

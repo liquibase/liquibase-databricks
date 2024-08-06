@@ -5,11 +5,12 @@ import liquibase.change.DatabaseChangeProperty;
 import liquibase.change.core.CreateTableChange;
 import liquibase.database.Database;
 import liquibase.exception.ValidationErrors;
+import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.servicelocator.PrioritizedService;
 import liquibase.statement.core.CreateTableStatement;
 
 
-@DatabaseChange(name = "createTable", description = "Create Table", priority = PrioritizedService.PRIORITY_DATABASE +500)
+@DatabaseChange(name = "createTable", description = "Create Table", priority =  PrioritizedService.PRIORITY_DATABASE)
 public class CreateTableChangeDatabricks extends CreateTableChange {
 
     private String tableFormat;
@@ -18,6 +19,10 @@ public class CreateTableChangeDatabricks extends CreateTableChange {
     private String partitionColumns;
     private ExtendedTableProperties extendedTableProperties;
 
+    @Override
+    public boolean supports(Database database) {
+        return database instanceof DatabricksDatabase;
+    }
 
     @Override
     public ValidationErrors validate(Database database) {

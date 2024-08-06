@@ -1,0 +1,47 @@
+{
+  "snapshot": {
+    "objects": {
+      "liquibase.structure.core.Table": [
+        {
+          "table": {
+            "name": "authors"
+          }
+        }
+      ],
+      "liquibase.structure.core.Column": [
+        {
+          "column": {
+            "name": "varcharColumn",
+            "type": {
+
+              "columnSize": "50.*",
+              "typeName": "VARCHAR"
+            }
+          }
+        },
+        {
+          "column": {
+            "name": "stringColumn",
+            "type": {
+              "columnSize": "255.*",
+              "typeName": "STRING"
+            }
+          }
+        },
+        {
+          "column": {
+            "name": "intColumn",
+            "type": {
+              "typeName": "INT"
+            }
+          }
+        },
+        {
+          "column": {
+            "name": "dateColumn"
+          }
+        }
+      ]
+    }
+  }
+}
