@@ -7,7 +7,8 @@
              "name": "first_name_renameColumn_test",
              "nullable": false,
              "type": {
-               "typeName": "STRING"
+               "typeName": "VARCHAR",
+               "columnSize": "50.*"
              }
            }
          }
