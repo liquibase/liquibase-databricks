@@ -48,7 +48,7 @@ If hive_metastore is used, this is not tested and may not provide all the below 
 21. [x] Change Data Test: apply insert
 22. [x] Change Data Test: apply loadData
 23. [x] Change Data Test: apply loadDataUpdate
-24. [ ] Add/Drop Check Constraints - TO DO: Need to create snapshot generator but the change type works
+24. [x] Add/Drop Check Constraints - supported but not returned in snapshot
 
 ### Advanced
 1. [x] addColumn snapshot
@@ -58,16 +58,17 @@ If hive_metastore is used, this is not tested and may not provide all the below 
 5. [x] createTable snapshot
 6. [x] createView snapshot
 7. [x] generateChangelog -
-2. [x] addUniqueConstraint -  not supported
-3. [x] createIndex - Not Supported, use changeClusterColumns change type for datbricks to Map to CLUSTER BY ALTER TABLE statements for Delta Tables
-
+8. [x] addUniqueConstraint -  not supported
+9. [x] createIndex - Not Supported, use changeClusterColumns change type for datbricks to Map to CLUSTER BY ALTER TABLE statements for Delta Tables
+10. [x] alterTableProperties
+11. [x] alterCluster
 
 ### Databricks Specific:
 1. [x] OPTIMIZE - optimizeTable - optimize with zorderCols options - <b> SUPPORTED </b> in Contributed Harness
 2. [x] CLUSTER BY (DDL) - createClusteredTable - createTable with clusterColumns as additional option for liquid - <b> SUPPORTED </b> in Contributed Harness
 3. [x] ANALYZE TABLE - analyzeTable - change type with compute stats column options - <b> SUPPORTED </b> in Contributed Harness
 4. [x] VACUUM - vacuumTable - change type with retentionHours parameter (default is 168) - <b> SUPPORTED </b> in Contributed Harness
-5. [ ] ALTER CLUSTER KEY - changeClusterColumns - change type that will be used until index change types are mapped with CLUSTER BY columns for snapshot purposes - TO DO
+5. [x] ALTER CLUSTER KEY - alterCluster - change type that will be used until index change types are mapped with CLUSTER BY columns for snapshot purposes
 
 
 ## Remaining Required Change Types to Finish in Base/Contributed
@@ -88,16 +89,13 @@ The remaining other change types are not relevant to Databricks and have been ma
 2. MERGE
 3. RESTORE VERSION AS OF
 4. ANALYZE TABLE - Code Complete - Adding Tests - Cody Davis
-5. SET TBL PROPERTIES - (Defaults are in createTable change type with min required table props to support Liquibase)
-6. CLONE
-7. BLOOM FILTERS - Maybe do not support, CLUSTER BY should be the primary indexing mechanism long term
-8. OPTIMIZE / ZORDER - Code Complete - Adding Tests - Cody Davis
-9. VACUUM - Code Complete - Adding Tests - Cody Davis
-10. SYNC IDENTITY
-11. VOLUMES
-12. GRANT / REVOKE statements
-13. CLUSTER BY - Similar to Indexes, important to support as a create table / alter table set of change types (params in createTable change), addClusterKey new change type to ALTER TABle
-
+5. CLONE
+6. BLOOM FILTERS - Maybe do not support, CLUSTER BY should be the primary indexing mechanism long term
+7. OPTIMIZE / ZORDER - Code Complete - Adding Tests - Cody Davis
+8. VACUUM - Code Complete - Adding Tests - Cody Davis
+9. SYNC IDENTITY
+10. VOLUMES
+11. GRANT / REVOKE statements
 
 
 ## How to use the Liquibase-Databricks Extension
