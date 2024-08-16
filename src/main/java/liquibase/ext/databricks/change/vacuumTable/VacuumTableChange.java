@@ -9,9 +9,13 @@ import liquibase.database.Database;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.servicelocator.PrioritizedService;
 import liquibase.statement.SqlStatement;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.text.MessageFormat;
 
+@Setter
+@Getter
 @DatabaseChange(name = "vacuumTable", description = "Vacuum Old Files from Table", priority =  PrioritizedService.PRIORITY_DATABASE)
 public class VacuumTableChange extends AbstractChange {
 
@@ -19,38 +23,6 @@ public class VacuumTableChange extends AbstractChange {
     private String schemaName;
     private String tableName;
     private Integer retentionHours;
-
-    public String getCatalogName() {
-        return catalogName;
-    }
-
-    public void setCatalogName (String catalogName) {
-        this.catalogName = catalogName;
-    }
-
-    public String getTableName() {
-        return tableName;
-    }
-
-    public void setTableName (String tableName) {
-        this.tableName = tableName;
-    }
-
-    public String getSchemaName() {
-        return schemaName;
-    }
-
-    public void setSchemaName (String schemaName) {
-        this.schemaName = schemaName;
-    }
-
-    public Integer getRetentionHours () {
-        return this.retentionHours;
-    }
-
-    public void setRetentionHours (Integer retentionHours) {
-        this.retentionHours = retentionHours;
-    }
 
     @Override
     public String getConfirmationMessage() {
@@ -88,8 +60,6 @@ public class VacuumTableChange extends AbstractChange {
             statement.setRetentionHours(getRetentionHours());
         }
 
-        SqlStatement[] builtStatement = new SqlStatement[] {statement};
-
-        return builtStatement;
+        return new SqlStatement[] {statement};
     }
 }

@@ -14,33 +14,16 @@ import liquibase.servicelocator.PrioritizedService;
         minParameters = 0, maxParameters = 0, priority = PrioritizedService.PRIORITY_DATABASE)
 public class BigintDatatypeDatabricks extends BigIntType {
 
-    private boolean autoIncrement;
-
-    @Override
-    public boolean isAutoIncrement() {
-        return autoIncrement;
-    }
-
-    public void setAutoIncrement(boolean autoIncrement) {
-        this.autoIncrement = autoIncrement;
-    }
-
     @Override
     public DatabaseDataType toDatabaseDataType(Database database) {
         if (database instanceof DatabricksDatabase) {
             return new DatabaseDataType("BIGINT");
         }
-
         return super.toDatabaseDataType(database);
     }
 
     @Override
     public boolean supports(Database database) {
         return database instanceof DatabricksDatabase;
-    }
-
-    @Override
-    public LoadDataChange.LOAD_DATA_TYPE getLoadTypeName() {
-        return LoadDataChange.LOAD_DATA_TYPE.NUMERIC;
     }
 }

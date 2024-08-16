@@ -11,16 +11,11 @@ import liquibase.servicelocator.PrioritizedService;
 @DataTypeInfo(name = "array<string>", minParameters = 0, maxParameters = 0, priority = PrioritizedService.PRIORITY_DATABASE)
 public class ArrayStringDataTypeDatabricks extends LiquibaseDataType {
 
-
-    public ArrayStringDataTypeDatabricks() {
-        // empty constructor
-    }
     @Override
     public DatabaseDataType toDatabaseDataType(Database database) {
         if (database instanceof DatabricksDatabase) {
             return new DatabaseDataType("ARARY<STRING>");
         }
-
         return super.toDatabaseDataType(database);
     }
 

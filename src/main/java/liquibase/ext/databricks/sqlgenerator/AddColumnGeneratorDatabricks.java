@@ -13,8 +13,6 @@ import liquibase.statement.NotNullConstraint;
 import liquibase.statement.core.AddColumnStatement;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Iterator;
-
 public class AddColumnGeneratorDatabricks extends AddColumnGenerator {
 
     @Override
@@ -46,12 +44,10 @@ public class AddColumnGeneratorDatabricks extends AddColumnGenerator {
 
         alterTable.append(this.getDefaultClauseForColumn(statement, database));
         if (!statement.isNullable()) {
-            Iterator<ColumnConstraint> var8 = statement.getConstraints().iterator();
 
-            while(var8.hasNext()) {
-                ColumnConstraint constraint = var8.next();
+            for (ColumnConstraint constraint : statement.getConstraints()) {
                 if (constraint instanceof NotNullConstraint) {
-                    NotNullConstraint notNullConstraint = (NotNullConstraint)constraint;
+                    NotNullConstraint notNullConstraint = (NotNullConstraint) constraint;
                     if (StringUtils.isNotEmpty(notNullConstraint.getConstraintName())) {
                         alterTable.append(" CONSTRAINT ").append(database.escapeConstraintName(notNullConstraint.getConstraintName()));
                         break;

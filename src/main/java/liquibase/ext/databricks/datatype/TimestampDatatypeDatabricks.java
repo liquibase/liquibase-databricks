@@ -131,21 +131,7 @@ public class TimestampDatatypeDatabricks extends TimestampType {
                         && additionInformation.toUpperCase(Locale.US).contains("TIMEZONE")) {
                     additionalInformation = additionInformation.toUpperCase(Locale.US).replace("TIMEZONE", "TIME ZONE");
                 }
-                // CORE-3229 Oracle 11g doesn't support WITHOUT clause in TIMESTAMP data type
-                if ((database instanceof OracleDatabase) && additionInformation.startsWith("WITHOUT")) {
-                    // https://docs.oracle.com/cd/B19306_01/server.102/b14225/ch4datetime.htm#sthref389
-                    additionalInformation = null;
-                }
 
-                if ((database instanceof H2Database) && additionInformation.startsWith("WITHOUT")) {
-                    // http://www.h2database.com/html/datatypes.html
-                    additionalInformation = null;
-                }
-
-                if ((database instanceof SybaseASADatabase) && additionInformation.startsWith("WITHOUT")) {
-                    // https://help.sap.com/docs/SAP_SQL_Anywhere/93079d4ba8e44920ae63ffb4def91f5b/81fe3e6b6ce2101487d8acce02f6aba5.html
-                    additionalInformation = null;
-                }
             }
 
             type.addAdditionalInformation(additionalInformation);
@@ -159,11 +145,4 @@ public class TimestampDatatypeDatabricks extends TimestampType {
     public boolean supports(Database database) {
         return database instanceof DatabricksDatabase;
     }
-
-    @Override
-    public LoadDataChange.LOAD_DATA_TYPE getLoadTypeName() {
-        return LoadDataChange.LOAD_DATA_TYPE.DATE;
-    }
-
-
 }

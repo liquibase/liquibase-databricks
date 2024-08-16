@@ -74,8 +74,4 @@ public class AddForeignKeyConstraintGeneratorDatabricks extends AddForeignKeyCon
         };
     }
 
-    @Override
-    protected ForeignKey getAffectedForeignKey(AddForeignKeyConstraintStatement statement) {
-        return new ForeignKey().setName(statement.getConstraintName()).setForeignKeyColumns(Column.listFromNames(statement.getBaseColumnNames())).setForeignKeyTable((Table) new Table().setName(statement.getBaseTableName()).setSchema(statement.getBaseTableCatalogName(), statement.getBaseTableSchemaName()));
-    }
 }
