@@ -86,7 +86,7 @@ public class DatabricksConnection extends JdbcConnection {
 
     @Override
     public int getPriority() {
-        return PRIORITY_DATABASE;
+        return PRIORITY_DATABASE + 101;
     }
 
     @Override
