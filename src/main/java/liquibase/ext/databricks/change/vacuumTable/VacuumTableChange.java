@@ -6,11 +6,13 @@ import liquibase.change.Change;
 import liquibase.change.ChangeMetaData;
 import liquibase.change.DatabaseChange;
 import liquibase.database.Database;
+import liquibase.ext.databricks.database.DatabricksDatabase;
+import liquibase.servicelocator.PrioritizedService;
 import liquibase.statement.SqlStatement;
 
 import java.text.MessageFormat;
 
-@DatabaseChange(name = "vacuumTable", description = "Vacuum Old Files from Table", priority = ChangeMetaData.PRIORITY_DEFAULT + 200)
+@DatabaseChange(name = "vacuumTable", description = "Vacuum Old Files from Table", priority =  PrioritizedService.PRIORITY_DATABASE)
 public class VacuumTableChange extends AbstractChange {
 
     private String catalogName;
@@ -53,6 +55,11 @@ public class VacuumTableChange extends AbstractChange {
     @Override
     public String getConfirmationMessage() {
         return MessageFormat.format("{0}.{1}.{2} successfully vacuumed.", getCatalogName(), getSchemaName(), getTableName());
+    }
+
+    @Override
+    public boolean supports(Database database) {
+        return database instanceof DatabricksDatabase;
     }
 
     @Override

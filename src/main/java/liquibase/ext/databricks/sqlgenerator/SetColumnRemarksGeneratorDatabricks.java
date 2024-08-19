@@ -3,7 +3,6 @@ package liquibase.ext.databricks.sqlgenerator;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.database.Database;
 import liquibase.database.core.*;
-import liquibase.datatype.DataTypeFactory;
 import liquibase.exception.ValidationErrors;
 import liquibase.exception.Warnings;
 import liquibase.sql.Sql;
@@ -11,11 +10,9 @@ import liquibase.sql.UnparsedSql;
 import liquibase.sqlgenerator.SqlGeneratorChain;
 import liquibase.statement.core.SetColumnRemarksStatement;
 import liquibase.structure.core.Column;
-import liquibase.structure.core.Data;
 import liquibase.structure.core.Table;
-import liquibase.util.ColumnParentType;
-import liquibase.util.StringUtil;
 import liquibase.sqlgenerator.core.SetColumnRemarksGenerator;
+import org.apache.commons.lang3.StringUtils;
 
 public class SetColumnRemarksGeneratorDatabricks extends SetColumnRemarksGenerator {
 
@@ -26,7 +23,7 @@ public class SetColumnRemarksGeneratorDatabricks extends SetColumnRemarksGenerat
 
     @Override
     public int getPriority() {
-        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
+        return PRIORITY_DATABASE;
     }
 
 
@@ -37,7 +34,7 @@ public class SetColumnRemarksGeneratorDatabricks extends SetColumnRemarksGenerat
         validationErrors.checkRequiredField("columnName", setColumnRemarksStatement.getColumnName());
         validationErrors.checkDisallowedField("catalogName", setColumnRemarksStatement.getCatalogName(), database, MSSQLDatabase.class);
         if (database instanceof MySQLDatabase) {
-            validationErrors.checkRequiredField("columnDataType", StringUtil.trimToNull(setColumnRemarksStatement.getColumnDataType()));
+            validationErrors.checkRequiredField("columnDataType", StringUtils.trimToNull(setColumnRemarksStatement.getColumnDataType()));
         }
         return validationErrors;
     }
@@ -55,7 +52,7 @@ public class SetColumnRemarksGeneratorDatabricks extends SetColumnRemarksGenerat
     @Override
     public Sql[] generateSql(SetColumnRemarksStatement statement, Database database, SqlGeneratorChain sqlGeneratorChain) {
 
-        String remarksEscaped = database.escapeStringForDatabase(StringUtil.trimToEmpty(statement.getRemarks()));
+        String remarksEscaped = database.escapeStringForDatabase(StringUtils.trimToEmpty(statement.getRemarks()));
 
 
         return new Sql[]{new UnparsedSql("ALTER TABLE " + database.escapeTableName(statement.getCatalogName(), statement.getSchemaName(), statement.getTableName())

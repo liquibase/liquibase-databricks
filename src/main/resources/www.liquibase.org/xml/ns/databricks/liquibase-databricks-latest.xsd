@@ -11,4 +11,74 @@
             <xsd:attribute name="tblProperties" type="xsd:string"/>
         </xsd:complexType>
     </xsd:element>
+
+    <xsd:element name="alterTableProperties">
+        <xsd:complexType>
+            <xsd:choice maxOccurs="1" minOccurs="1">
+                <xsd:sequence >
+                    <xsd:element ref="setExtendedTableProperties" maxOccurs="1" minOccurs="1"/>
+                </xsd:sequence>
+                <xsd:sequence >
+                    <xsd:element ref="unsetExtendedTableProperties" maxOccurs="1" minOccurs="1"/>
+                </xsd:sequence>
+            </xsd:choice>
+            <xsd:attribute name="tableName" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="setExtendedTableProperties">
+        <xsd:complexType>
+            <xsd:attribute name="tblProperties" type="xsd:string"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="unsetExtendedTableProperties">
+        <xsd:complexType>
+            <xsd:attribute name="tblProperties" type="xsd:string"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="alterCluster">
+        <xsd:complexType>
+            <xsd:choice maxOccurs="1" minOccurs="1">
+                <xsd:sequence >
+                    <xsd:element ref="column" maxOccurs="unbounded"/>
+                    <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+                <xsd:sequence>
+                    <xsd:element ref="clusterBy" maxOccurs="1"/>
+                    <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="1"/>
+                </xsd:sequence>
+            </xsd:choice>
+            <xsd:attribute name="tableName" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="column">
+        <xsd:complexType mixed="true">
+            <xsd:attributeGroup ref="column"/>
+            <xsd:anyAttribute namespace="##other" processContents="lax"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:attributeGroup name="column">
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+    </xsd:attributeGroup>
+
+    <xsd:element name="clusterBy">
+        <xsd:complexType mixed="true">
+            <xsd:attributeGroup ref="clusterBy"/>
+            <xsd:anyAttribute namespace="##other" processContents="lax"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:attributeGroup name="clusterBy">
+        <xsd:attribute name="none" type="noneClusterBy" use="required"/>
+    </xsd:attributeGroup>
+
+    <xsd:simpleType name="noneClusterBy">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="true"/>
+        </xsd:restriction>
+    </xsd:simpleType>
 </xsd:schema>

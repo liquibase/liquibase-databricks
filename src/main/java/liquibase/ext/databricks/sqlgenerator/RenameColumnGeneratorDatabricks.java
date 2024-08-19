@@ -12,8 +12,8 @@ import liquibase.sqlgenerator.SqlGeneratorChain;
 import liquibase.statement.core.RenameColumnStatement;
 import liquibase.structure.core.Column;
 import liquibase.structure.core.Table;
-import liquibase.util.StringUtil;
 import liquibase.sqlgenerator.core.RenameColumnGenerator;
+import org.apache.commons.lang3.StringUtils;
 
 public class RenameColumnGeneratorDatabricks extends RenameColumnGenerator {
 
@@ -24,7 +24,7 @@ public class RenameColumnGeneratorDatabricks extends RenameColumnGenerator {
 
     @Override
     public int getPriority() {
-        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
+        return PRIORITY_DATABASE;
     }
 
 
@@ -36,7 +36,7 @@ public class RenameColumnGeneratorDatabricks extends RenameColumnGenerator {
         validationErrors.checkRequiredField("newColumnName", renameColumnStatement.getNewColumnName());
 
         if (database instanceof MySQLDatabase) {
-            validationErrors.checkRequiredField("columnDataType", StringUtil.trimToNull(renameColumnStatement.getColumnDataType()));
+            validationErrors.checkRequiredField("columnDataType", StringUtils.trimToNull(renameColumnStatement.getColumnDataType()));
         }
 
         return validationErrors;

@@ -12,7 +12,8 @@ import liquibase.servicelocator.PrioritizedService;
         name = "double",
         minParameters = 0,
         maxParameters = 0,
-        priority = DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE
+        aliases = {"java.sql.Types.DOUBLE", "java.lang.Double"},
+        priority = PrioritizedService.PRIORITY_DATABASE
 )
 public class DoubleDatatypeDatabricks extends LiquibaseDataType {
 
@@ -39,10 +40,6 @@ public class DoubleDatatypeDatabricks extends LiquibaseDataType {
     }
 
     @Override
-    public int getPriority() {
-        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
-    }
-
     public LoadDataChange.LOAD_DATA_TYPE getLoadTypeName() {
         return LoadDataChange.LOAD_DATA_TYPE.NUMERIC;
     }

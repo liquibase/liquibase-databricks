@@ -6,13 +6,15 @@ import liquibase.datatype.DataTypeInfo;
 import liquibase.datatype.DatabaseDataType;
 import liquibase.datatype.LiquibaseDataType;
 import liquibase.ext.databricks.database.DatabricksDatabase;
+import liquibase.servicelocator.PrioritizedService;
 
 
 @DataTypeInfo(
         name = "int",
         minParameters = 0,
         maxParameters = 0,
-        priority = DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE
+        aliases = {"integer", "java.sql.Types.INTEGER", "java.lang.Integer"},
+        priority = PrioritizedService.PRIORITY_DATABASE
 )
 public class IntegerDatatypeDatabricks extends LiquibaseDataType {
     public IntegerDatatypeDatabricks() {
@@ -37,6 +39,7 @@ public class IntegerDatatypeDatabricks extends LiquibaseDataType {
 
     }
 
+    @Override
     public LoadDataChange.LOAD_DATA_TYPE getLoadTypeName() {
         return LoadDataChange.LOAD_DATA_TYPE.NUMERIC;
     }

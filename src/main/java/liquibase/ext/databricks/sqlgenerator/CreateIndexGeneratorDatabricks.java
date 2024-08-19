@@ -23,6 +23,7 @@ Only supported on delta 3.0 + and DBR 13.2+ and DBSQL
 
 
  */
+//TODO not used - figure out -fix or delete
 public class CreateIndexGeneratorDatabricks extends CreateIndexGenerator {
 
     @Override
@@ -32,7 +33,7 @@ public class CreateIndexGeneratorDatabricks extends CreateIndexGenerator {
 
     @Override
     public int getPriority() {
-        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
+        return PRIORITY_DATABASE;
     }
 
 

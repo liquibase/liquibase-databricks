@@ -18,8 +18,6 @@ import java.util.*;
 
 public class DatabricksDatabase extends AbstractJdbcDatabase {
 
-
-    public static final int DATABRICKS_PRIORITY_DATABASE = 1515;
     // define env variables for database
     public static final String PRODUCT_NAME = "databricks";
     // Set default catalog - must be unity Catalog Enabled
@@ -30,7 +28,7 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
     private Set<String> systemTablesAndViews = new HashSet<>();
 
     //Define data type names enabled for auto-increment columns - currently only BIGINT
-    public static final List<String> VALID_AUTO_INCREMENT_COLUMN_TYPE_NAMES = Collections.unmodifiableList(Arrays.asList("BIGINT"));
+    public static final List<String> VALID_AUTO_INCREMENT_COLUMN_TYPE_NAMES = Collections.singletonList("BIGINT");
 
     public DatabricksDatabase() {
         super.setCurrentDateTimeFunction("current_timestamp()");
@@ -92,7 +90,7 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
 
     @Override
     public int getPriority() {
-        return DATABRICKS_PRIORITY_DATABASE;
+        return PRIORITY_DATABASE;
     }
 
     @Override
@@ -132,6 +130,11 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
 
     @Override
     public boolean supportsSequences() { return false; }
+
+    @Override
+    public boolean supportsDatabaseChangeLogHistory() {
+        return true;
+    }
 
     @Override
     public String getAutoIncrementClause(final BigInteger startWith, final BigInteger incrementBy, final String generationType, final Boolean defaultOnNull) {
