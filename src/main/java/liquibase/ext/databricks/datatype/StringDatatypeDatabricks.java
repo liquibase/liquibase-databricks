@@ -6,6 +6,8 @@ import liquibase.datatype.DatabaseDataType;
 import liquibase.datatype.core.VarcharType;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.servicelocator.PrioritizedService;
+import lombok.Getter;
+import lombok.Setter;
 
 @DataTypeInfo(
         name = "string",
@@ -15,6 +17,10 @@ import liquibase.servicelocator.PrioritizedService;
         aliases = {"clob", "java.lang.String"}
 )
 public class StringDatatypeDatabricks extends VarcharType {
+
+    @Getter
+    @Setter
+    private boolean autoIncrement;
 
     @Override
     public DatabaseDataType toDatabaseDataType(Database database) {

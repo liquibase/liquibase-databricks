@@ -3,6 +3,7 @@ liquibase.ext.databricks.datatype.ArrayStringDataTypeDatabricks
 liquibase.ext.databricks.datatype.BigintDatatypeDatabricks
 liquibase.ext.databricks.datatype.BinaryDataTypeDatabricks
 liquibase.ext.databricks.datatype.BooleanDatatypeDatabricks
+liquibase.ext.databricks.datatype.DateDatatypeDatabricks
 liquibase.ext.databricks.datatype.DatetimeDatatypeDatabricks
 liquibase.ext.databricks.datatype.DoubleDatatypeDatabricks
 liquibase.ext.databricks.datatype.FloatDatatypeDatabricks
