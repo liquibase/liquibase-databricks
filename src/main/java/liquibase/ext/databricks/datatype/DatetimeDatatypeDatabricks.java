@@ -6,8 +6,6 @@ import liquibase.datatype.DatabaseDataType;
 import liquibase.datatype.core.DateTimeType;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.servicelocator.PrioritizedService;
-import lombok.Getter;
-import lombok.Setter;
 
 @DataTypeInfo(
         name = "timestamp",
@@ -18,9 +16,6 @@ import lombok.Setter;
 )
 public class DatetimeDatatypeDatabricks extends DateTimeType {
 
-    @Getter
-    @Setter
-    private boolean autoIncrement;
 
     @Override
     public DatabaseDataType toDatabaseDataType(Database database) {

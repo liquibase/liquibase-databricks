@@ -5,8 +5,6 @@ import liquibase.datatype.DataTypeInfo;
 import liquibase.datatype.core.DateType;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.servicelocator.PrioritizedService;
-import lombok.Getter;
-import lombok.Setter;
 
 @DataTypeInfo(
         name = "date",
@@ -16,10 +14,6 @@ import lombok.Setter;
         priority = PrioritizedService.PRIORITY_DATABASE
 )
 public class DateDatatypeDatabricks extends DateType {
-
-    @Getter
-    @Setter
-    private boolean autoIncrement;
 
     @Override
     public boolean supports(Database database) {
