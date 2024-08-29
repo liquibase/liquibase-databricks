@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: your.name
+      changes:
+        - createTable:
+            tableName: test_table_clustered_new
+            columns:
+              - column:
+                  name: test_id
+                  type: int
+              - column:
+                  name: test_new
+                  type: int
+            clusterColumns: test_id, test_new
