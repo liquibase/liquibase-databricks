@@ -27,6 +27,40 @@
           }
         ]
       }
+    },
+    {
+      "changeSet":{
+        "id": 2,
+        "author":"your.name",
+        "changes":[
+          {
+            "alterCluster": {
+              "tableName": "test_table_clustered_new",
+              "columns": [
+                {
+                  "column": {
+                    "name": "test_id"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "changeSet": {
+        "id": 3,
+        "author": "your.name",
+        "changes": [
+          {
+            "dropColumn": {
+              "columnName": "test_new",
+              "tableName": "test_table_clustered_new"
+            }
+          }
+        ]
+      }
     }
   ]
 }
