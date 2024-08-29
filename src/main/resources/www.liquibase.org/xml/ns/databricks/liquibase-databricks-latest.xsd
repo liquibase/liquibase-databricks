@@ -81,4 +81,7 @@
             <xsd:enumeration value="true"/>
         </xsd:restriction>
     </xsd:simpleType>
+
+    <xsd:element name="clusterColumns" type="xsd:string"/>
+
 </xsd:schema>

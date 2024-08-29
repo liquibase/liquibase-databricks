@@ -1,0 +1,1 @@
+CREATE TABLE main.liquibase_harness_test_ds.test_table_clustered_new (test_id INT NOT NULL, test_new INT, CONSTRAINT PK_TEST_TABLE_CLUSTERED_NEW PRIMARY KEY (test_id)) USING delta TBLPROPERTIES('delta.feature.allowColumnDefaults' = 'supported', 'delta.columnMapping.mode' = 'name', 'delta.enableDeletionVectors' = true) CLUSTER BY (test_id)

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:databricks="http://www.liquibase.org/xml/ns/databricks"
+
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+            http://www.liquibase.org/xml/ns/databricks
+            http://www.liquibase.org/xml/ns/databricks/liquibase-databricks-latest.xsd">
+
+    <changeSet id="1" author="as">
+        <createTable tableName="test_table_clustered_new" >
+            <column name="test_id" type="int" >
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="test_new" type="int">
+            </column>
+            <databricks:clusterColumns>test_id</databricks:clusterColumns>
+        </createTable>
+        <rollback>
+            <dropTable tableName="test_table_clustered_new"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
