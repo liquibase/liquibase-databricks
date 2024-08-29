@@ -25,6 +25,13 @@
               "clusterColumns": "test_id,test_new"
             }
           }
+        ],
+        "rollback": [
+          {
+            "dropTable": {
+              "tableName": "test_table_clustered_new"
+            }
+          }
         ]
       }
     },
@@ -45,6 +52,12 @@
               ]
             }
           }
+        ],
+        "rollback": [
+          {
+            "empty": {
+            }
+          }
         ]
       }
     },
@@ -57,6 +70,12 @@
             "dropColumn": {
               "columnName": "test_new",
               "tableName": "test_table_clustered_new"
+            }
+          }
+        ],
+        "rollback": [
+          {
+            "empty": {
             }
           }
         ]
