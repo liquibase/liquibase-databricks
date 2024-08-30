@@ -14,7 +14,7 @@ public class ArrayStringDataTypeDatabricks extends LiquibaseDataType {
     @Override
     public DatabaseDataType toDatabaseDataType(Database database) {
         if (database instanceof DatabricksDatabase) {
-            return new DatabaseDataType("ARARY<STRING>");
+            return new DatabaseDataType("ARRAY<STRING>");
         }
         return super.toDatabaseDataType(database);
     }
