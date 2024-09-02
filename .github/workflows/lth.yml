@@ -41,7 +41,9 @@ jobs:
       - run: terraform plan
         working-directory: src/test/terraform
 
-      - run: terraform apply -auto-approve
+      - run: |
+          terraform taint databricks_sql_endpoint.this && terraform taint databricks_schema.test_harness
+          terraform apply -auto-approve
         working-directory: src/test/terraform
 
       - name: Collect Databricks Config
