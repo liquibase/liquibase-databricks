@@ -42,8 +42,8 @@ jobs:
         working-directory: src/test/terraform
 
       - run: |
-          terraform import databricks_schema.test_harness main.liquibase_harness_test_ds
-          terraform taint databricks_schema.test_harness
+          terraform import databricks_schema.test_harness main.liquibase_harness_test_ds || true
+          terraform taint databricks_schema.test_harness || true
           terraform apply -auto-approve
         working-directory: src/test/terraform
 
