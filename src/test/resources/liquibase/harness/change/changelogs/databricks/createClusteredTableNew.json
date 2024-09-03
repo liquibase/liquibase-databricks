@@ -1,0 +1,85 @@
+{
+  "databaseChangeLog": [
+    {
+      "changeSet": {
+        "id": "1",
+        "author": "your.name",
+        "changes": [
+          {
+            "createTable": {
+              "tableName": "test_table_clustered_new",
+              "columns": [
+                {
+                  "column": {
+                    "name": "test_id",
+                    "type": "int"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "test_new",
+                    "type": "int"
+                  }
+                }
+              ],
+              "clusterColumns": "test_id,test_new"
+            }
+          }
+        ],
+        "rollback": [
+          {
+            "dropTable": {
+              "tableName": "test_table_clustered_new"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "changeSet":{
+        "id": 2,
+        "author":"your.name",
+        "changes":[
+          {
+            "alterCluster": {
+              "tableName": "test_table_clustered_new",
+              "columns": [
+                {
+                  "column": {
+                    "name": "test_id"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "rollback": [
+          {
+            "empty": {
+            }
+          }
+        ]
+      }
+    },
+    {
+      "changeSet": {
+        "id": 3,
+        "author": "your.name",
+        "changes": [
+          {
+            "dropColumn": {
+              "columnName": "test_new",
+              "tableName": "test_table_clustered_new"
+            }
+          }
+        ],
+        "rollback": [
+          {
+            "empty": {
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
