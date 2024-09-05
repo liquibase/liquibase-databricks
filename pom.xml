@@ -113,6 +113,12 @@
             <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.skyscreamer</groupId>
+            <artifactId>jsonassert</artifactId>
+            <version>${jsonassert.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -124,20 +130,6 @@
         </resources>
 
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.0</version>
-                <configuration>
-                    <includes>
-                        <!-- By default, only files ending in 'Test' will be included, so also include support for Spock style naming convention -->
-                        <include>**/*Test</include>
-                        <include>**/*Tests</include>
-                        <include>**/*Spec</include>
-                        <include>**/*Suite</include>
-                    </includes>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-maven-plugin</artifactId>
