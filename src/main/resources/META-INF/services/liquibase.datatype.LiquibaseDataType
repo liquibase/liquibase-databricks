@@ -1,5 +1,3 @@
-liquibase.ext.databricks.datatype.ArrayIntegerDataTypeDatabricks
-liquibase.ext.databricks.datatype.ArrayStringDataTypeDatabricks
 liquibase.ext.databricks.datatype.BigintDatatypeDatabricks
 liquibase.ext.databricks.datatype.BinaryDataTypeDatabricks
 liquibase.ext.databricks.datatype.BooleanDatatypeDatabricks
