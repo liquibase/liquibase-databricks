@@ -1,12 +1,13 @@
 package liquibase.ext.databricks.datatype;
 
-import liquibase.change.core.LoadDataChange;
 import liquibase.database.Database;
 import liquibase.datatype.DataTypeInfo;
 import liquibase.datatype.DatabaseDataType;
 import liquibase.datatype.core.IntType;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.servicelocator.PrioritizedService;
+import lombok.Getter;
+import lombok.Setter;
 
 
 @DataTypeInfo(
@@ -17,6 +18,10 @@ import liquibase.servicelocator.PrioritizedService;
         priority = PrioritizedService.PRIORITY_DATABASE
 )
 public class IntegerDatatypeDatabricks extends IntType {
+
+    @Getter
+    @Setter
+    private boolean autoIncrement;
 
     @Override
     public DatabaseDataType toDatabaseDataType(Database database) {
