@@ -1,0 +1,18 @@
+{
+  "databaseChangeLog": [
+    {
+      "changeSet": {
+        "id": "1",
+        "author": "your.name",
+        "changes": [
+          {
+            "optimizeTable": {
+              "tableName": "authors",
+              "zorderColumns": "id,first_name"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
