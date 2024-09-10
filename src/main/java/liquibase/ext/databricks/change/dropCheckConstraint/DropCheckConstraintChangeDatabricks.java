@@ -85,8 +85,6 @@ public class DropCheckConstraintChangeDatabricks extends AbstractChange {
         statement.setTableName(getTableName());
         statement.setConstraintName(getConstraintName());
 
-        SqlStatement[] builtStatement = new SqlStatement[] {statement};
-
-        return builtStatement;
+        return new SqlStatement[] {statement};
     }
 }

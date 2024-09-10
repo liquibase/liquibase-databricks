@@ -8,7 +8,6 @@ import liquibase.snapshot.DatabaseSnapshot;
 import liquibase.snapshot.InvalidExampleException;
 import liquibase.snapshot.SnapshotGenerator;
 import liquibase.snapshot.SnapshotGeneratorChain;
-import liquibase.snapshot.jvm.ForeignKeySnapshotGenerator;
 import liquibase.snapshot.jvm.IndexSnapshotGenerator;
 import liquibase.structure.DatabaseObject;
 

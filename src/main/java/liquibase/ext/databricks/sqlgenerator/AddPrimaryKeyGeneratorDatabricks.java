@@ -1,16 +1,14 @@
 package liquibase.ext.databricks.sqlgenerator;
 
-import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.database.Database;
 import liquibase.database.core.*;
 import liquibase.exception.ValidationErrors;
+import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.sql.Sql;
 import liquibase.sql.UnparsedSql;
 import liquibase.sqlgenerator.SqlGeneratorChain;
-import liquibase.statement.core.AddPrimaryKeyStatement;
-import liquibase.structure.core.PrimaryKey;
-import liquibase.structure.core.Table;
 import liquibase.sqlgenerator.core.AddPrimaryKeyGenerator;
+import liquibase.statement.core.AddPrimaryKeyStatement;
 
 public class AddPrimaryKeyGeneratorDatabricks extends AddPrimaryKeyGenerator {
 
@@ -53,16 +51,13 @@ public class AddPrimaryKeyGeneratorDatabricks extends AddPrimaryKeyGenerator {
     @Override
     public Sql[] generateSql(AddPrimaryKeyStatement statement, Database database, SqlGeneratorChain sqlGeneratorChain) {
         String sql;
-        sql = "ALTER TABLE " + database.escapeTableName(statement.getCatalogName(), statement.getSchemaName(), statement.getTableName()) + " ADD CONSTRAINT " + database.escapeConstraintName(statement.getConstraintName())+" PRIMARY KEY";
+        sql = "ALTER TABLE " + database.escapeTableName(statement.getCatalogName(), statement.getSchemaName(), statement.getTableName()) + " ADD CONSTRAINT " + database.escapeConstraintName(statement.getConstraintName()) + " PRIMARY KEY";
         sql += " (" + database.escapeColumnNameList(statement.getColumnNames()) + ")";
 
 
-        return new Sql[] {
+        return new Sql[]{
                 new UnparsedSql(sql, getAffectedPrimaryKey(statement))
         };
     }
 
-    protected PrimaryKey getAffectedPrimaryKey(AddPrimaryKeyStatement statement) {
-        return new PrimaryKey().setTable((Table) new Table().setName(statement.getTableName()).setSchema(statement.getCatalogName(), statement.getSchemaName()));
-    }
 }

@@ -2,7 +2,6 @@ package liquibase.ext.databricks.snapshot.jvm;
 
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.snapshot.*;
-import liquibase.snapshot.jvm.JdbcSnapshotGenerator;
 import liquibase.CatalogAndSchema;
 import liquibase.database.AbstractJdbcDatabase;
 import liquibase.database.Database;
@@ -14,8 +13,6 @@ import liquibase.database.core.SybaseDatabase;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.diff.compare.DatabaseObjectComparatorFactory;
 import liquibase.exception.DatabaseException;
-import liquibase.snapshot.jvm.SequenceSnapshotGenerator;
-import liquibase.snapshot.jvm.UniqueConstraintSnapshotGenerator;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.core.*;
 import java.sql.DatabaseMetaData;

@@ -4,7 +4,7 @@
                    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
     <changeSet id="1" author="codydavis">
-        <ext:optimizeTable tableName="authors" zorderColumns="id"/>
+        <ext:optimizeTable tableName="authors" zorderColumns="id,first_name"/>
     </changeSet>
 
 </databaseChangeLog>

@@ -1,10 +1,9 @@
 package liquibase.ext.databricks.datatype;
 
-import liquibase.change.core.LoadDataChange;
 import liquibase.database.Database;
 import liquibase.datatype.DataTypeInfo;
 import liquibase.datatype.DatabaseDataType;
-import liquibase.datatype.LiquibaseDataType;
+import liquibase.datatype.core.BooleanType;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.servicelocator.PrioritizedService;
 
@@ -15,21 +14,11 @@ import liquibase.servicelocator.PrioritizedService;
         aliases = {"java.sql.Types.BOOLEAN", "java.lang.Boolean", "bit", "bool"},
         priority = PrioritizedService.PRIORITY_DATABASE
 )
-public class BooleanDatatypeDatabricks extends LiquibaseDataType {
-
-    public BooleanDatatypeDatabricks() {
-        // empty constructor
-    }
-
-    @Override
-    public boolean supports(Database database) {
-        return database instanceof DatabricksDatabase;
-    }
+public class BooleanDatatypeDatabricks extends BooleanType {
 
     @Override
     public DatabaseDataType toDatabaseDataType(Database database) {
         if (database instanceof DatabricksDatabase) {
-
             DatabaseDataType type = new DatabaseDataType("BOOLEAN", this.getParameters());
             type.setType("BOOLEAN");
             return type;
@@ -40,7 +29,7 @@ public class BooleanDatatypeDatabricks extends LiquibaseDataType {
     }
 
     @Override
-    public LoadDataChange.LOAD_DATA_TYPE getLoadTypeName() {
-        return LoadDataChange.LOAD_DATA_TYPE.BOOLEAN;
+    public boolean supports(Database database) {
+        return database instanceof DatabricksDatabase;
     }
 }

@@ -1,17 +1,11 @@
 package liquibase.ext.databricks.change.addCheckConstraint;
 
-
 import liquibase.database.Database;
 import liquibase.exception.ValidationErrors;
-import liquibase.ext.databricks.change.addCheckConstraint.AddCheckConstraintStatementDatabricks;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.sqlgenerator.SqlGeneratorChain;
-import liquibase.database.Database;
-import liquibase.exception.ValidationErrors;
-import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.sql.Sql;
 import liquibase.sql.UnparsedSql;
-import liquibase.sqlgenerator.SqlGeneratorChain;
 import liquibase.sqlgenerator.core.AbstractSqlGenerator;
 
 public class AddCheckConstraintGeneratorDatabricks extends AbstractSqlGenerator<AddCheckConstraintStatementDatabricks> {
@@ -44,10 +38,7 @@ public class AddCheckConstraintGeneratorDatabricks extends AbstractSqlGenerator<
         // Constrinat Name
         sql.append(statement.getConstraintName());
 
-        sql.append(" CHECK (");
-
-        sql.append(statement.getConstraintBody().toString() + ")");
-
+        sql.append(" CHECK (").append(statement.getConstraintBody()).append(")");
 
         return new Sql[] { new UnparsedSql(sql.toString()) };
 
