@@ -15,8 +15,6 @@ import liquibase.servicelocator.PrioritizedService;
         aliases = {"clob", "java.lang.String"}
 )
 public class StringDatatypeDatabricks extends VarcharType {
-    public StringDatatypeDatabricks() {
-    }
 
     @Override
     public DatabaseDataType toDatabaseDataType(Database database) {

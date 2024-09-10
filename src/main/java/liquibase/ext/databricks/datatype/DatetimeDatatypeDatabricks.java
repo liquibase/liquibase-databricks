@@ -16,7 +16,6 @@ import liquibase.servicelocator.PrioritizedService;
 )
 public class DatetimeDatatypeDatabricks extends DateTimeType {
 
-
     @Override
     public DatabaseDataType toDatabaseDataType(Database database) {
         if (database instanceof DatabricksDatabase) {
