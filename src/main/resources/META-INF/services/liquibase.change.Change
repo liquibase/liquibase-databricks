@@ -1,4 +1,5 @@
 liquibase.ext.databricks.change.createTable.CreateTableChangeDatabricks
+liquibase.ext.databricks.change.createView.CreateViewChangeDatabricks
 liquibase.ext.databricks.change.optimizeTable.OptimizeTableChange
 liquibase.ext.databricks.change.analyzeTable.AnalyzeTableChange
 liquibase.ext.databricks.change.vacuumTable.VacuumTableChange
