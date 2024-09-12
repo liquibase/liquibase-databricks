@@ -35,39 +35,31 @@ public class CreateViewGeneratorDatabricks extends CreateViewGenerator {
 
         SqlParserFactory sqlParserFactory = Scope.getCurrentScope().getSingleton(SqlParserFactory.class);
         LiquibaseSqlParser sqlParser = sqlParserFactory.getSqlParser();
-        StringClauses viewDefinition = sqlParser.parse(statement.getSelectQuery(), true, true);
+        String viewDefinition = sqlParser.parse(statement.getSelectQuery(), true, true).toString();
 
         if (!statement.isFullDefinition()) {
-            viewDefinition
-                    .prepend(" ")
-                    .prepend("AS");
-            addTblProperties(statement, viewDefinition);
-            viewDefinition
-                    .prepend(" ")
-                    .prepend(database.escapeViewName(
-                            statement.getCatalogName(), statement.getSchemaName(), statement.getViewName()))
-                    .prepend(" ")
-                    .prepend("VIEW")
-                    .prepend(" ")
-                    .prepend("CREATE");
+            viewDefinition = "CREATE VIEW " +
+                    database.escapeViewName(statement.getCatalogName(), statement.getSchemaName(), statement.getViewName()) +
+                    addTblProperties(statement) +
+                    " AS " + viewDefinition;
         }
 
         if (statement.isReplaceIfExists() && !statement.getSelectQuery().toUpperCase().contains("OR REPLACE")) {
-            viewDefinition.replace("CREATE", "CREATE OR REPLACE");
+            viewDefinition = viewDefinition.replace("CREATE", "CREATE OR REPLACE");
         }
 
-        sql.add(new UnparsedSql(viewDefinition.toString(), getAffectedView(statement)));
+        sql.add(new UnparsedSql(viewDefinition, getAffectedView(statement)));
         return sql.toArray(EMPTY_SQL);
     }
 
-    private void addTblProperties(CreateViewStatement statement, StringClauses viewDefinition) {
+    private String addTblProperties(CreateViewStatement statement) {
         if (statement instanceof CreateViewStatementDatabricks) {
             CreateViewStatementDatabricks thisStatement = (CreateViewStatementDatabricks) statement;
 
             if (StringUtils.isNotEmpty(thisStatement.getTblProperties()) && !statement.getSelectQuery().toUpperCase().contains("TBLPROPERTIES")) {
-                viewDefinition.prepend(" ")
-                        .prepend("TBLPROPERTIES (" + thisStatement.getTblProperties() + ")");
+                return " TBLPROPERTIES (" + thisStatement.getTblProperties() + ")";
             }
         }
+        return "";
     }
 }
