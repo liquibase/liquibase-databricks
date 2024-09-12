@@ -27,15 +27,20 @@ class CreateViewGeneratorDatabricksTest extends Specification {
 
     def "creates a view with tblProperties"() {
         when:
-        def selectQuery = "SELECT SYSDATE FROM DUAL"
+        def selectQuery = "SELECT * FROM mytable"
         def tblProperties = "'external.location'='s3://mybucket/mytable','this.is.my.key'=12,'this.is.my.key2'=true"
-        def statement = new CreateViewStatementDatabricks("PUBLIC", "schema", "my_view", selectQuery, false)
+        def statement = new CreateViewStatementDatabricks("main", "schema", "my_view", selectQuery, false)
         statement.tblProperties = tblProperties
-        def sql = SqlGeneratorFactory.instance.generateSql(statement, new DatabricksDatabase())
+        def sqla = SqlGeneratorFactory.instance.generateSql(statement, new DatabricksDatabase())
 
         then:
-        sql.length == 1
-        sql[0].toString() == "CREATE VIEW PUBLIC.schema.my_view TBLPROPERTIES (" + tblProperties +  ") AS " + selectQuery + ";"
+        sqla.length == 1
+
+        when:
+        def sql = sqla[0].toString()
+
+        then:
+        sql == "CREATE VIEW main.schema.my_view TBLPROPERTIES (" + tblProperties +  ") AS " + selectQuery + ";"
     }
 
 }
