@@ -11,7 +11,6 @@ import liquibase.sql.UnparsedSql;
 import liquibase.sqlgenerator.SqlGeneratorChain;
 import liquibase.sqlgenerator.core.CreateViewGenerator;
 import liquibase.statement.core.CreateViewStatement;
-import liquibase.util.StringClauses;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
