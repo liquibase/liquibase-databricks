@@ -4,3 +4,5 @@ liquibase.ext.databricks.snapshot.jvm.ForeignKeySnapshotGeneratorDatabricks
 liquibase.ext.databricks.snapshot.jvm.UniqueConstraintSnapshotGeneratorDatabricks
 liquibase.ext.databricks.snapshot.jvm.IndexSnapshotGeneratorDatabricks
 liquibase.ext.databricks.snapshot.jvm.ViewSnapshotGeneratorDatabricks
+liquibase.ext.databricks.snapshot.jvm.ColumnSnapshotGeneratorDatabricks
+

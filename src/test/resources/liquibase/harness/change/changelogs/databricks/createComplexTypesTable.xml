@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="1" author="filipe">
+        <ext:createTable tableName="test_table_complex_types">
+            <column name="my_arrs" type="ARRAY&lt;STRING&gt;"/>
+            <column name="my_arrbi" type="ARRAY&lt;BIGINT&gt;"/>
+            <column name="my_map" type="MAP&lt;STRING, BIGINT&gt;"/>
+            <column name="my_struct" type="STRUCT&lt;FIELD1: STRING NOT NULL, FIELD2: INT&gt;"/>
+        </ext:createTable>
+    </changeSet>
+</databaseChangeLog>
