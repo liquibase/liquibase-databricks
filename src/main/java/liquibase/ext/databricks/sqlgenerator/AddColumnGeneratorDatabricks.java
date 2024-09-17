@@ -11,15 +11,13 @@ import liquibase.statement.ColumnConstraint;
 import liquibase.statement.DatabaseFunction;
 import liquibase.statement.NotNullConstraint;
 import liquibase.statement.core.AddColumnStatement;
-import liquibase.util.StringUtil;
-
-import java.util.Iterator;
+import org.apache.commons.lang3.StringUtils;
 
 public class AddColumnGeneratorDatabricks extends AddColumnGenerator {
 
     @Override
     public int getPriority() {
-        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
+        return PRIORITY_DATABASE;
     }
 
     @Override
@@ -46,13 +44,11 @@ public class AddColumnGeneratorDatabricks extends AddColumnGenerator {
 
         alterTable.append(this.getDefaultClauseForColumn(statement, database));
         if (!statement.isNullable()) {
-            Iterator<ColumnConstraint> var8 = statement.getConstraints().iterator();
 
-            while(var8.hasNext()) {
-                ColumnConstraint constraint = var8.next();
+            for (ColumnConstraint constraint : statement.getConstraints()) {
                 if (constraint instanceof NotNullConstraint) {
-                    NotNullConstraint notNullConstraint = (NotNullConstraint)constraint;
-                    if (StringUtil.isNotEmpty(notNullConstraint.getConstraintName())) {
+                    NotNullConstraint notNullConstraint = (NotNullConstraint) constraint;
+                    if (StringUtils.isNotEmpty(notNullConstraint.getConstraintName())) {
                         alterTable.append(" CONSTRAINT ").append(database.escapeConstraintName(notNullConstraint.getConstraintName()));
                         break;
                     }
@@ -75,7 +71,7 @@ public class AddColumnGeneratorDatabricks extends AddColumnGenerator {
         }
 
         if (database instanceof MySQLDatabase && statement.getRemarks() != null) {
-            alterTable.append(" COMMENT '").append(database.escapeStringForDatabase(StringUtil.trimToEmpty(statement.getRemarks()))).append("' ");
+            alterTable.append(" COMMENT '").append(database.escapeStringForDatabase(StringUtils.trimToEmpty(statement.getRemarks()))).append("' ");
         }
 
         if (statement.getAddBeforeColumn() != null && !statement.getAddBeforeColumn().isEmpty()) {

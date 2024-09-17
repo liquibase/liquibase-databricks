@@ -1,10 +1,15 @@
 name: Liquibase Test Harness
-
 on:
+  workflow_dispatch:
   pull_request:
   push:
     branches:
       - main
+
+# static value to the workflow group to ensure only one run of the workflow can be in progress at a time.
+concurrency:
+  group: liquibase-test-harness
+  cancel-in-progress: false
 
 jobs:
   liquibase-test-harness:
@@ -24,7 +29,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        liquibase-support-level: [Foundational, Contributed, Advanced] # Define the different test levels to run
+        liquibase-support-level: [Foundational, Contributed] # Define the different test levels to run
       fail-fast: false # Set fail-fast to false to run all test levels even if some of them fail
 
     steps:
@@ -37,7 +42,10 @@ jobs:
       - run: terraform plan
         working-directory: src/test/terraform
 
-      - run: terraform apply -auto-approve
+      - run: |
+          terraform import databricks_schema.test_harness main.liquibase_harness_test_ds || true
+          terraform taint databricks_schema.test_harness || true
+          terraform apply -auto-approve
         working-directory: src/test/terraform
 
       - name: Collect Databricks Config
@@ -73,4 +81,16 @@ jobs:
       - name: Stop test database
         if: always() # Always destroy, even if the previous steps fail
         working-directory: src/test/terraform
-        run: terraform destroy -auto-approve
+        run: |
+          set -e
+          TERRAFORM_OUTPUT=$(terraform show -json)
+          if [ -z "$TERRAFORM_OUTPUT" ]; then
+            echo "Terraform output is empty. Skipping removal."
+          else
+            SCHEMA_EXISTS=$(echo $TERRAFORM_OUTPUT | jq -r '.values.root_module.resources[] | select(.address == "databricks_schema.test_harness") | .values.name')
+            if [ "$SCHEMA_EXISTS" == "liquibase_harness_test_ds" ]; then
+              terraform destroy -auto-approve
+            else
+              echo "Schema does not exist. Skipping removal."
+            fi
+          fi

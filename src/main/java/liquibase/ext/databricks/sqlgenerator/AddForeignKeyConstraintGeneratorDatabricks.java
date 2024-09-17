@@ -23,7 +23,7 @@ public class AddForeignKeyConstraintGeneratorDatabricks extends AddForeignKeyCon
 
     @Override
     public int getPriority() {
-        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
+        return PRIORITY_DATABASE;
     }
 
     @Override
@@ -74,8 +74,4 @@ public class AddForeignKeyConstraintGeneratorDatabricks extends AddForeignKeyCon
         };
     }
 
-    @Override
-    protected ForeignKey getAffectedForeignKey(AddForeignKeyConstraintStatement statement) {
-        return new ForeignKey().setName(statement.getConstraintName()).setForeignKeyColumns(Column.listFromNames(statement.getBaseColumnNames())).setForeignKeyTable((Table) new Table().setName(statement.getBaseTableName()).setSchema(statement.getBaseTableCatalogName(), statement.getBaseTableSchemaName()));
-    }
 }

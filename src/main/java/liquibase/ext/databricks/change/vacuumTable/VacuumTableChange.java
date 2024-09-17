@@ -6,11 +6,17 @@ import liquibase.change.Change;
 import liquibase.change.ChangeMetaData;
 import liquibase.change.DatabaseChange;
 import liquibase.database.Database;
+import liquibase.ext.databricks.database.DatabricksDatabase;
+import liquibase.servicelocator.PrioritizedService;
 import liquibase.statement.SqlStatement;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.text.MessageFormat;
 
-@DatabaseChange(name = "vacuumTable", description = "Vacuum Old Files from Table", priority = ChangeMetaData.PRIORITY_DEFAULT + 200)
+@Setter
+@Getter
+@DatabaseChange(name = "vacuumTable", description = "Vacuum Old Files from Table", priority =  PrioritizedService.PRIORITY_DATABASE)
 public class VacuumTableChange extends AbstractChange {
 
     private String catalogName;
@@ -18,41 +24,14 @@ public class VacuumTableChange extends AbstractChange {
     private String tableName;
     private Integer retentionHours;
 
-    public String getCatalogName() {
-        return catalogName;
-    }
-
-    public void setCatalogName (String catalogName) {
-        this.catalogName = catalogName;
-    }
-
-    public String getTableName() {
-        return tableName;
-    }
-
-    public void setTableName (String tableName) {
-        this.tableName = tableName;
-    }
-
-    public String getSchemaName() {
-        return schemaName;
-    }
-
-    public void setSchemaName (String schemaName) {
-        this.schemaName = schemaName;
-    }
-
-    public Integer getRetentionHours () {
-        return this.retentionHours;
-    }
-
-    public void setRetentionHours (Integer retentionHours) {
-        this.retentionHours = retentionHours;
-    }
-
     @Override
     public String getConfirmationMessage() {
         return MessageFormat.format("{0}.{1}.{2} successfully vacuumed.", getCatalogName(), getSchemaName(), getTableName());
+    }
+
+    @Override
+    public boolean supports(Database database) {
+        return database instanceof DatabricksDatabase;
     }
 
     @Override
@@ -81,8 +60,6 @@ public class VacuumTableChange extends AbstractChange {
             statement.setRetentionHours(getRetentionHours());
         }
 
-        SqlStatement[] builtStatement = new SqlStatement[] {statement};
-
-        return builtStatement;
+        return new SqlStatement[] {statement};
     }
 }

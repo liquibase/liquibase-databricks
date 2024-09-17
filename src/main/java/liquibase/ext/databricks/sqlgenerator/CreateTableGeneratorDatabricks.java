@@ -11,7 +11,7 @@ import liquibase.sql.UnparsedSql;
 import liquibase.sqlgenerator.SqlGeneratorChain;
 import liquibase.statement.core.CreateTableStatement;
 import liquibase.structure.DatabaseObject;
-import liquibase.util.StringUtil;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 
@@ -20,7 +20,7 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
 
     @Override
     public int getPriority() {
-        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
+        return PRIORITY_DATABASE;
     }
 
     @Override
@@ -41,20 +41,24 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
     public Sql[] generateSql(CreateTableStatement statement, Database database, SqlGeneratorChain sqlGeneratorChain) {
 
         Sql[] sqls = super.generateSql(statement, database, sqlGeneratorChain);
-        String finalsql = sqls[0].toSql();
+        StringBuilder finalsql = new StringBuilder(sqls[0].toSql());
 
         if (statement instanceof CreateTableStatementDatabricks) {
             CreateTableStatementDatabricks thisStatement = (CreateTableStatementDatabricks) statement;
 
-            if ((!StringUtil.isEmpty(thisStatement.getTableFormat()))) {
-                finalsql += " USING " + thisStatement.getTableFormat();
+            if ((!StringUtils.isEmpty(thisStatement.getTableFormat()))) {
+                finalsql.append(" USING ").append(thisStatement.getTableFormat());
+            } else if (thisStatement.getExtendedTableProperties() != null && StringUtils.isNoneEmpty(thisStatement.getExtendedTableProperties().getTblProperties())) {
+                finalsql.append(" TBLPROPERTIES (").append(thisStatement.getExtendedTableProperties().getTblProperties()).append(")");
             } else {
-                finalsql += " USING delta TBLPROPERTIES('delta.feature.allowColumnDefaults' = 'supported', 'delta.columnMapping.mode' = 'name', 'delta.enableDeletionVectors' = true)";
+                finalsql.append(" USING delta TBLPROPERTIES('delta.feature.allowColumnDefaults' = 'supported', 'delta.columnMapping.mode' = 'name', 'delta.enableDeletionVectors' = true)");
             }
 
             // Databricks can decide to have tables live in a particular location. If null, Databricks will handle the location automatically in DBFS
-            if (!StringUtil.isEmpty(thisStatement.getTableLocation())) {
-                finalsql += " LOCATION '" + thisStatement.getTableLocation() + "'";
+            if (!StringUtils.isEmpty(thisStatement.getTableLocation())) {
+                finalsql.append(" LOCATION '").append(thisStatement.getTableLocation()).append("'");
+            } else if (thisStatement.getExtendedTableProperties() != null && StringUtils.isNotEmpty(thisStatement.getExtendedTableProperties().getTableLocation())) {
+                finalsql.append(" LOCATION '").append(thisStatement.getExtendedTableProperties().getTableLocation()).append("'");
             }
 
             ArrayList<String> clusterCols = thisStatement.getClusterColumns();
@@ -63,48 +67,43 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
 
             // If there are any cluster columns, add the clause
             // ONLY if there are NOT cluster columns, then do partitions, but never both.
-            if (clusterCols.size() >= 1 ) {
+            if (!clusterCols.isEmpty()) {
 
-                finalsql += " CLUSTER BY (";
+                finalsql.append(" CLUSTER BY (");
 
                 int val = 0;
                 while (clusterCols.size() > val) {
-                    finalsql += clusterCols.get(val);
+                    finalsql.append(clusterCols.get(val));
 
                     val +=1;
                     if (clusterCols.size() > val) {
-                        finalsql += ", ";
+                        finalsql.append(", ");
                     }
                     else {
-                        finalsql += ")";
+                        finalsql.append(")");
                     }
                 }
-            } else if (partitionCols.size() >=1) {
-                finalsql += " PARTITIONED BY (";
+            } else if (!partitionCols.isEmpty()) {
+                finalsql.append(" PARTITIONED BY (");
 
                 int val = 0;
                 while (partitionCols.size() > val) {
-                    finalsql += partitionCols.get(val);
+                    finalsql.append(partitionCols.get(val));
 
                     val +=1;
                     if (partitionCols.size() > val) {
-                        finalsql += ", ";
+                        finalsql.append(", ");
                     }
                     else {
-                        finalsql += ")";
+                        finalsql.append(")");
                     }
                 }
             }
 
 
-        } else {
-            // Not a Delta Table
-            finalsql += "";
         }
 
-        //}
-
-        sqls[0] = new UnparsedSql(finalsql, sqls[0].getAffectedDatabaseObjects().toArray(new DatabaseObject[0]));
+        sqls[0] = new UnparsedSql(finalsql.toString(), sqls[0].getAffectedDatabaseObjects().toArray(new DatabaseObject[0]));
 
         return sqls;
 

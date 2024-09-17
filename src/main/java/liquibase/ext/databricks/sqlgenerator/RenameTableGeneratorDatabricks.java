@@ -22,17 +22,9 @@ public class RenameTableGeneratorDatabricks extends RenameTableGenerator {
 
     @Override
     public int getPriority() {
-        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
+        return PRIORITY_DATABASE;
     }
 
-
-    @Override
-    public ValidationErrors validate(RenameTableStatement renameTableStatement, Database database, SqlGeneratorChain sqlGeneratorChain) {
-        ValidationErrors validationErrors = new ValidationErrors();
-        validationErrors.checkRequiredField("newTableName", renameTableStatement.getNewTableName());
-        validationErrors.checkRequiredField("oldTableName", renameTableStatement.getOldTableName());
-        return validationErrors;
-    }
 
     @Override
     public Sql[] generateSql(RenameTableStatement statement, Database database, SqlGeneratorChain sqlGeneratorChain) {
@@ -48,11 +40,4 @@ public class RenameTableGeneratorDatabricks extends RenameTableGenerator {
         };
     }
 
-    protected Relation getAffectedNewTable(RenameTableStatement statement) {
-        return new Table().setName(statement.getNewTableName()).setSchema(statement.getCatalogName(), statement.getSchemaName());
-    }
-
-    protected Relation getAffectedOldTable(RenameTableStatement statement) {
-        return new Table().setName(statement.getOldTableName()).setSchema(statement.getCatalogName(), statement.getSchemaName());
-    }
 }

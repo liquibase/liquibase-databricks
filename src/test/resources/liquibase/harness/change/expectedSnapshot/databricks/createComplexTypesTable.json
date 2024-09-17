@@ -1,0 +1,47 @@
+{
+  "snapshot": {
+    "objects": {
+      "liquibase.structure.core.Table": [
+        {
+          "table": {
+            "name": "test_table_complex_types"
+          }
+        }
+      ],
+      "liquibase.structure.core.Column": [
+        {
+          "column": {
+            "name": "my_arrs",
+            "type": {
+              "typeName": "ARRAY<STRING>"
+            }
+          }
+        },
+        {
+          "column": {
+            "name": "my_arrbi",
+            "type": {
+              "typeName": "ARRAY<BIGINT>"
+            }
+          }
+        },
+        {
+          "column": {
+            "name": "my_map",
+            "type": {
+              "typeName": "MAP<STRING, BIGINT>"
+            }
+          }
+        },
+        {
+          "column": {
+            "name": "my_struct",
+            "type": {
+              "typeName": "STRUCT<FIELD1: STRING NOT NULL, FIELD2: INT>"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

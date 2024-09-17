@@ -1,0 +1,63 @@
+{
+  "snapshot": {
+    "objects": {
+      "liquibase.structure.core.Table": [
+        {
+          "table": {
+            "name": "tableWithDefaultValues"
+          }
+        }
+      ],
+      "liquibase.structure.core.Column": [
+        {
+          "column": {
+            "name": "longcolumn",
+            "type": {
+              "typeName": "BIGINT"
+            }
+          }
+        },
+        {
+          "column": {
+            "name": "eventTime",
+            "type": {
+              "typeName": "TIMESTAMP"
+            }
+          }
+        },
+        {
+          "column": {
+            "name": "year",
+            "type": {
+              "typeName": "INT"
+            }
+          }
+        },
+        {
+          "column": {
+            "name": "eventDate",
+            "type": {
+              "typeName": "DATE"
+            }
+          }
+        },
+        {
+          "column": {
+            "name": "eventDescription",
+            "type": {
+              "typeName": "STRING"
+            }
+          }
+        },
+        {
+          "column": {
+            "name": "eventShortDescription",
+            "type": {
+              "typeName": "STRING"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

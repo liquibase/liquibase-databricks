@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: your.name
+      changes:
+        - createTable:
+            tableName: test_alter_table_properties
+            columns:
+              - column:
+                  name: test_id
+                  type: int
+  - changeSet:
+      id: 2
+      author: your.name
+      changes:
+        - alterTableProperties:
+            tableName: test_alter_table_properties
+            setExtendedTableProperties:
+              tblProperties: "'external.location'='s3://mybucket/mytable','this.is.my.key'=12,'this.is.my.key2'=true"
+      rollback:
+        - alterTableProperties:
+            tableName: test_alter_table_properties
+            unsetExtendedTableProperties:
+              tblProperties: "'external.location', 'this.is.my.key','this.is.my.key2'"

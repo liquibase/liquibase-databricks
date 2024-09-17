@@ -8,7 +8,6 @@ import liquibase.snapshot.DatabaseSnapshot;
 import liquibase.snapshot.InvalidExampleException;
 import liquibase.snapshot.SnapshotGenerator;
 import liquibase.snapshot.SnapshotGeneratorChain;
-import liquibase.snapshot.jvm.ForeignKeySnapshotGenerator;
 import liquibase.snapshot.jvm.IndexSnapshotGenerator;
 import liquibase.structure.DatabaseObject;
 
@@ -20,8 +19,8 @@ public class IndexSnapshotGeneratorDatabricks extends IndexSnapshotGenerator {
 
     @Override
     public int getPriority(Class<? extends DatabaseObject> objectType, Database database) {
-        if (super.getPriority(objectType, database) > 0 && database instanceof DatabricksDatabase) {
-            return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
+        if (database instanceof DatabricksDatabase) {
+            return super.getPriority(objectType, database) + PRIORITY_DATABASE;
         } else {
             return PRIORITY_NONE;
         }

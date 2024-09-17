@@ -10,6 +10,8 @@ import liquibase.statement.core.RawCallStatement;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.core.Catalog;
 import liquibase.structure.core.Schema;
+import org.apache.commons.lang3.StringUtils;
+import lombok.Setter;
 
 import java.math.BigInteger;
 import java.sql.ResultSet;
@@ -18,19 +20,18 @@ import java.util.*;
 
 public class DatabricksDatabase extends AbstractJdbcDatabase {
 
-
-    public static final int DATABRICKS_PRIORITY_DATABASE = 1515;
     // define env variables for database
     public static final String PRODUCT_NAME = "databricks";
     // Set default catalog - must be unity Catalog Enabled
 
+    @Setter
     private String systemSchema = "information_schema";
 
     // This is from the new INFORMATION_SCHEMA() database
     private Set<String> systemTablesAndViews = new HashSet<>();
 
     //Define data type names enabled for auto-increment columns - currently only BIGINT
-    public static final List<String> VALID_AUTO_INCREMENT_COLUMN_TYPE_NAMES = Collections.unmodifiableList(Arrays.asList("BIGINT"));
+    public static final List<String> VALID_AUTO_INCREMENT_COLUMN_TYPE_NAMES = Collections.singletonList("BIGINT");
 
     public DatabricksDatabase() {
         super.setCurrentDateTimeFunction("current_timestamp()");
@@ -92,7 +93,7 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
 
     @Override
     public int getPriority() {
-        return DATABRICKS_PRIORITY_DATABASE;
+        return PRIORITY_DATABASE;
     }
 
     @Override
@@ -112,7 +113,7 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
 
     @Override
     public boolean supportsInitiallyDeferrableColumns() {
-        return false;
+        return true;
     }
 
     @Override
@@ -134,37 +135,45 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
     public boolean supportsSequences() { return false; }
 
     @Override
+    public boolean supportsDatabaseChangeLogHistory() {
+        return true;
+    }
+
+    @Override
     public String getAutoIncrementClause(final BigInteger startWith, final BigInteger incrementBy, final String generationType, final Boolean defaultOnNull) {
         if (!this.supportsAutoIncrement()) {
             return "";
         }
 
         // generate an SQL:2003 STANDARD compliant auto increment clause by default
-
         String autoIncrementClause = getAutoIncrementClause(generationType, defaultOnNull);
 
         boolean generateStartWith = generateAutoIncrementStartWith(startWith);
         boolean generateIncrementBy = generateAutoIncrementBy(incrementBy);
 
         if (generateStartWith || generateIncrementBy) {
-            autoIncrementClause += getAutoIncrementOpening();
-            if (generateStartWith) {
-                autoIncrementClause += String.format(getAutoIncrementStartWithClause(), (startWith == null) ? defaultAutoIncrementStartWith : startWith);
-            }
-
-            if (generateIncrementBy) {
-                if (generateStartWith) { // for databricks there is no comma
-                    autoIncrementClause += " ";
-
-                }
-
-                autoIncrementClause += String.format(getAutoIncrementByClause(), (incrementBy == null) ? defaultAutoIncrementBy : incrementBy);
-            }
-
-            autoIncrementClause += getAutoIncrementClosing();
+            autoIncrementClause += buildAutoIncrementClause(startWith, incrementBy, generateStartWith, generateIncrementBy);
         }
 
         return autoIncrementClause;
+    }
+
+    private String buildAutoIncrementClause(final BigInteger startWith, final BigInteger incrementBy, boolean generateStartWith, boolean generateIncrementBy) {
+        StringBuilder clauseBuilder = new StringBuilder(getAutoIncrementOpening());
+
+        if (generateStartWith) {
+            clauseBuilder.append(String.format(getAutoIncrementStartWithClause(), (startWith == null) ? defaultAutoIncrementStartWith : startWith));
+        }
+
+        if (generateIncrementBy) {
+            if (generateStartWith) { // for databricks there is no comma
+                clauseBuilder.append(" ");
+            }
+            clauseBuilder.append(String.format(getAutoIncrementByClause(), (incrementBy == null) ? defaultAutoIncrementBy : incrementBy));
+        }
+
+        clauseBuilder.append(getAutoIncrementClosing());
+        return clauseBuilder.toString();
     }
 
     @Override
@@ -282,9 +291,6 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
     public void setDefaultCatalogName(final String catalogName) {
         this.defaultCatalogName = correctObjectName(catalogName, Catalog.class);
     }
-
-    public void setSystemSchema(String systemSchema) {this.systemSchema = systemSchema;}
-
 
     private Set<String> getDatabricksReservedWords() {
 

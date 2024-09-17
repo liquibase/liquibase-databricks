@@ -1,0 +1,1 @@
+CREATE TABLE main.liquibase_harness_test_ds.test_table_complex_types (my_arrs ARRAY<STRING>, my_arrbi ARRAY<BIGINT>, my_map MAP<STRING, BIGINT>, my_struct STRUCT<FIELD1: STRING NOT NULL, FIELD2: INT>) USING delta TBLPROPERTIES('delta.feature.allowColumnDefaults' = 'supported', 'delta.columnMapping.mode' = 'name', 'delta.enableDeletionVectors' = true)

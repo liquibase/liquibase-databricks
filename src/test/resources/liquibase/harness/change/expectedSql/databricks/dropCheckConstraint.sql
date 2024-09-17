@@ -1,2 +1,2 @@
-INVALID TEST
--- Databricks Supports Check Constraints, but Liquibase OSS does not have the change type to extend
+ALTER TABLE main.liquibase_harness_test_ds.posts ADD CONSTRAINT test_check_constraint CHECK (id > 0)
+ALTER TABLE main.liquibase_harness_test_ds.posts DROP CONSTRAINT test_check_constraint

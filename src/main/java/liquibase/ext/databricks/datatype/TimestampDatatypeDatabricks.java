@@ -3,32 +3,40 @@ package liquibase.ext.databricks.datatype;
 import liquibase.datatype.core.TimestampType;
 import liquibase.Scope;
 import liquibase.change.core.LoadDataChange;
+
 import java.util.Locale;
+
 import liquibase.GlobalConfiguration;
 import liquibase.database.Database;
 import liquibase.database.core.*;
 import liquibase.datatype.DataTypeInfo;
 import liquibase.datatype.DatabaseDataType;
 import liquibase.exception.DatabaseIncapableOfOperation;
-import liquibase.util.StringUtil;
+import liquibase.servicelocator.PrioritizedService;
 import liquibase.util.grammar.ParseException;
 import liquibase.ext.databricks.database.DatabricksDatabase;
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Data type support for TIMESTAMP data types in various DBMS. All DBMS are at least expected to support the
  * year, month, day, hour, minute and second parts. Optionally, fractional seconds and time zone information can be
  * specified as well.
  */
-@DataTypeInfo(name = "timestamp", aliases = {"java.sql.Types.TIMESTAMP", "java.sql.Types.TIMESTAMP_WITH_TIMEZONE", "java.sql.Timestamp", "timestamptz"}, minParameters = 0, maxParameters = 0, priority = DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE)
+
+//TODO refactor to simplify this class
+@DataTypeInfo(name = "timestamp", aliases = {"java.sql.Types.TIMESTAMP", "java.sql.Types.TIMESTAMP_WITH_TIMEZONE", "java.sql.Timestamp", "timestamptz"},
+        minParameters = 0, maxParameters = 0, priority = PrioritizedService.PRIORITY_DATABASE)
 public class TimestampDatatypeDatabricks extends TimestampType {
 
     /**
      * Returns a DBMS-specific String representation of this TimestampType for use in SQL statements.
+     *
      * @param database the database for which the String must be generated
      * @return a String with the DBMS-specific type specification
      */
     @Override
     public DatabaseDataType toDatabaseDataType(Database database) {
-        String originalDefinition = StringUtil.trimToEmpty(getRawDefinition());
+        String originalDefinition = StringUtils.trimToEmpty(getRawDefinition());
         // If a fractional precision is given, check is the DBMS supports the length
         if (getParameters().length > 0) {
             Integer desiredLength = null;
@@ -56,41 +64,6 @@ public class TimestampDatatypeDatabricks extends TimestampType {
                     );
                 }
             }
-        }
-
-        if (database instanceof MySQLDatabase) {
-            if (originalDefinition.contains(" ") || originalDefinition.contains("(")) {
-                return new DatabaseDataType(getRawDefinition());
-            }
-            return super.toDatabaseDataType(database);
-        }
-        if (database instanceof MSSQLDatabase) {
-            if (Boolean.TRUE.equals(!GlobalConfiguration.CONVERT_DATA_TYPES.getCurrentValue())
-                    && originalDefinition.toLowerCase(Locale.US).startsWith("timestamp")) {
-                return new DatabaseDataType(database.escapeDataTypeName("timestamp"));
-            }
-            Object[] parameters = getParameters();
-            if (parameters.length >= 1) {
-                final int paramValue = Integer.parseInt(parameters[0].toString());
-                // If the scale for datetime2 is the database default anyway, omit it.
-                // If the scale is 8, omit it since it's not a valid value for datetime2
-                if (paramValue > 7 || paramValue == (database.getDefaultScaleForNativeDataType("datetime2"))) {
-                    parameters = new Object[0];
-
-                }
-
-            }
-            return new DatabaseDataType(database.escapeDataTypeName("datetime2"), parameters);
-        }
-        if (database instanceof SybaseDatabase) {
-            return new DatabaseDataType(database.escapeDataTypeName("datetime"));
-        }
-        if (database instanceof AbstractDb2Database) {
-            Object[] parameters = getParameters();
-            if ((parameters != null) && (parameters.length > 1)) {
-                parameters = new Object[] {parameters[1]};
-            }
-            return new DatabaseDataType(database.escapeDataTypeName("timestamp"), parameters);
         }
 
         /*
@@ -121,7 +94,7 @@ public class TimestampDatatypeDatabricks extends TimestampType {
                 fractionalDigits = maxFractionalDigits;
             }
             // Do not return parameter p for Databricks
-            type =  new DatabaseDataType("TIMESTAMP");
+            type = new DatabaseDataType("TIMESTAMP");
         } else {
             type = new DatabaseDataType("TIMESTAMP");
         }
@@ -149,7 +122,7 @@ public class TimestampDatatypeDatabricks extends TimestampType {
                 || database instanceof OracleDatabase)
                 || database instanceof H2Database
                 || database instanceof HsqlDatabase
-                || database instanceof SybaseASADatabase){
+                || database instanceof SybaseASADatabase) {
             String additionalInformation = this.getAdditionalInformation();
 
             if (additionalInformation != null) {
@@ -158,21 +131,7 @@ public class TimestampDatatypeDatabricks extends TimestampType {
                         && additionInformation.toUpperCase(Locale.US).contains("TIMEZONE")) {
                     additionalInformation = additionInformation.toUpperCase(Locale.US).replace("TIMEZONE", "TIME ZONE");
                 }
-                // CORE-3229 Oracle 11g doesn't support WITHOUT clause in TIMESTAMP data type
-                if ((database instanceof OracleDatabase) && additionInformation.startsWith("WITHOUT")) {
-                    // https://docs.oracle.com/cd/B19306_01/server.102/b14225/ch4datetime.htm#sthref389
-                    additionalInformation = null;
-                }
 
-                if ((database instanceof H2Database) && additionInformation.startsWith("WITHOUT")) {
-                    // http://www.h2database.com/html/datatypes.html
-                    additionalInformation = null;
-                }
-
-                if ((database instanceof SybaseASADatabase) && additionInformation.startsWith("WITHOUT")) {
-                    // https://help.sap.com/docs/SAP_SQL_Anywhere/93079d4ba8e44920ae63ffb4def91f5b/81fe3e6b6ce2101487d8acce02f6aba5.html
-                    additionalInformation = null;
-                }
             }
 
             type.addAdditionalInformation(additionalInformation);
@@ -183,15 +142,7 @@ public class TimestampDatatypeDatabricks extends TimestampType {
     }
 
     @Override
-    public int getPriority() {
-        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
+    public boolean supports(Database database) {
+        return database instanceof DatabricksDatabase;
     }
-
-
-    @Override
-    public LoadDataChange.LOAD_DATA_TYPE getLoadTypeName() {
-        return LoadDataChange.LOAD_DATA_TYPE.DATE;
-    }
-
-
 }

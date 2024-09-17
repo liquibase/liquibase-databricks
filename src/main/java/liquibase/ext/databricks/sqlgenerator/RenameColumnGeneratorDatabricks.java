@@ -1,19 +1,15 @@
 package liquibase.ext.databricks.sqlgenerator;
 
-import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.database.Database;
-import liquibase.database.core.*;
-import liquibase.datatype.DataTypeFactory;
-import liquibase.exception.DatabaseException;
+import liquibase.database.core.MySQLDatabase;
 import liquibase.exception.ValidationErrors;
+import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.sql.Sql;
 import liquibase.sql.UnparsedSql;
 import liquibase.sqlgenerator.SqlGeneratorChain;
-import liquibase.statement.core.RenameColumnStatement;
-import liquibase.structure.core.Column;
-import liquibase.structure.core.Table;
-import liquibase.util.StringUtil;
 import liquibase.sqlgenerator.core.RenameColumnGenerator;
+import liquibase.statement.core.RenameColumnStatement;
+import org.apache.commons.lang3.StringUtils;
 
 public class RenameColumnGeneratorDatabricks extends RenameColumnGenerator {
 
@@ -24,7 +20,7 @@ public class RenameColumnGeneratorDatabricks extends RenameColumnGenerator {
 
     @Override
     public int getPriority() {
-        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
+        return PRIORITY_DATABASE;
     }
 
 
@@ -36,7 +32,7 @@ public class RenameColumnGeneratorDatabricks extends RenameColumnGenerator {
         validationErrors.checkRequiredField("newColumnName", renameColumnStatement.getNewColumnName());
 
         if (database instanceof MySQLDatabase) {
-            validationErrors.checkRequiredField("columnDataType", StringUtil.trimToNull(renameColumnStatement.getColumnDataType()));
+            validationErrors.checkRequiredField("columnDataType", StringUtils.trimToNull(renameColumnStatement.getColumnDataType()));
         }
 
         return validationErrors;
@@ -53,11 +49,4 @@ public class RenameColumnGeneratorDatabricks extends RenameColumnGenerator {
         };
     }
 
-    protected Column getAffectedOldColumn(RenameColumnStatement statement) {
-        return new Column().setName(statement.getOldColumnName()).setRelation(new Table().setName(statement.getTableName()).setSchema(statement.getCatalogName(), statement.getSchemaName()));
-    }
-
-    protected Column getAffectedNewColumn(RenameColumnStatement statement) {
-        return new Column().setName(statement.getNewColumnName()).setRelation(new Table().setName(statement.getTableName()).setSchema(statement.getCatalogName(), statement.getSchemaName()));
-    }
 }

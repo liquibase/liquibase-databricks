@@ -22,20 +22,9 @@ public class RenameViewGeneratorDatabricks extends RenameViewGenerator {
 
     @Override
     public int getPriority() {
-        return DatabricksDatabase.DATABRICKS_PRIORITY_DATABASE;
+        return PRIORITY_DATABASE;
     }
 
-
-    @Override
-    public ValidationErrors validate(RenameViewStatement renameViewStatement, Database database, SqlGeneratorChain sqlGeneratorChain) {
-        ValidationErrors validationErrors = new ValidationErrors();
-        validationErrors.checkRequiredField("oldViewName", renameViewStatement.getOldViewName());
-        validationErrors.checkRequiredField("newViewName", renameViewStatement.getNewViewName());
-
-        validationErrors.checkDisallowedField("schemaName", renameViewStatement.getSchemaName(), database, OracleDatabase.class);
-
-        return validationErrors;
-    }
 
     @Override
     public Sql[] generateSql(RenameViewStatement statement, Database database, SqlGeneratorChain sqlGeneratorChain) {
@@ -52,11 +41,4 @@ public class RenameViewGeneratorDatabricks extends RenameViewGenerator {
         };
     }
 
-    protected Relation getAffectedNewView(RenameViewStatement statement) {
-        return new View().setName(statement.getNewViewName()).setSchema(statement.getCatalogName(), statement.getSchemaName());
-    }
-
-    protected Relation getAffectedOldView(RenameViewStatement statement) {
-        return new View().setName(statement.getOldViewName()).setSchema(statement.getCatalogName(), statement.getSchemaName());
-    }
 }

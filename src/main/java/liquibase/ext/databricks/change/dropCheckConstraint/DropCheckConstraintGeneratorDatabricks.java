@@ -35,7 +35,7 @@ public class DropCheckConstraintGeneratorDatabricks extends AbstractSqlGenerator
 
         sql.append(" DROP CONSTRAINT ");
 
-        // Constrinat Name
+        // Constraint Name
         sql.append(statement.getConstraintName());
 
         return new Sql[] { new UnparsedSql(sql.toString()) };

@@ -1,0 +1,1 @@
+CREATE TABLE test_table (test_column INT NULL, varcharColumn VARCHAR(25) NULL, intColumn INT NULL, dateColumn date NULL);
