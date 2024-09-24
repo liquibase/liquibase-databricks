@@ -4,13 +4,12 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-    <!--Changetype not supported. We need to override test-harness existing changelog in order to work for this suite-->
-    <changeSet id="1" author="codydavis">
-        <createTable tableName="test_table_index">
-            <column name="id" type="INT"/>
+    <changeSet id="1" author="mykhailo">
+        <createTable tableName="snapshot_test_table">
+            <column name="snapshot_test_column" type="INT"/>
         </createTable>
         <rollback>
-            <dropTable tableName="test_table_index"/>
+            <dropTable tableName="snapshot_test_table"/>
         </rollback>
     </changeSet>
 </databaseChangeLog>

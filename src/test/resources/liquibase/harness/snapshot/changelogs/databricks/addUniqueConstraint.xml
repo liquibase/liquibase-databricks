@@ -4,13 +4,13 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-    <!--    Unique constraints are not supported for Databrick. Remove test data for this changetype after refactoring of snapshot test-->
-    <changeSet id="1" author="cody">
-        <createTable tableName="test_table">
+    <!--Changetype not supported. We need to override test-harness existing changelog in order to work for this suite-->
+    <changeSet id="1" author="as">
+        <createTable tableName="test_table_unique">
             <column name="id" type="INT"/>
         </createTable>
         <rollback>
-            <dropTable tableName="test_table"/>
+            <dropTable tableName="test_table_unique"/>
         </rollback>
     </changeSet>
 </databaseChangeLog>

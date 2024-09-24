@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="1" author="as">
+        <createTable tableName="test_table">
+            <column name="id" type="INT">
+              <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="test_table"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="2" author="as">
+        <addPrimaryKey
+                columnNames="id"
+                constraintName="test_pk"
+                tableName="test_table"
+                validate="true"/>
+        <rollback>
+            <dropPrimaryKey tableName="test_table"
+                            constraintName="test_pk"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

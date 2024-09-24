@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="1" author="mykhailo">
+        <createTable tableName="view_table">
+            <column name="test_column" type="INT"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="view_table"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="2" author="mykhailo">
+        <createView viewName="test_view">
+            select test_column from main.liquibase_harness_test_ds.view_table
+        </createView>
+        <rollback>
+            <dropView viewName="test_view"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
