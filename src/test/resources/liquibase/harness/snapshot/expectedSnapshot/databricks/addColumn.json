@@ -19,6 +19,15 @@
           }
         },
         {
+           "column": {
+            "name": "stringColumn",
+             "nullable": true,
+            "type": {
+              "typeName": "STRING"
+            }
+          }
+        },
+        {
           "column": {
             "name": "varcharColumn",
             "nullable": true,
