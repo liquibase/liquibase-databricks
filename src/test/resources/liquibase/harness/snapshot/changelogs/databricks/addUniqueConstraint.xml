@@ -5,12 +5,12 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
     <!--Changetype not supported. We need to override test-harness existing changelog in order to work for this suite-->
-    <changeSet id="1" author="codydavis">
-        <createTable tableName="test_table_index">
+    <changeSet id="1" author="as">
+        <createTable tableName="test_table_unique">
             <column name="id" type="INT"/>
         </createTable>
         <rollback>
-            <dropTable tableName="test_table_index"/>
+            <dropTable tableName="test_table_unique"/>
         </rollback>
     </changeSet>
 </databaseChangeLog>

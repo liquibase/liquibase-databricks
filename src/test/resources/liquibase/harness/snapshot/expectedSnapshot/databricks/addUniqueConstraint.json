@@ -4,7 +4,7 @@
       "liquibase.structure.core.Table": [
         {
           "table": {
-            "name": "test_table"
+            "name": "test_table_unique"
           }
         }
       ]
