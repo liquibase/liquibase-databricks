@@ -1,1 +1,1 @@
-CREATE VIEW main.liquibase_harness_test_ds.test_view AS select id, first_name, last_name, email from authors
+CREATE VIEW main.liquibase_harness_test_ds.test_view TBLPROPERTIES ('external.location'='s3://mybucket/myview','this.is.my.key'=12,'this.is.my.key2'=true) AS select id, first_name, last_name, email from authors
