@@ -56,6 +56,19 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
             }
         }
         return table;
+
+//        String query = String.format("SHOW TBLPROPERTIES %s.%s.%s;", database.getDefaultCatalogName(), database.getDefaultSchemaName(), example.getName());
+//        List<Map<String, ?>> tablePropertiesResponse = Scope.getCurrentScope().getSingleton(ExecutorService.class)
+//                .getExecutor("jdbc", database).queryForList(new RawParameterizedSqlStatement(query));
+//        for (Map<String, ?> tableProperty : tablePropertiesResponse) {
+//            table.setAttribute((String) tableProperty.get("KEY"), tableProperty.get("VALUE"));
+//        }
+//        return table;
     }
+
+//    @Override
+//    public Class<? extends SnapshotGenerator>[] replaces() {
+//        return new Class[]{TableSnapshotGenerator.class};
+//    }
 
 }
