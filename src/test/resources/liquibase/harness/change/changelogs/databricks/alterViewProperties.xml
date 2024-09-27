@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:databricks="http://www.liquibase.org/xml/ns/databricks"
+
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+            http://www.liquibase.org/xml/ns/databricks
+            http://www.liquibase.org/xml/ns/databricks/liquibase-databricks-latest.xsd">
+
+    <changeSet id="1" author="as">
+        <databricks:createView viewName="test_alter_view_properties">
+            select id, first_name, last_name, email from authors
+        </databricks:createView>
+    </changeSet>
+
+    <changeSet id="2" author="as">
+        <databricks:alterViewProperties viewName="test_alter_view_properties">
+            <!-- setExtendedTableProperties in an alterViewProperties seems misleading -->
+            <databricks:setExtendedTableProperties tblProperties="'external.location'='s3://mybucket/mytable','this.is.my.key'=12,'this.is.my.key2'=true"/>
+        </databricks:alterViewProperties>
+        <rollback>
+            <databricks:alterViewProperties viewName="test_alter_view_properties">
+                <databricks:unsetExtendedTableProperties tblProperties="'external.location', 'this.is.my.key','this.is.my.key2'"/>
+            </databricks:alterViewProperties>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
