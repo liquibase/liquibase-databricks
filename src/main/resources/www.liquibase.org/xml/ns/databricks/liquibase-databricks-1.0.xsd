@@ -75,6 +75,20 @@
         </xsd:complexType>
     </xsd:element>
 
+    <xsd:element name="alterViewProperties">
+        <xsd:complexType>
+            <xsd:choice maxOccurs="1" minOccurs="1">
+                <xsd:sequence >
+                    <xsd:element ref="setExtendedTableProperties" maxOccurs="1" minOccurs="1"/>
+                </xsd:sequence>
+                <xsd:sequence >
+                    <xsd:element ref="unsetExtendedTableProperties" maxOccurs="1" minOccurs="1"/>
+                </xsd:sequence>
+            </xsd:choice>
+            <xsd:attribute name="viewName" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
     <xsd:element name="setExtendedTableProperties">
         <xsd:complexType>
             <xsd:attribute name="tblProperties" type="xsd:string"/>

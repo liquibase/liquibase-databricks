@@ -21,3 +21,4 @@ liquibase.ext.databricks.change.addCheckConstraint.AddCheckConstraintGeneratorDa
 liquibase.ext.databricks.change.dropCheckConstraint.DropCheckConstraintGeneratorDatabricks
 liquibase.ext.databricks.sqlgenerator.AlterTablePropertiesGeneratorDatabricks
 liquibase.ext.databricks.sqlgenerator.AlterClusterGeneratorDatabricks
+liquibase.ext.databricks.sqlgenerator.AlterViewPropertiesGeneratorDatabricks
