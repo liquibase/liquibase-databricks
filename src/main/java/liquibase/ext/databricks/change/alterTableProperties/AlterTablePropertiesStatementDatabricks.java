@@ -1,7 +1,6 @@
 package liquibase.ext.databricks.change.alterTableProperties;
 
 import liquibase.ext.databricks.change.AbstractAlterPropertiesStatementDatabricks;
-import liquibase.statement.AbstractSqlStatement;
 import lombok.Getter;
 import lombok.Setter;
 

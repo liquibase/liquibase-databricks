@@ -44,16 +44,12 @@ public abstract class AbstractAlterPropertiesChangeDatabricks extends AbstractCh
     protected abstract String getNoPropertiesErrorMessage();
 
     protected String applySubjectToErrorPattern(String subject) {
-        return MessageFormat.format("Alter %s Properties change require 'setExtendedTableProperties' or 'unsetExtendedTableProperties' element, please add at least one option.", capitalize(subject));
+        return MessageFormat.format("Alter {0} Properties change require 'setExtendedTableProperties' or 'unsetExtendedTableProperties' element, please add at least one option.", capitalize(subject));
     }
-
-    public abstract String getConfirmationMessage();
 
     protected String getConfirmationMessage(String elementName) {
         return MessageFormat.format("{0}.{1}.{2} successfully altered.", getCatalogName(), getSchemaName(), elementName);
     }
-
-    public abstract SqlStatement[] generateStatements(Database database);
 
     protected SqlStatement[] generateStatements(AbstractAlterPropertiesStatementDatabricks statement) {
         if (setExtendedTableProperties != null) {
