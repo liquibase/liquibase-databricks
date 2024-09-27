@@ -14,7 +14,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.databricks.client.jdbc42.internal.apache.commons.lang.StringUtils.capitalize;
 import static liquibase.statement.SqlStatement.EMPTY_SQL_STATEMENT;
 
 @Setter
@@ -44,7 +43,7 @@ public abstract class AbstractAlterPropertiesChangeDatabricks extends AbstractCh
     protected abstract String getNoPropertiesErrorMessage();
 
     protected String applySubjectToErrorPattern(String subject) {
-        return MessageFormat.format("Alter {0} Properties change require 'setExtendedTableProperties' or 'unsetExtendedTableProperties' element, please add at least one option.", capitalize(subject));
+        return MessageFormat.format("Alter {0} Properties change require 'setExtendedTableProperties' or 'unsetExtendedTableProperties' element, please add at least one option.", subject);
     }
 
     protected String getConfirmationMessage(String elementName) {
