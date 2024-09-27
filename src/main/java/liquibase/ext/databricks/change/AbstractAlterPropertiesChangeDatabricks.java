@@ -6,7 +6,6 @@ import liquibase.database.Database;
 import liquibase.exception.ValidationErrors;
 import liquibase.ext.databricks.change.alterTableProperties.SetExtendedTableProperties;
 import liquibase.ext.databricks.change.alterTableProperties.UnsetExtendedTableProperties;
-import liquibase.ext.databricks.change.alterViewProperties.AlterViewPropertiesStatementDatabricks;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.statement.SqlStatement;
 import lombok.Setter;
@@ -15,6 +14,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.databricks.client.jdbc42.internal.apache.commons.lang.StringUtils.capitalize;
 import static liquibase.statement.SqlStatement.EMPTY_SQL_STATEMENT;
 
 @Setter
@@ -24,11 +24,6 @@ public abstract class AbstractAlterPropertiesChangeDatabricks extends AbstractCh
     private String schemaName;
     private SetExtendedTableProperties setExtendedTableProperties;
     private UnsetExtendedTableProperties unsetExtendedTableProperties;
-    private final String elementName;
-
-    public AbstractAlterPropertiesChangeDatabricks (String elementName) {
-        this.elementName = elementName;
-    }
 
     @Override
     public boolean supports(Database database) {
@@ -48,15 +43,19 @@ public abstract class AbstractAlterPropertiesChangeDatabricks extends AbstractCh
 
     protected abstract String getNoPropertiesErrorMessage();
 
-    @Override
-    public String getConfirmationMessage() {
-        return MessageFormat.format("{0}.{1}.{2} successfully altered.", getCatalogName(), getSchemaName(), getElementName());
+    protected String applySubjectToErrorPattern(String subject) {
+        return MessageFormat.format("Alter %s Properties change require 'setExtendedTableProperties' or 'unsetExtendedTableProperties' element, please add at least one option.", capitalize(subject));
     }
 
-    @Override
-    public SqlStatement[] generateStatements(Database database) {
-        AlterViewPropertiesStatementDatabricks statement = new AlterViewPropertiesStatementDatabricks(getCatalogName(), getSchemaName(), getElementName());
+    public abstract String getConfirmationMessage();
 
+    protected String getConfirmationMessage(String elementName) {
+        return MessageFormat.format("{0}.{1}.{2} successfully altered.", getCatalogName(), getSchemaName(), elementName);
+    }
+
+    public abstract SqlStatement[] generateStatements(Database database);
+
+    protected SqlStatement[] generateStatements(AbstractAlterPropertiesStatementDatabricks statement) {
         if (setExtendedTableProperties != null) {
             statement.setSetExtendedTableProperties(setExtendedTableProperties);
         } else if (unsetExtendedTableProperties != null) {
@@ -76,10 +75,6 @@ public abstract class AbstractAlterPropertiesChangeDatabricks extends AbstractCh
     @DatabaseChangeProperty
     public String getSchemaName() {
         return schemaName;
-    }
-
-    public String getElementName() {
-        return elementName;
     }
 
     @DatabaseChangeProperty
