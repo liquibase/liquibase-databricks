@@ -4,8 +4,6 @@ import liquibase.change.DatabaseChange;
 import liquibase.change.DatabaseChangeProperty;
 import liquibase.database.Database;
 import liquibase.ext.databricks.change.AbstractAlterPropertiesChangeDatabricks;
-import liquibase.ext.databricks.change.AbstractAlterPropertiesStatementDatabricks;
-import liquibase.ext.databricks.change.alterViewProperties.AlterViewPropertiesStatementDatabricks;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.servicelocator.PrioritizedService;
 import liquibase.statement.SqlStatement;
@@ -15,7 +13,7 @@ import lombok.Setter;
 @DatabaseChange(name = "alterTableProperties", description = "Alter Table Properties", priority = PrioritizedService.PRIORITY_DATABASE + 500)
 public class AlterTablePropertiesChangeDatabricks extends AbstractAlterPropertiesChangeDatabricks {
 
-    private final static String CHANGE_TYPE_SUBJECT = "Table";
+    private static final String CHANGE_TYPE_SUBJECT = "Table";
     private String tableName;
 
     @Override

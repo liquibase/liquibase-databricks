@@ -15,7 +15,7 @@ public abstract class AbstractAlterPropertiesStatementDatabricks extends Abstrac
     private SetExtendedTableProperties setExtendedTableProperties;
     private UnsetExtendedTableProperties unsetExtendedTableProperties;
 
-    public AbstractAlterPropertiesStatementDatabricks(String catalogName, String schemaName) {
+    protected AbstractAlterPropertiesStatementDatabricks(String catalogName, String schemaName) {
         this.catalogName = catalogName;
         this.schemaName = schemaName;
     }

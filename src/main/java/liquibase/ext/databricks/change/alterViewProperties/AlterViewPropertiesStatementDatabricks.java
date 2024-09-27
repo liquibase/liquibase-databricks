@@ -1,9 +1,6 @@
 package liquibase.ext.databricks.change.alterViewProperties;
 
 import liquibase.ext.databricks.change.AbstractAlterPropertiesStatementDatabricks;
-import liquibase.ext.databricks.change.alterTableProperties.SetExtendedTableProperties;
-import liquibase.ext.databricks.change.alterTableProperties.UnsetExtendedTableProperties;
-import liquibase.statement.AbstractSqlStatement;
 import lombok.Getter;
 import lombok.Setter;
 
