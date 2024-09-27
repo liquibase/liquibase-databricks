@@ -10,7 +10,7 @@ import liquibase.statement.SqlStatement;
 import lombok.Setter;
 
 @Setter
-@DatabaseChange(name = "alterViewProperties", description = "Alter View Properties", priority = PrioritizedService.PRIORITY_DATABASE + 500)
+@DatabaseChange(name = "alterViewProperties", description = "Alter View Properties", priority = PrioritizedService.PRIORITY_DATABASE)
 public class AlterViewPropertiesChangeDatabricks extends AbstractAlterPropertiesChangeDatabricks {
 
     private static final String CHANGE_TYPE_SUBJECT = "View";
