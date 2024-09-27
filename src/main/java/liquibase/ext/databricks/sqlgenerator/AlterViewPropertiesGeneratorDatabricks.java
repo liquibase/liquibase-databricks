@@ -2,7 +2,6 @@ package liquibase.ext.databricks.sqlgenerator;
 
 import liquibase.database.Database;
 import liquibase.exception.ValidationErrors;
-import liquibase.ext.databricks.change.alterTableProperties.AlterTablePropertiesStatementDatabricks;
 import liquibase.ext.databricks.change.alterViewProperties.AlterViewPropertiesStatementDatabricks;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.sql.Sql;
