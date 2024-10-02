@@ -8,19 +8,19 @@ import liquibase.database.DatabaseConnection;
 import liquibase.exception.DatabaseException;
 import liquibase.executor.ExecutorService;
 import liquibase.ext.databricks.database.DatabricksConnection;
+import liquibase.ext.databricks.database.DatabricksDatabase;
+import liquibase.ext.databricks.structure.core.ViewDatabricks;
 import liquibase.snapshot.DatabaseSnapshot;
 import liquibase.snapshot.jvm.ViewSnapshotGenerator;
 import liquibase.statement.core.RawSqlStatement;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.core.Schema;
 import liquibase.structure.core.View;
+import org.apache.commons.lang3.StringUtils;
 
 import java.sql.ResultSet;
 import java.util.List;
 import java.util.Map;
-
-import liquibase.ext.databricks.database.DatabricksDatabase;
-import org.apache.commons.lang3.StringUtils;
 
 public class ViewSnapshotGeneratorDatabricks extends ViewSnapshotGenerator {
 
@@ -43,8 +43,6 @@ public class ViewSnapshotGeneratorDatabricks extends ViewSnapshotGenerator {
             Schema schema = example.getSchema();
             DatabaseConnection connection = database.getConnection();
 
-            CatalogAndSchema catalogAndSchema = (new CatalogAndSchema(schema.getCatalogName(), schema.getName())).customize(database);
-            String jdbcSchemaName = database.correctObjectName(((AbstractJdbcDatabase) database).getJdbcSchemaName(catalogAndSchema), Schema.class);
             String query = String.format("SELECT view_definition FROM %s.%s.VIEWS WHERE table_name='%s' AND table_schema='%s' AND table_catalog='%s';",
                     schema.getCatalogName(), database.getSystemSchema(), example.getName(), schema.getName(), schema.getCatalogName());
 
@@ -83,7 +81,8 @@ public class ViewSnapshotGeneratorDatabricks extends ViewSnapshotGenerator {
                 String rawCatalogName = schema.getCatalogName();
 
 
-                View view = (new View()).setName(this.cleanNameFromDatabase(rawViewName, database));
+                ViewDatabricks view = new ViewDatabricks();
+                view.setName(this.cleanNameFromDatabase(rawViewName, database));
                 CatalogAndSchema schemaFromJdbcInfo = ((AbstractJdbcDatabase) database).getSchemaFromJdbcInfo(rawCatalogName, rawSchemaName);
                 view.setSchema(new Schema(schemaFromJdbcInfo.getCatalogName(), schemaFromJdbcInfo.getSchemaName()));
 
@@ -105,6 +104,8 @@ public class ViewSnapshotGeneratorDatabricks extends ViewSnapshotGenerator {
                 }
 
                 view.setDefinition(definition);
+
+                view.setTblProperties("IMPLEMENT IT HERE");
 
                 return view;
             }
