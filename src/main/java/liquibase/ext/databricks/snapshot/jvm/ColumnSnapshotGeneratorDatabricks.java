@@ -1,28 +1,29 @@
 package liquibase.ext.databricks.snapshot.jvm;
 
-import liquibase.Scope;
 import liquibase.database.Database;
 import liquibase.exception.DatabaseException;
-import liquibase.executor.ExecutorService;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.snapshot.CachedRow;
-import liquibase.snapshot.DatabaseSnapshot;
+import liquibase.snapshot.SnapshotGenerator;
 import liquibase.snapshot.jvm.ColumnSnapshotGenerator;
-import liquibase.statement.core.RawParameterizedSqlStatement;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.core.Column;
 import liquibase.structure.core.DataType;
 
-import java.util.List;
-import java.util.Map;
 public class ColumnSnapshotGeneratorDatabricks extends ColumnSnapshotGenerator {
 
     @Override
     public int getPriority(Class<? extends DatabaseObject> objectType, Database database) {
-        if (database instanceof DatabricksDatabase)
-            return PRIORITY_DATABASE;
-        return PRIORITY_NONE;
+        if (database instanceof DatabricksDatabase) {
+            return super.getPriority(objectType, database) + PRIORITY_DATABASE;
+        } else {
+            return PRIORITY_NONE;
+        }
+    }
 
+    @Override
+    public Class<? extends SnapshotGenerator>[] replaces() {
+        return new Class[] { ColumnSnapshotGenerator.class };
     }
 
     /**
@@ -42,28 +43,4 @@ public class ColumnSnapshotGeneratorDatabricks extends ColumnSnapshotGenerator {
         }
         return super.readDataType(columnMetadataResultSet, column, database);
     }
-
-
-    @Override
-    protected DatabaseObject snapshotObject(DatabaseObject example, DatabaseSnapshot snapshot) throws DatabaseException {
-        if (example instanceof Column) {
-            Column column = (Column) super.snapshotObject(example, snapshot);
-            Database database = snapshot.getDatabase();
-
-            String query = String.format("SELECT column_default from %s.COLUMNS where table_name = '%s' AND table_schema='%s' AND column_name ='%s';",
-                    database.getSystemSchema(),
-                    column.getRelation().getName(),
-                    column.getRelation().getSchema().getName(),
-                    column.getName());
-            List<Map<String, ?>> tablePropertiesResponse = Scope.getCurrentScope().getSingleton(ExecutorService.class)
-                    .getExecutor("jdbc", database).queryForList(new RawParameterizedSqlStatement(query));
-            for (Map<String, ?> tableProperty : tablePropertiesResponse) {
-                column.setDefaultValue(tableProperty.get("COLUMN_DEFAULT"));
-            }
-            return column;
-        } else {
-            return example;
-        }
-    }
-
 }
