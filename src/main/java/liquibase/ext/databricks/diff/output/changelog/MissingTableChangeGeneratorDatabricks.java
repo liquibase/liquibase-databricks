@@ -56,7 +56,6 @@ public class MissingTableChangeGeneratorDatabricks extends MissingTableChangeGen
         return createTableChangeDatabricks;
     }
 
-    @Override
     protected CreateTableChange createCreateTableChange() {
         return new CreateTableChangeDatabricks();
     }
