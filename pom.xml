@@ -64,8 +64,8 @@
         <sonar.sources>src/main/java</sonar.sources>
         <sonar.tests>src/test</sonar.tests>
         <liquibase-test-harness.version>1.0.10</liquibase-test-harness.version>
-        <junit.version>5.11.0</junit.version>
-        <junit-platform.version>1.11.0</junit-platform.version>
+        <junit.version>5.11.2</junit.version>
+        <junit-platform.version>1.11.2</junit-platform.version>
         <jacoco.fileset.directory>target</jacoco.fileset.directory>
     </properties>
 
@@ -160,7 +160,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.10.0</version>
+                <version>3.10.1</version>
                 <configuration>
                     <attach>true</attach>
                     <author>false</author>
