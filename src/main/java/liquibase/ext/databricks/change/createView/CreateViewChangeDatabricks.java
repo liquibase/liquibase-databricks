@@ -5,6 +5,7 @@ import liquibase.change.DatabaseChangeProperty;
 import liquibase.change.core.CreateViewChange;
 import liquibase.database.Database;
 import liquibase.ext.databricks.database.DatabricksDatabase;
+import liquibase.ext.databricks.parser.NamespaceDetailsDatabricks;
 import liquibase.servicelocator.PrioritizedService;
 import liquibase.statement.core.CreateViewStatement;
 import lombok.Setter;
@@ -27,10 +28,14 @@ public class CreateViewChangeDatabricks extends CreateViewChange {
         return cvsd;
     }
 
-
     @DatabaseChangeProperty
     public String getTblProperties() {
         return tblProperties;
+    }
+
+    @Override
+    public String getSerializedObjectNamespace() {
+        return NamespaceDetailsDatabricks.DATABRICKS_NAMESPACE;
     }
 
 }
