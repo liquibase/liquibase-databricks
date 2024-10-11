@@ -16,10 +16,10 @@ import java.util.Map;
 
 public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
 
-    private final static String LOCATION = "Location";
-    private final static String TABLE_PROPERTIES = "Table Properties";
-    private final static String TBL_PROPERTIES = "tblProperties";
-    private final static String DETAILED_TABLE_INFORMATION_NODE = "# Detailed Table Information";
+    private static final String LOCATION = "Location";
+    private static final String TABLE_PROPERTIES = "Table Properties";
+    private static final String TBL_PROPERTIES = "tblProperties";
+    private static final String DETAILED_TABLE_INFORMATION_NODE = "# Detailed Table Information";
 
     @Override
     public int getPriority(Class<? extends DatabaseObject> objectType, Database database) {
