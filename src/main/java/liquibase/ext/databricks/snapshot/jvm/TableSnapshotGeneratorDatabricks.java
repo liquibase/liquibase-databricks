@@ -33,28 +33,29 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
     protected DatabaseObject snapshotObject(DatabaseObject example, DatabaseSnapshot snapshot) throws DatabaseException {
         Table table = (Table) super.snapshotObject(example, snapshot);
         Database database = snapshot.getDatabase();
-
-        String query = String.format("DESCRIBE TABLE EXTENDED %s.%s.%s;", database.getDefaultCatalogName(), database.getDefaultSchemaName(), example.getName());
-        List<Map<String, ?>> tablePropertiesResponse = Scope.getCurrentScope().getSingleton(ExecutorService.class)
-                .getExecutor("jdbc", database).queryForList(new RawParameterizedSqlStatement(query));
-        // DESCRIBE TABLE EXTENDED returns both columns and additional information.
-        // We need to make sure "Location" is not column in the table, but table location in s3
-        boolean detailedInformationNode = false;
-        for (Map<String, ?> tableProperty : tablePropertiesResponse) {
-            if (tableProperty.get("COL_NAME").equals(DETAILED_TABLE_INFORMATION_NODE)) {
-                detailedInformationNode = true;
-                continue;
-            }
-            if (detailedInformationNode && tableProperty.get("COL_NAME").equals(LOCATION)) {
-                table.setAttribute(LOCATION, tableProperty.get("DATA_TYPE"));
-            }
-            if (detailedInformationNode && tableProperty.get("COL_NAME").equals(TABLE_PROPERTIES)) {
-                String tblProperties = (String) tableProperty.get("DATA_TYPE");
-                table.setAttribute(TBL_PROPERTIES, tblProperties.substring(1, tblProperties.length() - 1));// remove starting and ending square brackets
+        if (table != null) {
+            String query = String.format("DESCRIBE TABLE EXTENDED %s.%s.%s;", database.getDefaultCatalogName(), database.getDefaultSchemaName(),
+                    example.getName());
+            List<Map<String, ?>> tablePropertiesResponse = Scope.getCurrentScope().getSingleton(ExecutorService.class)
+                    .getExecutor("jdbc", database).queryForList(new RawParameterizedSqlStatement(query));
+            // DESCRIBE TABLE EXTENDED returns both columns and additional information.
+            // We need to make sure "Location" is not column in the table, but table location in s3
+            boolean detailedInformationNode = false;
+            for (Map<String, ?> tableProperty : tablePropertiesResponse) {
+                if (tableProperty.get("COL_NAME").equals(DETAILED_TABLE_INFORMATION_NODE)) {
+                    detailedInformationNode = true;
+                    continue;
+                }
+                if (detailedInformationNode && tableProperty.get("COL_NAME").equals(LOCATION)) {
+                    table.setAttribute(LOCATION, tableProperty.get("DATA_TYPE"));
+                }
+                if (detailedInformationNode && tableProperty.get("COL_NAME").equals(TABLE_PROPERTIES)) {
+                    String tblProperties = (String) tableProperty.get("DATA_TYPE");
+                    table.setAttribute(TBL_PROPERTIES, tblProperties.substring(1, tblProperties.length() - 1));// remove starting and ending square brackets
+                }
             }
         }
         return table;
-
     }
 
 }
