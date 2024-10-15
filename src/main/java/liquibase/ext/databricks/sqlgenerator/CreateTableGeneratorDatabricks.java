@@ -17,6 +17,8 @@ import java.util.ArrayList;
 
 public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
 
+    private static final String CLUSTERING_INFORMATION_TBL_PROPERTY_START = "clusteringColumns=[[";
+
 
     @Override
     public int getPriority() {
@@ -49,7 +51,7 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
             if ((!StringUtils.isEmpty(thisStatement.getTableFormat()))) {
                 finalsql.append(" USING ").append(thisStatement.getTableFormat());
             } else if (thisStatement.getExtendedTableProperties() != null && StringUtils.isNoneEmpty(thisStatement.getExtendedTableProperties().getTblProperties())) {
-                finalsql.append(" TBLPROPERTIES (").append(thisStatement.getExtendedTableProperties().getTblProperties()).append(")");
+                finalsql.append(" TBLPROPERTIES (").append(avoidClusterProperties(thisStatement)).append(")");
             } else {
                 finalsql.append(" USING delta TBLPROPERTIES('delta.feature.allowColumnDefaults' = 'supported', 'delta.columnMapping.mode' = 'name', 'delta.enableDeletionVectors' = true)");
             }
@@ -107,6 +109,25 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
 
         return sqls;
 
+    }
+
+    /**
+     * While we are passing TBLPROPERTIES as raw string into create table statement, especially in cases of
+     * changelog generation we need to sanitize them from 'clusteringColumns' property, otherwise generated changelog
+     * will fail to execute.
+     * Parsing of tblProperties map as an actual Map structured collection should make this approach safer and easier.
+     * @param statement CreateTableStatementDatabricks containing tblProperties raw string
+     * @return tblProperties string without 'clusteringColumns' property if it was present, otherwise untouched
+     * tblProperties raw string.
+     * */
+    private String avoidClusterProperties(CreateTableStatementDatabricks statement) {
+        String tblProperties = statement.getExtendedTableProperties().getTblProperties();
+        if(tblProperties.contains(CLUSTERING_INFORMATION_TBL_PROPERTY_START)) {
+            int clusterColumnsStartIndex = tblProperties.indexOf(CLUSTERING_INFORMATION_TBL_PROPERTY_START);
+            String replaceString = tblProperties.substring(clusterColumnsStartIndex, tblProperties.indexOf("\"]],", clusterColumnsStartIndex) + 4);
+            return tblProperties.replace(replaceString, "");
+        }
+        return tblProperties;
     }
 
 }
