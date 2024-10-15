@@ -17,6 +17,8 @@ import java.util.Map;
 public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
 
     private static final String LOCATION = "Location";
+    private static final String TYPE = "Type";
+    private static final String EXTERNAL = "EXTERNAL";
     private static final String TABLE_PROPERTIES = "Table Properties";
     private static final String TBL_PROPERTIES = "tblProperties";
     private static final String DETAILED_TABLE_INFORMATION_NODE = "# Detailed Table Information";
@@ -41,12 +43,16 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
             // DESCRIBE TABLE EXTENDED returns both columns and additional information.
             // We need to make sure "Location" is not column in the table, but table location in s3
             boolean detailedInformationNode = false;
+            boolean externalLocation = false;
             for (Map<String, ?> tableProperty : tablePropertiesResponse) {
                 if (tableProperty.get("COL_NAME").equals(DETAILED_TABLE_INFORMATION_NODE)) {
                     detailedInformationNode = true;
                     continue;
                 }
-                if (detailedInformationNode && tableProperty.get("COL_NAME").equals(LOCATION)) {
+                if(detailedInformationNode && tableProperty.get("COL_NAME").equals(TYPE)) {
+                    externalLocation = ((String)tableProperty.get("DATA_TYPE")).equalsIgnoreCase(EXTERNAL);
+                }
+                if (detailedInformationNode && externalLocation && tableProperty.get("COL_NAME").equals(LOCATION)) {
                     table.setAttribute(LOCATION, tableProperty.get("DATA_TYPE"));
                 }
                 if (detailedInformationNode && tableProperty.get("COL_NAME").equals(TABLE_PROPERTIES)) {
@@ -57,5 +63,10 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
         }
         return table;
     }
+    //TODO another way of getting Location is query like
+    // select * from `system`.`information_schema`.`tables` where table_name = 'test_table_properties' AND table_schema='liquibase_harness_test_ds';
+    // get column 'table_type', if 'EXTERNAL' then
+    // Location = get column 'storage_path'
+    // cleanup this after approach of getting all properties is settled
 
 }
