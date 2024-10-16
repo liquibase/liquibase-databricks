@@ -31,8 +31,9 @@ public class MissingTableChangeGeneratorDatabricks extends MissingTableChangeGen
         if (changes == null || changes.length == 0) {
             return changes;
         }
+        //so far we intentionally omit tableLocation in generated changelog
         ExtendedTableProperties extendedTableProperties = new ExtendedTableProperties(
-                missingObject.getAttribute("Location", String.class),
+                null,
                 missingObject.getAttribute("tblProperties", String.class));
 
         changes[0] = getCreateTableChangeDatabricks(extendedTableProperties, changes);
