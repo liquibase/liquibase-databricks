@@ -17,8 +17,6 @@ import java.util.Map;
 public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
 
     private static final String LOCATION = "Location";
-    private static final String TYPE = "Type";
-    private static final String EXTERNAL = "EXTERNAL";
     private static final String TABLE_PROPERTIES = "Table Properties";
     private static final String TBL_PROPERTIES = "tblProperties";
     private static final String DETAILED_TABLE_INFORMATION_NODE = "# Detailed Table Information";
