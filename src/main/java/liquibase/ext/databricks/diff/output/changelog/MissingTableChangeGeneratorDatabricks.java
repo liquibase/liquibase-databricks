@@ -68,7 +68,7 @@ public class MissingTableChangeGeneratorDatabricks extends MissingTableChangeGen
     }
 
     private String sanitizeClusterColumns(String clusterColumnProperty) {
-        Pattern pattern = Pattern.compile("\\[|\\]|\\\"");
+        Pattern pattern = Pattern.compile("[\\[\\]\\\"]");
         return clusterColumnProperty.replaceAll(pattern.toString(), "");
     }
 }
