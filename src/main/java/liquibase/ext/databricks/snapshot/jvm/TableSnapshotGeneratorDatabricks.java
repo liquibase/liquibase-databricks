@@ -43,16 +43,12 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
             // DESCRIBE TABLE EXTENDED returns both columns and additional information.
             // We need to make sure "Location" is not column in the table, but table location in s3
             boolean detailedInformationNode = false;
-            boolean externalLocation = false;
             for (Map<String, ?> tableProperty : tablePropertiesResponse) {
                 if (tableProperty.get("COL_NAME").equals(DETAILED_TABLE_INFORMATION_NODE)) {
                     detailedInformationNode = true;
                     continue;
                 }
-                if(detailedInformationNode && tableProperty.get("COL_NAME").equals(TYPE)) {
-                    externalLocation = ((String)tableProperty.get("DATA_TYPE")).equalsIgnoreCase(EXTERNAL);
-                }
-                if (detailedInformationNode && externalLocation && tableProperty.get("COL_NAME").equals(LOCATION)) {
+                if (detailedInformationNode && tableProperty.get("COL_NAME").equals(LOCATION)) {
                     table.setAttribute(LOCATION, tableProperty.get("DATA_TYPE"));
                 }
                 if (detailedInformationNode && tableProperty.get("COL_NAME").equals(TABLE_PROPERTIES)) {
