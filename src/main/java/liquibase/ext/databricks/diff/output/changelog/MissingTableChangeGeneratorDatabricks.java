@@ -34,7 +34,7 @@ public class MissingTableChangeGeneratorDatabricks extends MissingTableChangeGen
         ExtendedTableProperties extendedTableProperties = new ExtendedTableProperties(
                 null,
                 missingObject.getAttribute("tblProperties", String.class));
-        String clusterColumns = missingObject.getAttribute("clusterColumns", "");
+        String clusterColumns = missingObject.getAttribute("clusteringColumns", "");
 
         changes[0] = getCreateTableChangeDatabricks(extendedTableProperties, changes, clusterColumns);
         return changes;
