@@ -25,7 +25,8 @@
             <column name="test_id" type="int">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <databricks:extendedTableProperties tblProperties="'external.location'='s3://mybucket/mytable','this.is.my.key'=12,'this.is.my.key2'=true"/>
+            <databricks:extendedTableProperties tblProperties="'this.is.my.key'=12,'this.is.my.key2'=true"
+                                                tableLocation="s3://databricks-th/test_table_properties"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>

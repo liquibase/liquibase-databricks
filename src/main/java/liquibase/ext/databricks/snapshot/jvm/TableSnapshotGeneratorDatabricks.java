@@ -61,6 +61,11 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
         }
         return table;
     }
+    //TODO another way of getting Location is query like
+    // select * from `system`.`information_schema`.`tables` where table_name = 'test_table_properties' AND table_schema='liquibase_harness_test_ds';
+    // get column 'table_type', if 'EXTERNAL' then
+    // Location = get column 'storage_path'
+    // cleanup this after approach of getting all properties is settled
 
     private Map<String, String> getTblPropertiesMap(Database database, String table) throws DatabaseException {
         String query = String.format("SHOW TBLPROPERTIES %s.%s.%s;", database.getDefaultCatalogName(), database.getDefaultSchemaName(), table);
