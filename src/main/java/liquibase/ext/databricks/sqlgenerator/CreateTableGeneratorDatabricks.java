@@ -48,7 +48,7 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
             if ((!StringUtils.isEmpty(thisStatement.getTableFormat()))) {
                 finalsql.append(" USING ").append(thisStatement.getTableFormat());
             } else if (thisStatement.getExtendedTableProperties() != null && StringUtils.isNoneEmpty(thisStatement.getExtendedTableProperties().getTblProperties())) {
-                finalsql.append(" TBLPROPERTIES (").append(thisStatement).append(")");
+                finalsql.append(" TBLPROPERTIES (").append(thisStatement.getExtendedTableProperties().getTblProperties()).append(")");
             } else {
                 finalsql.append(" USING delta TBLPROPERTIES('delta.feature.allowColumnDefaults' = 'supported', 'delta.columnMapping.mode' = 'name', 'delta.enableDeletionVectors' = true)");
             }
