@@ -4,7 +4,8 @@
       "liquibase.structure.core.Table": [
         {
           "table": {
-            "name": "test_table_clustered_new"
+            "name": "test_table_clustered_new",
+            "clusteringColumns": "test_id,test_present_new"
           }
         }
       ],

@@ -12,8 +12,6 @@ import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.core.Table;
 
-import java.util.regex.Pattern;
-
 public class MissingTableChangeGeneratorDatabricks extends MissingTableChangeGenerator {
 
     @Override
@@ -55,7 +53,7 @@ public class MissingTableChangeGeneratorDatabricks extends MissingTableChangeGen
         createTableChangeDatabricks.setIfNotExists(temp.getIfNotExists());
         createTableChangeDatabricks.setRowDependencies(temp.getRowDependencies());
         if (!clusterColumns.isEmpty()) {
-            createTableChangeDatabricks.setClusterColumns(sanitizeClusterColumns(clusterColumns));
+            createTableChangeDatabricks.setClusterColumns(clusterColumns);
         }
 
         createTableChangeDatabricks.setExtendedTableProperties(extendedTableProperties);
@@ -65,10 +63,5 @@ public class MissingTableChangeGeneratorDatabricks extends MissingTableChangeGen
     @Override
     protected CreateTableChange createCreateTableChange() {
         return new CreateTableChangeDatabricks();
-    }
-
-    private String sanitizeClusterColumns(String clusterColumnProperty) {
-        Pattern pattern = Pattern.compile("[\\[\\]\\\"]");
-        return clusterColumnProperty.replaceAll(pattern.toString(), "");
     }
 }

@@ -13,13 +13,14 @@ import liquibase.structure.core.Table;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
 
     private static final String LOCATION = "Location";
     private static final String TBL_PROPERTIES = "tblProperties";
-    private static final String CLUSTER_COLUMNS = "clusterColumns";
+    private static final String CLUSTER_COLUMNS = "clusteringColumns";
     private static final String DETAILED_TABLE_INFORMATION_NODE = "# Detailed Table Information";
 
     @Override
@@ -53,8 +54,8 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
             }
             Map<String, String> tblProperties = getTblPropertiesMap(database, example.getName());
             if (tblProperties.containsKey(CLUSTER_COLUMNS)) {
-                // used remove, as clusterColumns tblProperty is not allowed in create/alter table statements
-                table.setAttribute(CLUSTER_COLUMNS, tblProperties.remove(CLUSTER_COLUMNS));
+                // removing clusterColumns, as clusterColumns tblProperty is not allowed in create/alter table statements
+                table.setAttribute(CLUSTER_COLUMNS, sanitizeClusterColumns(tblProperties.remove(CLUSTER_COLUMNS)));
             }
             table.setAttribute(TBL_PROPERTIES, getTblPropertiesString(tblProperties));
         }
@@ -76,6 +77,11 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
                 .sorted(Map.Entry.comparingByKey())
                 .forEach(entry -> csvString.append(entry.getKey()).append("=").append(entry.getValue()).append(","));
         return csvString.toString().replaceAll(",$", "");
+    }
+
+    private String sanitizeClusterColumns(String clusterColumnProperty) {
+        Pattern pattern = Pattern.compile("[\\[\\]\\\"]");
+        return clusterColumnProperty.replaceAll(pattern.toString(), "");
     }
 
 }
