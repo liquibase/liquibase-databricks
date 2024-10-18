@@ -72,9 +72,4 @@ public class CreateTableChangeDatabricks extends CreateTableChange {
         return extendedTableProperties;
     }
 
-    @Override
-    public String getSerializedObjectNamespace() {
-        return NamespaceDetailsDatabricks.DATABRICKS_NAMESPACE;
-    }
-
 }
