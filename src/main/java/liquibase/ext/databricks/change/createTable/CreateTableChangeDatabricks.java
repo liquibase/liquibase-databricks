@@ -6,7 +6,7 @@ import liquibase.change.core.CreateTableChange;
 import liquibase.database.Database;
 import liquibase.exception.ValidationErrors;
 import liquibase.ext.databricks.database.DatabricksDatabase;
-import liquibase.ext.databricks.parser.NamespaceDetailsDatabricks;
+import liquibase.parser.core.xml.StandardNamespaceDetails;
 import liquibase.servicelocator.PrioritizedService;
 import liquibase.statement.core.CreateTableStatement;
 import lombok.Setter;
@@ -70,6 +70,11 @@ public class CreateTableChangeDatabricks extends CreateTableChange {
     @DatabaseChangeProperty
     public ExtendedTableProperties getExtendedTableProperties() {
         return extendedTableProperties;
+    }
+
+    @Override
+    public String getSerializedObjectNamespace() {
+        return StandardNamespaceDetails.GENERIC_EXTENSION_XSD;
     }
 
 }

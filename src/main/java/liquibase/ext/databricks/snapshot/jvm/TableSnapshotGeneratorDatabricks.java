@@ -11,6 +11,7 @@ import liquibase.statement.core.RawParameterizedSqlStatement;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.core.Table;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -22,6 +23,12 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
     private static final String TBL_PROPERTIES = "tblProperties";
     private static final String CLUSTER_COLUMNS = "clusteringColumns";
     private static final String DETAILED_TABLE_INFORMATION_NODE = "# Detailed Table Information";
+    private static final List<String> TBL_PROPERTIES_STOP_LIST = Arrays.asList(
+            "delta.columnMapping.maxColumnId",
+            "delta.rowTracking.materializedRowCommitVersionColumnName",
+            "delta.rowTracking.materializedRowIdColumnName",
+            "delta.feature.clustering"
+    );
 
     @Override
     public int getPriority(Class<? extends DatabaseObject> objectType, Database database) {
@@ -54,7 +61,8 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
             }
             Map<String, String> tblProperties = getTblPropertiesMap(database, example.getName());
             if (tblProperties.containsKey(CLUSTER_COLUMNS)) {
-                // removing clusterColumns, as clusterColumns tblProperty is not allowed in create/alter table statements
+                // removing clusterColumns and other properties which are not allowed in create/alter table statements
+                TBL_PROPERTIES_STOP_LIST.forEach(tblProperties::remove);
                 table.setAttribute(CLUSTER_COLUMNS, sanitizeClusterColumns(tblProperties.remove(CLUSTER_COLUMNS)));
             }
             table.setAttribute(TBL_PROPERTIES, getTblPropertiesString(tblProperties));
@@ -80,8 +88,8 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
         propertiesMap.entrySet()
                 .stream()
                 .sorted(Map.Entry.comparingByKey())
-                .forEach(entry -> csvString.append(entry.getKey()).append("=").append(entry.getValue()).append(","));
-        return csvString.toString().replaceAll(",$", "");
+                .forEach(entry -> csvString.append("'").append(entry.getKey()).append("'='").append(entry.getValue()).append("', "));
+        return csvString.toString().replaceAll(", $", "");
     }
 
     private String sanitizeClusterColumns(String clusterColumnProperty) {
