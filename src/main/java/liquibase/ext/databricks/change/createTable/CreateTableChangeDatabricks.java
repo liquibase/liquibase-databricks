@@ -6,7 +6,7 @@ import liquibase.change.core.CreateTableChange;
 import liquibase.database.Database;
 import liquibase.exception.ValidationErrors;
 import liquibase.ext.databricks.database.DatabricksDatabase;
-import liquibase.parser.core.xml.StandardNamespaceDetails;
+import liquibase.ext.databricks.parser.NamespaceDetailsDatabricks;
 import liquibase.servicelocator.PrioritizedService;
 import liquibase.statement.core.CreateTableStatement;
 import lombok.Setter;
@@ -73,8 +73,11 @@ public class CreateTableChangeDatabricks extends CreateTableChange {
     }
 
     @Override
-    public String getSerializedObjectNamespace() {
-        return StandardNamespaceDetails.GENERIC_EXTENSION_XSD;
+    public String getSerializableFieldNamespace(String field) {
+        if("clusterColumns".equalsIgnoreCase(field)) {
+            return NamespaceDetailsDatabricks.DATABRICKS_NAMESPACE;
+        }
+        return getSerializedObjectNamespace();
     }
 
 }
