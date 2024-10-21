@@ -13,7 +13,8 @@
         <createTable tableName="test_table_clustered_new" >
             <column name="test_id" type="int" />
             <column name="test_new" type="int"/>
-            <databricks:clusterColumns>test_id,test_new</databricks:clusterColumns>
+            <column name="test_present_new" type="int"/>
+            <databricks:clusterColumns>test_id,test_new,test_present_new</databricks:clusterColumns>
         </createTable>
         <rollback>
             <!-- The dropTable will drop a full table whether it has clustered columns or not. -->
@@ -23,6 +24,7 @@
     <changeSet id="2" author="your.name">
         <databricks:alterCluster tableName="test_table_clustered_new">
             <databricks:column name="test_id"/>
+            <databricks:column name="test_present_new"/>
         </databricks:alterCluster>
         <rollback/>
     </changeSet>

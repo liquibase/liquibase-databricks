@@ -73,8 +73,11 @@ public class CreateTableChangeDatabricks extends CreateTableChange {
     }
 
     @Override
-    public String getSerializedObjectNamespace() {
-        return NamespaceDetailsDatabricks.DATABRICKS_NAMESPACE;
+    public String getSerializableFieldNamespace(String field) {
+        if("clusterColumns".equalsIgnoreCase(field)) {
+            return NamespaceDetailsDatabricks.DATABRICKS_NAMESPACE;
+        }
+        return getSerializedObjectNamespace();
     }
 
 }

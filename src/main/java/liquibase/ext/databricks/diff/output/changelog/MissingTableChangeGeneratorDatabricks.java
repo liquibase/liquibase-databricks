@@ -14,7 +14,6 @@ import liquibase.structure.core.Table;
 
 public class MissingTableChangeGeneratorDatabricks extends MissingTableChangeGenerator {
 
-
     @Override
     public int getPriority(Class<? extends DatabaseObject> objectType, Database database) {
         if (database instanceof DatabricksDatabase && Table.class.isAssignableFrom(objectType)) {
@@ -35,12 +34,14 @@ public class MissingTableChangeGeneratorDatabricks extends MissingTableChangeGen
         ExtendedTableProperties extendedTableProperties = new ExtendedTableProperties(
                 null,
                 missingObject.getAttribute("tblProperties", String.class));
+        String clusterColumns = missingObject.getAttribute("clusteringColumns", "");
 
-        changes[0] = getCreateTableChangeDatabricks(extendedTableProperties, changes);
+        changes[0] = getCreateTableChangeDatabricks(extendedTableProperties, changes, clusterColumns);
         return changes;
     }
 
-    private CreateTableChangeDatabricks getCreateTableChangeDatabricks(ExtendedTableProperties extendedTableProperties, Change[] changes) {
+    private CreateTableChangeDatabricks getCreateTableChangeDatabricks(ExtendedTableProperties extendedTableProperties,
+                                                                       Change[] changes, String clusterColumns) {
         CreateTableChange temp = (CreateTableChange) changes[0];
         CreateTableChangeDatabricks createTableChangeDatabricks = new CreateTableChangeDatabricks();
         createTableChangeDatabricks.setColumns(temp.getColumns());
@@ -52,6 +53,9 @@ public class MissingTableChangeGeneratorDatabricks extends MissingTableChangeGen
         createTableChangeDatabricks.setRemarks(temp.getRemarks());
         createTableChangeDatabricks.setIfNotExists(temp.getIfNotExists());
         createTableChangeDatabricks.setRowDependencies(temp.getRowDependencies());
+        if (!clusterColumns.isEmpty()) {
+            createTableChangeDatabricks.setClusterColumns(clusterColumns);
+        }
 
         createTableChangeDatabricks.setExtendedTableProperties(extendedTableProperties);
         return createTableChangeDatabricks;
