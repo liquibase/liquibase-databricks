@@ -20,17 +20,20 @@ import java.util.regex.Pattern;
 
 public class ColumnSnapshotGeneratorDatabricks extends ColumnSnapshotGenerator {
 
-    private static final String ALL_DATA_TYPES = " BIGINT | BINARY | BOOLEAN | DATE | DECIMAL| DECIMAL\\(| DOUBLE | FLOAT | INT | INTERVAL| VOID | SMALLINT | STRING | VARCHAR\\(\\d+\\) | TIMESTAMP | TIMESTAMP_NTZ | TINYINT | ARRAY<| MAP<| STRUCT<| VARIANT| OBJECT<";
+    private static final String ALL_DATA_TYPES = " BIGINT | BINARY | BOOLEAN | DATE | DECIMAL| DECIMAL\\(| DOUBLE | FLOAT | INT | INTERVAL | VOID | SMALLINT | STRING | VARCHAR\\(\\d+\\) | TIMESTAMP | TIMESTAMP_NTZ | TINYINT | ARRAY<| MAP<| STRUCT<| VARIANT| OBJECT<";
+    private static final String DEFAULT_CLAUSE_TERMINATORS = "(?i)(\\s+COMMENT\\s+'| PRIMARY\\s+KEY | FOREIGN\\s+KEY | MASK\\s+\\w+|$|,(\\s+\\w+\\s+" + ALL_DATA_TYPES + "|\\)$)";
     private static final String GENERATED_BY_DEFAULT_REGEX = "(?i)\\s+GENERATED\\s+BY\\s+DEFAULT\\s+AS\\s+IDENTITY";
-    private static final String DEFAULT_VALUE_SNIPPET_REGEX = "DEFAULT\\s+(.*?)(?i)(\\s+COMMENT\\s+'| PRIMARY\\s+KEY | FOREIGN\\s+KEY | MASK\\s+\\w+|$|,|,\\s+\\w+(" + ALL_DATA_TYPES + "|\\)$)?)";
-    private static final String SANITIZE_TABLE_SPECIFICATION_REGEX = "(\\(.*?\\))\\s*(?i)(USING|OPTIONS|PARTITIONED BY|CLUSTER BY|LOCATION|COMMENT|TBLPROPERTIES|WITH|$|;$)";
-    private static final Pattern DEFAULT_VALUE_PATTERN = Pattern.compile(DEFAULT_VALUE_SNIPPET_REGEX);
+    private static final String GENERIC_DEFAULT_VALUE_REGEX = "DEFAULT\\s+(.*?)(" + DEFAULT_CLAUSE_TERMINATORS + "?))";
+    private static final String SANITIZE_TABLE_SPECIFICATION_REGEX = "(\\(.*?\\))\\s*(?i)(USING|OPTIONS|PARTITIONED BY|CLUSTER BY|LOCATION|TBLPROPERTIES|WITH|$|;$)";
+    private static final Pattern DEFAULT_VALUE_PATTERN = Pattern.compile(GENERIC_DEFAULT_VALUE_REGEX);
     private static final Pattern SANITIZE_TABLE_SPECIFICATION_PATTERN = Pattern.compile(SANITIZE_TABLE_SPECIFICATION_REGEX);
+    private static final Pattern FUNCTION_PATTERN = Pattern.compile("^(\\w+)\\(.*\\)");
 
     @Override
     public int getPriority(Class<? extends DatabaseObject> objectType, Database database) {
-        if (database instanceof DatabricksDatabase)
+        if (database instanceof DatabricksDatabase) {
             return PRIORITY_DATABASE;
+        }
         return PRIORITY_NONE;
     }
 
@@ -63,7 +66,7 @@ public class ColumnSnapshotGeneratorDatabricks extends ColumnSnapshotGenerator {
         if (example instanceof Column) {
             Column column = (Column) super.snapshotObject(example, snapshot);
             //These two are used too often, avoiding them? otherwise there would be too much DB calls
-            if(!column.getRelation().getName().equalsIgnoreCase("databasechangelog")
+            if (!column.getRelation().getName().equalsIgnoreCase("databasechangelog")
                     && !column.getRelation().getName().equalsIgnoreCase("databasechangeloglock")) {
                 Database database = snapshot.getDatabase();
                 String query = String.format("SHOW CREATE TABLE %s.%s.%s;",
@@ -73,12 +76,12 @@ public class ColumnSnapshotGeneratorDatabricks extends ColumnSnapshotGenerator {
                 String showCreateTableResponse = Scope.getCurrentScope().getSingleton(ExecutorService.class)
                         .getExecutor("jdbc", database).queryForObject(new RawParameterizedSqlStatement(query), String.class);
                 String defaultValue = extractDefaultValue(showCreateTableResponse, column.getName());
-                if(defaultValue != null) {
-                    Pattern functionPattern = Pattern.compile("^(\\w+)\\(.*\\)");
-                    Matcher functionMatcher = functionPattern.matcher(defaultValue);
-                    if(functionMatcher.find()) {
+                if (defaultValue != null) {
+                    Matcher functionMatcher = FUNCTION_PATTERN.matcher(defaultValue);
+                    if (functionMatcher.find()) {
                         DatabaseFunction function = new DatabaseFunction(defaultValue);
                         column.setDefaultValue(function);
+                        column.setComputed(true);
                     } else {
                         column.setDefaultValue(defaultValue);
                     }
@@ -93,20 +96,24 @@ public class ColumnSnapshotGeneratorDatabricks extends ColumnSnapshotGenerator {
     private String extractDefaultValue(String createTableStatement, String columnName) {
         String defaultValue = null;
         String sanitizedCreateTableStatement = sanitizeStatement(createTableStatement);
-        Pattern columnWithPotentialDefaultPattern = Pattern.compile("[\\(|,]\\s*(" + columnName + "\\s*\\b\\w*\\b.*?)\\s*(?i)(" + ALL_DATA_TYPES + "|( CONSTRAINT |\\)$))");
+        Pattern columnWithPotentialDefaultPattern = Pattern.compile("[\\(|,]\\s*(" + columnName + "\\s*\\b\\w*\\b.*?)\\s*(?i)(" + ALL_DATA_TYPES + "|( CONSTRAINT |$))");
         Matcher columnWithPotentialDefaultMatcher = columnWithPotentialDefaultPattern.matcher(sanitizedCreateTableStatement);
 
         String columnWithPotentialDefault = "";
-        if(columnWithPotentialDefaultMatcher.find()) {
+        if (columnWithPotentialDefaultMatcher.find()) {
             columnWithPotentialDefault = columnWithPotentialDefaultMatcher.group(1);
-            Matcher stringColumnMatcher = Pattern.compile(columnName + "\\s+(?i)(VARCHAR\\(\\d+\\)|STRING )").matcher(sanitizedCreateTableStatement);
-            Matcher defaultStringMatcher = Pattern.compile(columnName + ".+?DEFAULT\\s+(\\'|\\\")(.*?)\\1").matcher(sanitizedCreateTableStatement);
+            System.out.println("columnWithPotentialDefault =" + columnWithPotentialDefault);
+            Matcher stringColumnTypeMatcher = Pattern.compile(columnName + "\\s+(?i)(VARCHAR\\(\\d+\\)|STRING )")
+                    .matcher(sanitizedCreateTableStatement);
+            Matcher defaultStringValueMatcher = Pattern.compile(columnName + ".+?(?i)DEFAULT\\s+(\\'|\\\")(.*?)\\1")
+                    .matcher(sanitizedCreateTableStatement);
             Matcher defaultValueMatcher = DEFAULT_VALUE_PATTERN.matcher(columnWithPotentialDefault);
-            if(defaultValueMatcher.find()) {
+            if (defaultValueMatcher.find()) {
                 defaultValue = defaultValueMatcher.group(1);
-                if(stringColumnMatcher.find() && defaultStringMatcher.find()) {
-                    defaultValue = defaultStringMatcher.group(2);
+                if (stringColumnTypeMatcher.find() && defaultStringValueMatcher.find()) {
+                    defaultValue = defaultStringValueMatcher.group(2);
                 }
+                System.out.println("defaultValue =" + defaultValue);
             }
         }
         return defaultValue;
@@ -116,7 +123,7 @@ public class ColumnSnapshotGeneratorDatabricks extends ColumnSnapshotGenerator {
         createTableStatement = createTableStatement.replace("\n", "");
         String sanitizedCreateTableStatement = createTableStatement.replaceAll(GENERATED_BY_DEFAULT_REGEX, " ");
         Matcher tableSpecificationMatcher = SANITIZE_TABLE_SPECIFICATION_PATTERN.matcher(sanitizedCreateTableStatement);
-        if(tableSpecificationMatcher.find()) {
+        if (tableSpecificationMatcher.find()) {
             sanitizedCreateTableStatement = tableSpecificationMatcher.group(1);
         }
         return sanitizedCreateTableStatement;
