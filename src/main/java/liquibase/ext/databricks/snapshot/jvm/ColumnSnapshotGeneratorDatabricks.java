@@ -102,7 +102,6 @@ public class ColumnSnapshotGeneratorDatabricks extends ColumnSnapshotGenerator {
         String columnWithPotentialDefault = "";
         if (columnWithPotentialDefaultMatcher.find()) {
             columnWithPotentialDefault = columnWithPotentialDefaultMatcher.group(1);
-            System.out.println("columnWithPotentialDefault =" + columnWithPotentialDefault);
             Matcher stringColumnTypeMatcher = Pattern.compile(columnName + "\\s+(?i)(VARCHAR\\(\\d+\\)|STRING )")
                     .matcher(sanitizedCreateTableStatement);
             Matcher defaultStringValueMatcher = Pattern.compile(columnName + ".+?(?i)DEFAULT\\s+(\\'|\\\")(.*?)\\1")
@@ -113,7 +112,6 @@ public class ColumnSnapshotGeneratorDatabricks extends ColumnSnapshotGenerator {
                 if (stringColumnTypeMatcher.find() && defaultStringValueMatcher.find()) {
                     defaultValue = defaultStringValueMatcher.group(2);
                 }
-                System.out.println("defaultValue =" + defaultValue);
             }
         }
         return defaultValue;
