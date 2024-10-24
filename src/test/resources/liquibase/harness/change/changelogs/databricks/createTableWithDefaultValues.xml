@@ -11,13 +11,15 @@
     <changeSet author="fl" id="1">
         <createTable tableName="tableWithDefaultValues" >
             <column name="longcolumn" type="long" autoIncrement="true" generationType="IDENTITY" />
-            <column name="eventTime" type="timestamp"/>
-            <column name="year" type="int" defaultValueComputed="GENERATED ALWAYS AS (YEAR(eventTime))"/>
-            <column name="eventDate" type="date" defaultValueComputed="GENERATED ALWAYS AS (CAST(eventTime AS DATE))" />
-            <column name="eventDescription" type="string">
+            <column name="eventTime" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP()">
                 <constraints nullable="false" />
             </column>
-            <column name="eventShortDescription" type="string" defaultValueComputed="GENERATED ALWAYS AS (SUBSTRING(eventDescription, 0, 1))" />
+            <column name="year" type="int" defaultValueComputed="YEAR(CURRENT_TIMESTAMP())"/>
+            <column name="eventDate" type="date" defaultValueComputed="CAST(CURRENT_TIMESTAMP() AS DATE)" />
+            <column name="eventDescription" type="string" defaultValue="default string, regular ? almost();!$#@^%[] String bigint">
+                <constraints nullable="false" />
+            </column>
+            <column name="eventShortDescription" type="string" defaultValue="short desc" />
         </createTable>
     </changeSet>
 
