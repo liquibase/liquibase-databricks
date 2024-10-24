@@ -12,7 +12,10 @@ databaseChangeLog:
               - column:
                   name: test_new
                   type: int
-            clusterColumns: test_id, test_new
+              - column:
+                  name: test_present_new
+                  type: int
+            clusterColumns: test_id, test_new, test_present_new
       rollback:
         dropTable:
           tableName: test_table_clustered_new
@@ -25,6 +28,8 @@ databaseChangeLog:
             columns:
               - column:
                   name: test_id
+              - column:
+                  name: test_present_new
       rollback:
         empty
   - changeSet:

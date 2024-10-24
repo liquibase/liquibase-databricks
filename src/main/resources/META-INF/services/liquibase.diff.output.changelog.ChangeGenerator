@@ -1,0 +1,2 @@
+liquibase.ext.databricks.diff.output.changelog.MissingTableChangeGeneratorDatabricks
+liquibase.ext.databricks.diff.output.changelog.MissingViewChangeGeneratorDatabricks

@@ -1,7 +1,16 @@
 package liquibase.ext.databricks.change.createTable;
 
+import liquibase.ext.databricks.parser.NamespaceDetailsDatabricks;
 import liquibase.serializer.AbstractLiquibaseSerializable;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
 public class ExtendedTableProperties extends AbstractLiquibaseSerializable{
     private String tableLocation;
     private String tblProperties;
@@ -13,22 +22,6 @@ public class ExtendedTableProperties extends AbstractLiquibaseSerializable{
 
     @Override
     public String getSerializedObjectNamespace() {
-        return "http://www.liquibase.org/xml/ns/databricks";
-    }
-
-    public String getTableLocation() {
-        return tableLocation;
-    }
-
-    public void setTableLocation(String tableLocation) {
-        this.tableLocation = tableLocation;
-    }
-
-    public String getTblProperties() {
-        return tblProperties;
-    }
-
-    public void setTblProperties(String tblProperties) {
-        this.tblProperties = tblProperties;
+        return NamespaceDetailsDatabricks.DATABRICKS_NAMESPACE;
     }
 }

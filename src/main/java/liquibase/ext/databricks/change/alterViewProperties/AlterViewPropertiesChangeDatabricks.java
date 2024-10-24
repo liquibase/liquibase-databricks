@@ -1,4 +1,4 @@
-package liquibase.ext.databricks.change.alterTableProperties;
+package liquibase.ext.databricks.change.alterViewProperties;
 
 import liquibase.change.DatabaseChange;
 import liquibase.change.DatabaseChangeProperty;
@@ -10,11 +10,11 @@ import liquibase.statement.SqlStatement;
 import lombok.Setter;
 
 @Setter
-@DatabaseChange(name = "alterTableProperties", description = "Alter Table Properties", priority = PrioritizedService.PRIORITY_DATABASE + 500)
-public class AlterTablePropertiesChangeDatabricks extends AbstractAlterPropertiesChangeDatabricks {
+@DatabaseChange(name = "alterViewProperties", description = "Alter View Properties", priority = PrioritizedService.PRIORITY_DATABASE)
+public class AlterViewPropertiesChangeDatabricks extends AbstractAlterPropertiesChangeDatabricks {
 
-    private static final String CHANGE_TYPE_SUBJECT = "Table";
-    private String tableName;
+    private static final String CHANGE_TYPE_SUBJECT = "View";
+    private String viewName;
 
     @Override
     public boolean supports(Database database) {
@@ -28,16 +28,16 @@ public class AlterTablePropertiesChangeDatabricks extends AbstractAlterPropertie
 
     @Override
     public String getConfirmationMessage() {
-        return getConfirmationMessage(getTableName());
+        return getConfirmationMessage(getViewName());
     }
 
     @Override
     public SqlStatement[] generateStatements(Database database) {
-        return generateStatements(new AlterTablePropertiesStatementDatabricks(getCatalogName(), getSchemaName(), getTableName()));
+        return generateStatements(new AlterViewPropertiesStatementDatabricks(getCatalogName(), getSchemaName(), getViewName()));
     }
 
     @DatabaseChangeProperty
-    public String getTableName() {
-        return tableName;
+    public String getViewName() {
+        return viewName;
     }
 }

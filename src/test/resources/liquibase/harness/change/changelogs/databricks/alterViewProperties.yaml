@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: your.name
+      changes:
+        - createView:
+            viewName: test_alter_view_properties
+            selectQuery: select id, first_name, last_name, email from authors
+  - changeSet:
+      id: 2
+      author: your.name
+      changes:
+        - alterViewProperties:
+            viewName: test_alter_view_properties
+            setExtendedTableProperties:
+              tblProperties: "'external.location'='s3://mybucket/mytable','this.is.my.key'=12,'this.is.my.key2'=true"
+      rollback:
+        - alterViewProperties:
+            viewName: test_alter_view_properties
+            unsetExtendedTableProperties:
+              tblProperties: "'external.location', 'this.is.my.key','this.is.my.key2'"

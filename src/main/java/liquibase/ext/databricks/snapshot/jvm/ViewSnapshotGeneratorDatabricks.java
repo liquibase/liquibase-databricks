@@ -4,34 +4,28 @@ import liquibase.CatalogAndSchema;
 import liquibase.Scope;
 import liquibase.database.AbstractJdbcDatabase;
 import liquibase.database.Database;
-import liquibase.database.DatabaseConnection;
 import liquibase.exception.DatabaseException;
 import liquibase.executor.ExecutorService;
-import liquibase.ext.databricks.database.DatabricksConnection;
+import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.snapshot.DatabaseSnapshot;
 import liquibase.snapshot.jvm.ViewSnapshotGenerator;
-import liquibase.statement.core.RawSqlStatement;
+import liquibase.statement.core.RawParameterizedSqlStatement;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.core.Schema;
 import liquibase.structure.core.View;
+import org.apache.commons.lang3.StringUtils;
 
-import java.sql.ResultSet;
 import java.util.List;
 import java.util.Map;
 
-import liquibase.ext.databricks.database.DatabricksDatabase;
-import org.apache.commons.lang3.StringUtils;
-
+/**
+ * Overrides ViewSnapshotGenerator for Databricks views contemplating the tblProperties field
+ */
 public class ViewSnapshotGeneratorDatabricks extends ViewSnapshotGenerator {
-
 
     @Override
     public int getPriority(Class<? extends DatabaseObject> objectType, Database database) {
-        if (database instanceof DatabricksDatabase) {
-            return super.getPriority(objectType, database) + PRIORITY_DATABASE;
-        } else {
-            return PRIORITY_NONE;
-        }
+        return database instanceof DatabricksDatabase ? PRIORITY_DATABASE : PRIORITY_NONE;
     }
 
     @Override
@@ -41,74 +35,57 @@ public class ViewSnapshotGeneratorDatabricks extends ViewSnapshotGenerator {
         } else {
             Database database = snapshot.getDatabase();
             Schema schema = example.getSchema();
-            DatabaseConnection connection = database.getConnection();
 
-            CatalogAndSchema catalogAndSchema = (new CatalogAndSchema(schema.getCatalogName(), schema.getName())).customize(database);
-            String jdbcSchemaName = database.correctObjectName(((AbstractJdbcDatabase) database).getJdbcSchemaName(catalogAndSchema), Schema.class);
-            String query = String.format("SELECT view_definition FROM %s.%s.VIEWS WHERE table_name='%s' AND table_schema='%s' AND table_catalog='%s';",
-                    schema.getCatalogName(), database.getSystemSchema(), example.getName(), schema.getName(), schema.getCatalogName());
-
-            // DEBUG
-            //System.out.println("Snapshot Database Connection URL : " + database.getConnection().getURL());
-            //System.out.println("Snapshot Database Connection Class : " + database.getConnection().getClass().getName());
-
+            String query = String.format("SELECT view_definition FROM %s.%s.VIEWS WHERE table_name=? AND table_schema=? AND table_catalog=?",
+                    schema.getCatalogName(), database.getSystemSchema());
 
             List<Map<String, ?>> viewsMetadataRs = Scope.getCurrentScope().getSingleton(ExecutorService.class)
-                    .getExecutor("jdbc", database).queryForList(new RawSqlStatement(query));
-
-            // New Code, likely superfluous, was used for testing
-            /// This should use our existing DatabaseConnection url processing
-            String rawViewDefinition = null;
-
-            try (ResultSet viewMetadataResultSet = ((DatabricksConnection) connection).createStatement().executeQuery(query)) {
-                //System.out.println("Raw Result VIEW " + viewMetadataResultSet);
-
-                viewMetadataResultSet.next();
-                rawViewDefinition = viewMetadataResultSet.getString(1);
-
-
-            } catch (Exception e) {
-                Scope.getCurrentScope().getLog(getClass()).info("Error getting View Definiton via existing context, going to pull from URL", e);
-            }
-
-            /// Old Code
+                    .getExecutor("jdbc", database).queryForList(new RawParameterizedSqlStatement(query, example.getName(), schema.getName(), schema.getCatalogName()));
 
             if (viewsMetadataRs.isEmpty()) {
                 return null;
             } else {
-
-                Map<String, ?> row = viewsMetadataRs.get(0);
-                String rawViewName = example.getName();
+                String viewName = this.cleanNameFromDatabase(example.getName(), database);
                 String rawSchemaName = schema.getName();
                 String rawCatalogName = schema.getCatalogName();
 
-
-                View view = (new View()).setName(this.cleanNameFromDatabase(rawViewName, database));
                 CatalogAndSchema schemaFromJdbcInfo = ((AbstractJdbcDatabase) database).getSchemaFromJdbcInfo(rawCatalogName, rawSchemaName);
-                view.setSchema(new Schema(schemaFromJdbcInfo.getCatalogName(), schemaFromJdbcInfo.getSchemaName()));
-
-                String definition = rawViewDefinition;
-
-                if (definition == null || definition.isEmpty()) {
-                    definition = (String) row.get("view_definition");
-
-                }
-
-                int length = definition.length();
-                if (length > 0 && definition.charAt(length - 1) == 0) {
-                    definition = definition.substring(0, length - 1);
-                }
-
-                definition = StringUtils.trimToNull(definition);
-                if (definition == null) {
-                    definition = "[CANNOT READ VIEW DEFINITION]";
-                }
-
-                view.setDefinition(definition);
+                View view = (View) new View()
+                        .setName(viewName)
+                        .setSchema(new Schema(schemaFromJdbcInfo.getCatalogName(), schemaFromJdbcInfo.getSchemaName()))
+                        .setAttribute("tblProperties", this.getTblProperties(database, viewName));
+                view.setDefinition(getViewDefinition(viewsMetadataRs));
 
                 return view;
             }
-
         }
+    }
+
+    private String getViewDefinition(List<Map<String, ?>> viewsMetadataRs) {
+        Map<String, ?> row = viewsMetadataRs.get(0);
+        String definition = (String) row.get("VIEW_DEFINITION");
+
+        int length = definition.length();
+        if (length > 0 && definition.charAt(length - 1) == 0) {
+            definition = definition.substring(0, length - 1);
+        }
+
+        definition = StringUtils.trimToNull(definition);
+        if (definition == null) {
+            definition = "[CANNOT READ VIEW DEFINITION]";
+        }
+        return definition;
+    }
+
+    private String getTblProperties(Database database, String viewName) throws DatabaseException {
+        String query = String.format("SHOW TBLPROPERTIES %s.%s.%s;", database.getDefaultCatalogName(), database.getDefaultSchemaName(), viewName);
+        List<Map<String, ?>> tablePropertiesResponse = Scope.getCurrentScope().getSingleton(ExecutorService.class)
+                .getExecutor("jdbc", database).queryForList(new RawParameterizedSqlStatement(query));
+
+        StringBuilder csvString = new StringBuilder();
+        tablePropertiesResponse.forEach(tableProperty ->
+            csvString.append("'").append(tableProperty.get("KEY")).append("'='").append(tableProperty.get("VALUE")).append("', ")
+        );
+        return csvString.toString().replaceAll(", $", "");
     }
 }

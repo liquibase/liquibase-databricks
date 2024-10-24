@@ -20,9 +20,15 @@
                     "name": "test_new",
                     "type": "int"
                   }
+                },
+                {
+                  "column": {
+                    "name": "test_present_new",
+                    "type": "int"
+                  }
                 }
               ],
-              "clusterColumns": "test_id,test_new"
+              "clusterColumns": "test_id,test_new,test_present_new"
             }
           }
         ],
@@ -47,6 +53,11 @@
                 {
                   "column": {
                     "name": "test_id"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "test_present_new`"
                   }
                 }
               ]

@@ -1,23 +1,18 @@
 package liquibase.ext.databricks.change.alterTableProperties;
 
-import liquibase.statement.AbstractSqlStatement;
+import liquibase.ext.databricks.change.AbstractAlterPropertiesStatementDatabricks;
 import lombok.Getter;
 import lombok.Setter;
 
 @Setter
 @Getter
-public class AlterTablePropertiesStatementDatabricks extends AbstractSqlStatement {
+public class AlterTablePropertiesStatementDatabricks extends AbstractAlterPropertiesStatementDatabricks {
 
     private String tableName;
-    private String catalogName;
-    private String schemaName;
-    private SetExtendedTableProperties setExtendedTableProperties;
-    private UnsetExtendedTableProperties unsetExtendedTableProperties;
 
     public AlterTablePropertiesStatementDatabricks(String catalogName, String schemaName, String tableName) {
+        super(catalogName, schemaName);
         this.tableName = tableName;
-        this.catalogName = catalogName;
-        this.schemaName = schemaName;
     }
 
 }

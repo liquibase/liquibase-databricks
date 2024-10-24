@@ -17,7 +17,6 @@ import java.util.ArrayList;
 
 public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
 
-
     @Override
     public int getPriority() {
         return PRIORITY_DATABASE;
