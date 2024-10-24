@@ -47,16 +47,18 @@ public class ChangedTblPropertiesUtil {
         return change;
     }
 
-    private static AbstractAlterPropertiesChangeDatabricks getAbstractTablePropertiesChangeDatabricks(AbstractDatabaseObject changedObject, DiffOutputControl control, Difference difference, Class<? extends AbstractAlterPropertiesChangeDatabricks> clazz) {
+    static AbstractAlterPropertiesChangeDatabricks getAbstractTablePropertiesChangeDatabricks(AbstractDatabaseObject changedObject, DiffOutputControl control, Difference difference, Class<? extends AbstractAlterPropertiesChangeDatabricks> clazz) {
         String referenceValue = difference.getReferenceValue() == null ? "" : difference.getReferenceValue().toString();
         Map<String, String> referencedValuesMap = Arrays.stream(referenceValue.split(SPLIT_ON_COMMAS))
                 .map(s -> s.split(SPLIT_ON_EQUALS))
+                .filter(a -> a.length > 1)
                 .collect(Collectors.toMap(a -> a[0], a -> a[1]));
 
         String comparedValue = difference.getComparedValue() == null ? "" : difference.getComparedValue().toString();
 
         Map<String, String> comparedValuesMap = Arrays.stream(comparedValue.split(SPLIT_ON_COMMAS))
                 .map(s -> s.split(SPLIT_ON_EQUALS))
+                .filter(a -> a.length > 1)
                 .collect(Collectors.toMap(a -> a[0], a -> a[1]));
 
         Map<String, String> addPropertiesMap = new HashMap<>();
