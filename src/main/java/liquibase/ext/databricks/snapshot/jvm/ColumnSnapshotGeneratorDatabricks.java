@@ -1,16 +1,13 @@
 package liquibase.ext.databricks.snapshot.jvm;
 
-import liquibase.Scope;
 import liquibase.database.Database;
 import liquibase.exception.DatabaseException;
-import liquibase.executor.ExecutorService;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.snapshot.CachedRow;
 import liquibase.snapshot.DatabaseSnapshot;
 import liquibase.snapshot.SnapshotGenerator;
 import liquibase.snapshot.jvm.ColumnSnapshotGenerator;
 import liquibase.statement.DatabaseFunction;
-import liquibase.statement.core.RawParameterizedSqlStatement;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.core.Column;
 import liquibase.structure.core.DataType;
@@ -66,16 +63,13 @@ public class ColumnSnapshotGeneratorDatabricks extends ColumnSnapshotGenerator {
         if (example instanceof Column) {
             Column column = (Column) super.snapshotObject(example, snapshot);
             //These two are used too often, avoiding them? otherwise there would be too much DB calls
-            if (!column.getRelation().getName().equalsIgnoreCase("databasechangelog")
-                    && !column.getRelation().getName().equalsIgnoreCase("databasechangeloglock")) {
-                Database database = snapshot.getDatabase();
-                String query = String.format("SHOW CREATE TABLE %s.%s.%s;",
-                        column.getRelation().getSchema().getCatalog(),
-                        column.getRelation().getSchema().getName(),
-                        column.getRelation().getName());
-                String showCreateTableResponse = Scope.getCurrentScope().getSingleton(ExecutorService.class)
-                        .getExecutor("jdbc", database).queryForObject(new RawParameterizedSqlStatement(query), String.class);
-                String defaultValue = extractDefaultValue(showCreateTableResponse, column.getName());
+            String showCreateRelatedTableQuery = String.format("SHOW CREATE TABLE %s.%s.%s;",
+                    column.getRelation().getSchema().getCatalog(),
+                    column.getRelation().getSchema().getName(),
+                    column.getRelation().getName());
+            if (snapshot.getScratchData(showCreateRelatedTableQuery) != null) {
+                String showCreateTableStatement = (String) snapshot.getScratchData(showCreateRelatedTableQuery);
+                String defaultValue = extractDefaultValue(showCreateTableStatement, column.getName());
                 if (defaultValue != null) {
                     Matcher functionMatcher = FUNCTION_PATTERN.matcher(defaultValue);
                     if (functionMatcher.find()) {

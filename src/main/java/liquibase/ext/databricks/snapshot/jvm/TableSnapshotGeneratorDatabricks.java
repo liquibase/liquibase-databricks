@@ -3,6 +3,7 @@ package liquibase.ext.databricks.snapshot.jvm;
 import liquibase.Scope;
 import liquibase.database.Database;
 import liquibase.exception.DatabaseException;
+import liquibase.executor.Executor;
 import liquibase.executor.ExecutorService;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.snapshot.DatabaseSnapshot;
@@ -45,8 +46,18 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
         if (table != null) {
             String query = String.format("DESCRIBE TABLE EXTENDED %s.%s.%s;", database.getDefaultCatalogName(), database.getDefaultSchemaName(),
                     example.getName());
-            List<Map<String, ?>> tablePropertiesResponse = Scope.getCurrentScope().getSingleton(ExecutorService.class)
-                    .getExecutor("jdbc", database).queryForList(new RawParameterizedSqlStatement(query));
+            Executor jdbcExecutor = Scope.getCurrentScope().getSingleton(ExecutorService.class).getExecutor("jdbc", database);
+            List<Map<String, ?>> tablePropertiesResponse = jdbcExecutor.queryForList(new RawParameterizedSqlStatement(query));
+            //Skipping changelog tables default values processing
+            List<String> changelogTableNames = Arrays.asList(database.getDatabaseChangeLogLockTableName(), database.getDatabaseChangeLogTableName());
+            if(!changelogTableNames.contains(table.getName())) {
+                String showCreateTableQuery = String.format("SHOW CREATE TABLE %s.%s.%s;", table.getSchema().getCatalog(),
+                        table.getSchema().getName(), table.getName());
+                if(snapshot.getScratchData(showCreateTableQuery) == null) {
+                    String createTableStatement = jdbcExecutor.queryForObject(new RawParameterizedSqlStatement(showCreateTableQuery), String.class);
+                    snapshot.setScratchData(showCreateTableQuery, createTableStatement);
+                }
+            }
             // DESCRIBE TABLE EXTENDED returns both columns and additional information.
             // We need to make sure "Location" is not column in the table, but table location in s3
             boolean detailedInformationNode = false;
