@@ -31,17 +31,20 @@ public class MissingTableChangeGeneratorDatabricks extends MissingTableChangeGen
             return changes;
         }
         //so far we intentionally omit tableLocation in generated changelog
+        //TODO: add tableFormat extended property if needed in scope of DAT-18896
         ExtendedTableProperties extendedTableProperties = new ExtendedTableProperties(
                 null,
-                missingObject.getAttribute("tblProperties", String.class));
-        String clusterColumns = missingObject.getAttribute("clusteringColumns", "");
+                null,
+                missingObject.getAttribute("tblProperties", String.class),
+                missingObject.getAttribute("clusteringColumns", String.class),
+                missingObject.getAttribute("partitionColumns", String.class)
+        );
 
-        changes[0] = getCreateTableChangeDatabricks(extendedTableProperties, changes, clusterColumns);
+        changes[0] = getCreateTableChangeDatabricks(extendedTableProperties, changes);
         return changes;
     }
 
-    private CreateTableChangeDatabricks getCreateTableChangeDatabricks(ExtendedTableProperties extendedTableProperties,
-                                                                       Change[] changes, String clusterColumns) {
+    private CreateTableChangeDatabricks getCreateTableChangeDatabricks(ExtendedTableProperties extendedTableProperties, Change[] changes) {
         CreateTableChange temp = (CreateTableChange) changes[0];
         CreateTableChangeDatabricks createTableChangeDatabricks = new CreateTableChangeDatabricks();
         createTableChangeDatabricks.setColumns(temp.getColumns());
@@ -53,10 +56,7 @@ public class MissingTableChangeGeneratorDatabricks extends MissingTableChangeGen
         createTableChangeDatabricks.setRemarks(temp.getRemarks());
         createTableChangeDatabricks.setIfNotExists(temp.getIfNotExists());
         createTableChangeDatabricks.setRowDependencies(temp.getRowDependencies());
-        if (!clusterColumns.isEmpty()) {
-            createTableChangeDatabricks.setClusterColumns(clusterColumns);
-        }
-
+        //All not null properties should be attached in the CreateTableChangeDatabricks::generateCreateTableStatement
         createTableChangeDatabricks.setExtendedTableProperties(extendedTableProperties);
         return createTableChangeDatabricks;
     }

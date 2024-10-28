@@ -22,7 +22,9 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
     private static final String LOCATION = "Location";
     private static final String TBL_PROPERTIES = "tblProperties";
     private static final String CLUSTER_COLUMNS = "clusteringColumns";
+    private static final String PARTITION_COLUMNS = "partitionColumns";
     private static final String DETAILED_TABLE_INFORMATION_NODE = "# Detailed Table Information";
+    private static final String TABLE_PARTITION_INFORMATION_NODE = "# Partition Information";
     private static final List<String> TBL_PROPERTIES_STOP_LIST = Arrays.asList(
             "delta.columnMapping.maxColumnId",
             "delta.rowTracking.materializedRowCommitVersionColumnName",
@@ -50,20 +52,40 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
             // DESCRIBE TABLE EXTENDED returns both columns and additional information.
             // We need to make sure "Location" is not column in the table, but table location in s3
             boolean detailedInformationNode = false;
+            boolean partitionInformationNode = false;
+            StringBuilder partitionColumns = new StringBuilder();
             for (Map<String, ?> tableProperty : tablePropertiesResponse) {
                 if (tableProperty.get("COL_NAME").equals(DETAILED_TABLE_INFORMATION_NODE)) {
                     detailedInformationNode = true;
                     continue;
                 }
+                if (tableProperty.get("COL_NAME").equals(TABLE_PARTITION_INFORMATION_NODE)) {
+                    partitionInformationNode = true;
+                    continue;
+                }
                 if (detailedInformationNode && tableProperty.get("COL_NAME").equals(LOCATION)) {
                     table.setAttribute(LOCATION, tableProperty.get("DATA_TYPE"));
                 }
+                if(partitionInformationNode && !tableProperty.get("COL_NAME").equals("# col_name")) {
+                    if(tableProperty.get("COL_NAME").equals("")) {
+                        partitionInformationNode = false;
+                        continue;
+                    }
+                    if (partitionColumns.toString().isEmpty()) {
+                        partitionColumns.append(tableProperty.get("COL_NAME"));
+                    } else {
+                        partitionColumns.append(',').append(tableProperty.get("COL_NAME"));
+                    }
+                }
             }
             Map<String, String> tblProperties = getTblPropertiesMap(database, example.getName());
+            // removing Databricks system properties which are not allowed in create/alter table statements
+            TBL_PROPERTIES_STOP_LIST.forEach(tblProperties::remove);
             if (tblProperties.containsKey(CLUSTER_COLUMNS)) {
-                // removing clusterColumns and other properties which are not allowed in create/alter table statements
-                TBL_PROPERTIES_STOP_LIST.forEach(tblProperties::remove);
                 table.setAttribute(CLUSTER_COLUMNS, sanitizeClusterColumns(tblProperties.remove(CLUSTER_COLUMNS)));
+            }
+            if(!partitionColumns.toString().isEmpty()) {
+                table.setAttribute(PARTITION_COLUMNS, partitionColumns.toString());
             }
             table.setAttribute(TBL_PROPERTIES, getTblPropertiesString(tblProperties));
         }

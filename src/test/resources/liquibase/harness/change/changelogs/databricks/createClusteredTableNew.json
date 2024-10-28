@@ -42,10 +42,10 @@
       }
     },
     {
-      "changeSet":{
+      "changeSet": {
         "id": 2,
-        "author":"your.name",
-        "changes":[
+        "author": "your.name",
+        "changes": [
           {
             "alterCluster": {
               "tableName": "test_table_clustered_new",
@@ -87,6 +87,48 @@
         "rollback": [
           {
             "empty": {
+            }
+          }
+        ]
+      }
+    },
+    {
+      "changeSet": {
+        "id": "4",
+        "author": "your.name",
+        "changes": [
+          {
+            "createTable": {
+              "tableName": "clustered_delta_table",
+              "tableFormat": "delta",
+              "clusterColumns": "id,test_column",
+              "columns": [
+                {
+                  "column": {
+                    "name": "id",
+                    "type": "int"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "name",
+                    "type": "varchar(20)"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "test_column",
+                    "type": "varchar(20)"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "rollback": [
+          {
+            "dropTable": {
+              "tableName": "test_table_clustered_new"
             }
           }
         ]
