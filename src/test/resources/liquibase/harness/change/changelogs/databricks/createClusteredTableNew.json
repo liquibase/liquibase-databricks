@@ -128,7 +128,7 @@
         "rollback": [
           {
             "dropTable": {
-              "tableName": "test_table_clustered_new"
+              "tableName": "clustered_delta_table"
             }
           }
         ]
