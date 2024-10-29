@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Utility class for changed table properties diff
@@ -32,22 +33,23 @@ public class ChangedTblPropertiesUtil {
     /**
      * Get the AlterViewPropertiesChangeDatabricks changes
      */
-    static AlterViewPropertiesChangeDatabricks getAlterViewPropertiesChangeDatabricks(View changedObject, DiffOutputControl control, Difference difference) {
-        AlterViewPropertiesChangeDatabricks change = (AlterViewPropertiesChangeDatabricks) getAbstractTablePropertiesChangeDatabricks(changedObject, control, difference, AlterViewPropertiesChangeDatabricks.class);
-        change.setViewName(changedObject.getName());
+    static AbstractAlterPropertiesChangeDatabricks[] getAlterViewPropertiesChangeDatabricks(View changedObject, DiffOutputControl control, Difference difference) {
+        AbstractAlterPropertiesChangeDatabricks[] change = getAbstractTablePropertiesChangeDatabricks(changedObject, control, difference, AlterViewPropertiesChangeDatabricks.class);
+        Stream.of(change).forEach(c -> ((AlterViewPropertiesChangeDatabricks)c).setViewName(changedObject.getName()));
         return change;
     }
 
     /**
      * Get the AlterTablePropertiesChangeDatabricks changes
      */
-    static AlterTablePropertiesChangeDatabricks getAlterTablePropertiesChangeDatabricks(Table changedObject, DiffOutputControl control, Difference difference) {
-        AlterTablePropertiesChangeDatabricks change = (AlterTablePropertiesChangeDatabricks) getAbstractTablePropertiesChangeDatabricks(changedObject, control, difference, AlterTablePropertiesChangeDatabricks.class);
-        change.setTableName(changedObject.getName());
+    static AbstractAlterPropertiesChangeDatabricks[] getAlterTablePropertiesChangeDatabricks(Table changedObject, DiffOutputControl control, Difference difference) {
+        AbstractAlterPropertiesChangeDatabricks[] change = getAbstractTablePropertiesChangeDatabricks(changedObject, control, difference, AlterTablePropertiesChangeDatabricks.class);
+        Stream.of(change).forEach(c -> ((AlterTablePropertiesChangeDatabricks)c).setTableName(changedObject.getName()));
         return change;
     }
 
-    static AbstractAlterPropertiesChangeDatabricks getAbstractTablePropertiesChangeDatabricks(AbstractDatabaseObject changedObject, DiffOutputControl control, Difference difference, Class<? extends AbstractAlterPropertiesChangeDatabricks> clazz) {
+    static AbstractAlterPropertiesChangeDatabricks[] getAbstractTablePropertiesChangeDatabricks(AbstractDatabaseObject changedObject, DiffOutputControl control, Difference difference, Class<? extends AbstractAlterPropertiesChangeDatabricks> clazz) {
+        AbstractAlterPropertiesChangeDatabricks[] changes = new AbstractAlterPropertiesChangeDatabricks[0];
         String referenceValue = difference.getReferenceValue() == null ? "" : difference.getReferenceValue().toString();
         Map<String, String> referencedValuesMap = Arrays.stream(referenceValue.split(SPLIT_ON_COMMAS))
                 .map(s -> s.split(SPLIT_ON_EQUALS))
@@ -73,35 +75,44 @@ public class ChangedTblPropertiesUtil {
                 .filter(entry -> !referencedValuesMap.containsKey(entry.getKey()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        AbstractAlterPropertiesChangeDatabricks change = null;
-        try {
-            change = clazz.getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            throw new UnexpectedLiquibaseException("Reflection error", e);
-        }
         if (!addPropertiesMap.isEmpty()) {
             SetExtendedTableProperties setExtendedTableProperties = new SetExtendedTableProperties();
             setExtendedTableProperties.setTblProperties(addPropertiesMap.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining(",")));
+            AbstractAlterPropertiesChangeDatabricks change = getAbstractAlterPropertiesChangeDatabricks(changedObject, control, clazz);
             change.setSetExtendedTableProperties(setExtendedTableProperties);
+            changes = new AbstractAlterPropertiesChangeDatabricks[]{change};
         }
 
         if (!removePropertiesMap.isEmpty()) {
             UnsetExtendedTableProperties unsetExtendedTableProperties = new UnsetExtendedTableProperties();
             unsetExtendedTableProperties.setTblProperties(String.join(",", removePropertiesMap.keySet()));
+            AbstractAlterPropertiesChangeDatabricks change = getAbstractAlterPropertiesChangeDatabricks(changedObject, control, clazz);
             change.setUnsetExtendedTableProperties(unsetExtendedTableProperties);
+            if (changes.length == 0) {
+                changes = new AbstractAlterPropertiesChangeDatabricks[]{change};
+            } else {
+                changes = Arrays.copyOf(changes, changes.length + 1);
+                changes[changes.length - 1] = change;
+            }
         }
 
-        setCatalogAndSchema(changedObject, control, change);
-        return change;
+        return changes;
     }
 
-    private static void setCatalogAndSchema(AbstractDatabaseObject table, DiffOutputControl control, AbstractAlterPropertiesChangeDatabricks change) {
+    private static AbstractAlterPropertiesChangeDatabricks getAbstractAlterPropertiesChangeDatabricks(AbstractDatabaseObject changedObject, DiffOutputControl control, Class<? extends AbstractAlterPropertiesChangeDatabricks> clazz) {
+        AbstractAlterPropertiesChangeDatabricks change;
+        try {
+            change = clazz.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            throw new UnexpectedLiquibaseException("Reflection error", e);
+        }
         if (control.getIncludeCatalog()) {
-            change.setCatalogName(table.getSchema().getCatalogName());
+            change.setCatalogName(changedObject.getSchema().getCatalogName());
         }
 
         if (control.getIncludeSchema()) {
-            change.setSchemaName(table.getSchema().getName());
+            change.setSchemaName(changedObject.getSchema().getName());
         }
+        return change;
     }
 }

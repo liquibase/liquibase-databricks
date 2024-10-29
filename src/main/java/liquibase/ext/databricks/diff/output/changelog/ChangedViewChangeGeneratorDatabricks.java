@@ -7,6 +7,7 @@ import liquibase.diff.ObjectDifferences;
 import liquibase.diff.output.DiffOutputControl;
 import liquibase.diff.output.changelog.ChangeGeneratorChain;
 import liquibase.diff.output.changelog.core.ChangedViewChangeGenerator;
+import liquibase.ext.databricks.change.AbstractAlterPropertiesChangeDatabricks;
 import liquibase.ext.databricks.change.alterViewProperties.AlterViewPropertiesChangeDatabricks;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.structure.DatabaseObject;
@@ -32,13 +33,13 @@ public class ChangedViewChangeGeneratorDatabricks extends ChangedViewChangeGener
         Change[] changes = null;
         for (Difference difference : differences.getDifferences()) {
             if (difference.getField().equals("tblProperties")) {
-                AlterViewPropertiesChangeDatabricks change = getAlterViewPropertiesChangeDatabricks((View) changedObject, control, difference);
+                AbstractAlterPropertiesChangeDatabricks[] change = getAlterViewPropertiesChangeDatabricks((View) changedObject, control, difference);
 
                 if (changes == null) {
-                    changes = new Change[] {change};
+                    changes = change;
                 } else {
-                    changes = Arrays.copyOf(changes, changes.length + 1);
-                    changes[changes.length - 1] = change;
+                    changes = Arrays.copyOf(changes, changes.length + change.length);
+                    System.arraycopy(change, 0, changes, changes.length - change.length, change.length);
                 }
                 differences.removeDifference("tblProperties");
             }

@@ -7,7 +7,7 @@ import liquibase.diff.ObjectDifferences;
 import liquibase.diff.output.DiffOutputControl;
 import liquibase.diff.output.changelog.ChangeGeneratorChain;
 import liquibase.diff.output.changelog.core.ChangedTableChangeGenerator;
-import liquibase.ext.databricks.change.alterTableProperties.AlterTablePropertiesChangeDatabricks;
+import liquibase.ext.databricks.change.AbstractAlterPropertiesChangeDatabricks;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.core.Table;
@@ -34,13 +34,13 @@ public class ChangedTableChangeGeneratorDatabricks extends ChangedTableChangeGen
         Change[] changes = super.fixChanged(changedObject, differences, control, referenceDatabase, comparisonDatabase, chain);
         for (Difference difference : differences.getDifferences()) {
             if (difference.getField().equals("tblProperties")) {
-                AlterTablePropertiesChangeDatabricks change = getAlterTablePropertiesChangeDatabricks((Table) changedObject, control, difference);
+                AbstractAlterPropertiesChangeDatabricks[] change = getAlterTablePropertiesChangeDatabricks((Table) changedObject, control, difference);
 
                 if (changes == null || changes.length == 0) {
-                    changes = new Change[] {change};
+                    changes = change;
                 } else {
-                    changes = Arrays.copyOf(changes, changes.length + 1);
-                    changes[changes.length - 1] = change;
+                    changes = Arrays.copyOf(changes, changes.length + change.length);
+                    System.arraycopy(change, 0, changes, changes.length - change.length, change.length);
                 }
             }
         }
