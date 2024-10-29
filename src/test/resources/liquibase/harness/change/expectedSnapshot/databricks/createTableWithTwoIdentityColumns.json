@@ -1,0 +1,41 @@
+{
+  "snapshot": {
+    "objects": {
+      "liquibase.structure.core.Table": [
+        {
+          "table": {
+            "name": "createTableWithTwoIdentityColumns"
+          }
+        }
+      ],
+      "liquibase.structure.core.Column": [
+        {
+          "column": {
+            "name": "IdentityByDefault",
+            "type": {
+              "typeName": "BIGINT"
+            },
+            "autoIncrementInformation": {
+              "generationType": "BY DEFAULT",
+              "startWith": "10\\!\\{java.math.BigInteger\\}",
+              "incrementBy": "5\\!\\{java.math.BigInteger\\}"
+            }
+          }
+        },
+        {
+          "column": {
+            "name": "IdentityAlways",
+            "type": {
+              "typeName": "BIGINT"
+            },
+            "autoIncrementInformation": {
+              "generationType": "ALWAYS",
+              "startWith": "11\\!\\{java.math.BigInteger\\}",
+              "incrementBy": "2\\!\\{java.math.BigInteger\\}"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
