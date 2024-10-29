@@ -10,7 +10,7 @@
 
     <changeSet author="fl" id="1">
         <createTable tableName="tableWithDefaultValues" >
-            <column name="longcolumn" type="long" autoIncrement="true" generationType="IDENTITY" />
+            <column name="longcolumn" type="long" autoIncrement="true" generationType="IDENTITY" startWith="10" incrementBy="5"/>
             <column name="eventTime" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP()">
                 <constraints nullable="false" />
             </column>
