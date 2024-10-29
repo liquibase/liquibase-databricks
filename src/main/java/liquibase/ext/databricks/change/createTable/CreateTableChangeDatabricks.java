@@ -17,8 +17,7 @@ public class CreateTableChangeDatabricks extends CreateTableChange {
     private static final String DOUBLE_INIT_ERROR = "Double initialization of extended table properties is not allowed. " +
             "Please avoid using both EXT createTable attributes and Databricks specific extendedTableProperties element. " +
             "Element databricks:extendedTableProperties is preferred way to set databricks specific configurations.";
-    private static final String PARTITION_CLUSTER_COLLISION_ERROR = "Databricks does not support CLUSTER columns " +
-            "AND PARTITION BY columns, please pick one. And do not supply the other";
+    private static final String PARTITION_CLUSTER_COLLISION_ERROR = "Databricks does not support CLUSTER columns AND PARTITION BY columns, please pick one.";
     private String tableFormat;
     private String tableLocation;
     private String clusterColumns;

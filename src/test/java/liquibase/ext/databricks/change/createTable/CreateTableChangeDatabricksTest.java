@@ -25,7 +25,7 @@ class CreateTableChangeDatabricksTest {
     private static final String EXPECTED_CLUSTER_COLUMNS = "col2,col3";
     private static final String EXPECTED_TABLE_NAME = "test_table";
     private static final String CLUSTER_AND_PARTITION_ERROR_MESSAGE = "Databricks does not support CLUSTER columns AND " +
-            "PARTITION BY columns, please pick one. And do not supply the other";
+            "PARTITION BY columns, please pick one.";
     private static final String DOUBLE_INITIALIZATION_ERROR_MESSAGE = "Double initialization of extended table properties is not allowed. " +
             "Please avoid using both EXT createTable attributes and Databricks specific extendedTableProperties element. " +
             "Element databricks:extendedTableProperties is preferred way to set databricks specific configurations.";
