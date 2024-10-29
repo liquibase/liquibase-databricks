@@ -6,8 +6,7 @@ import liquibase.ext.databricks.change.AbstractAlterPropertiesChangeDatabricks;
 import liquibase.structure.core.Table;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ChangedTblPropertiesUtilTest {
 
@@ -26,7 +25,7 @@ class ChangedTblPropertiesUtilTest {
         //Assert
         assertNotNull(result);
         assertEquals("'this.should.be.added'=35", result.getSetExtendedTableProperties().getTblProperties());
-        assertEquals("", result.getUnsetExtendedTableProperties().getTblProperties());
+        assertNull(result.getUnsetExtendedTableProperties());
     }
 
     @Test
@@ -40,7 +39,7 @@ class ChangedTblPropertiesUtilTest {
 
         //Assert
         assertNotNull(result);
-        assertEquals("", result.getSetExtendedTableProperties().getTblProperties());
+        assertNull(result.getSetExtendedTableProperties());
         assertEquals("'this.should.be.removed'", result.getUnsetExtendedTableProperties().getTblProperties());
     }
 
@@ -73,7 +72,7 @@ class ChangedTblPropertiesUtilTest {
         //Assert
         assertNotNull(result);
         assertEquals("'this.should.be.changed'=35", result.getSetExtendedTableProperties().getTblProperties());
-        assertEquals("", result.getUnsetExtendedTableProperties().getTblProperties());
+        assertNull(result.getUnsetExtendedTableProperties());
     }
 
     @Test
@@ -88,8 +87,8 @@ class ChangedTblPropertiesUtilTest {
 
         //Assert
         assertNotNull(result);
-        assertEquals("", result.getSetExtendedTableProperties().getTblProperties());
-        assertEquals("", result.getUnsetExtendedTableProperties().getTblProperties());
+        assertNull(result.getSetExtendedTableProperties());
+        assertNull(result.getUnsetExtendedTableProperties());
     }
 
     @Test

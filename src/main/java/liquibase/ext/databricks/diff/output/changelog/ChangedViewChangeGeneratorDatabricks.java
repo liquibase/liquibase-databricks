@@ -29,19 +29,33 @@ public class ChangedViewChangeGeneratorDatabricks extends ChangedViewChangeGener
 
     @Override
     public Change[] fixChanged(DatabaseObject changedObject, ObjectDifferences differences, DiffOutputControl control, Database referenceDatabase, Database comparisonDatabase, ChangeGeneratorChain chain) {
-        Change[] changes = super.fixChanged(changedObject, differences, control, referenceDatabase, comparisonDatabase, chain);
+        Change[] changes = null;
         for (Difference difference : differences.getDifferences()) {
             if (difference.getField().equals("tblProperties")) {
                 AlterViewPropertiesChangeDatabricks change = getAlterViewPropertiesChangeDatabricks((View) changedObject, control, difference);
 
-                if (changes == null || changes.length == 0) {
+                if (changes == null) {
                     changes = new Change[] {change};
                 } else {
                     changes = Arrays.copyOf(changes, changes.length + 1);
                     changes[changes.length - 1] = change;
                 }
+                differences.removeDifference("tblProperties");
             }
         }
+
+        if (differences.hasDifferences()) {
+            Change[] otherChanges = super.fixChanged(changedObject, differences, control, referenceDatabase, comparisonDatabase, chain);
+            if (otherChanges != null) {
+                if (changes == null) {
+                    changes = otherChanges;
+                } else {
+                    changes = Arrays.copyOf(changes, changes.length + otherChanges.length);
+                    System.arraycopy(otherChanges, 0, changes, changes.length - otherChanges.length, otherChanges.length);
+                }
+            }
+        }
+
         return changes;
     }
 }

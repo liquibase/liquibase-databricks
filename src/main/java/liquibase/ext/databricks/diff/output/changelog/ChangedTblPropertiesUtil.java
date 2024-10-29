@@ -79,13 +79,18 @@ public class ChangedTblPropertiesUtil {
         } catch (Exception e) {
             throw new UnexpectedLiquibaseException("Reflection error", e);
         }
-        SetExtendedTableProperties setExtendedTableProperties = new SetExtendedTableProperties();
-        setExtendedTableProperties.setTblProperties(addPropertiesMap.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining(",")));
-        change.setSetExtendedTableProperties(setExtendedTableProperties);
+        if (!addPropertiesMap.isEmpty()) {
+            SetExtendedTableProperties setExtendedTableProperties = new SetExtendedTableProperties();
+            setExtendedTableProperties.setTblProperties(addPropertiesMap.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining(",")));
+            change.setSetExtendedTableProperties(setExtendedTableProperties);
+        }
 
-        UnsetExtendedTableProperties unsetExtendedTableProperties = new UnsetExtendedTableProperties();
-        unsetExtendedTableProperties.setTblProperties(String.join(",", removePropertiesMap.keySet()));
-        change.setUnsetExtendedTableProperties(unsetExtendedTableProperties);
+        if (!removePropertiesMap.isEmpty()) {
+            UnsetExtendedTableProperties unsetExtendedTableProperties = new UnsetExtendedTableProperties();
+            unsetExtendedTableProperties.setTblProperties(String.join(",", removePropertiesMap.keySet()));
+            change.setUnsetExtendedTableProperties(unsetExtendedTableProperties);
+        }
+
         setCatalogAndSchema(changedObject, control, change);
         return change;
     }
