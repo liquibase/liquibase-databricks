@@ -18,8 +18,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static liquibase.ext.databricks.snapshot.jvm.TableSnapshotGeneratorDatabricks.PROPERTIES_STOP_LIST;
-
 /**
  * Utility class for changed table properties diff
  */
@@ -97,7 +95,7 @@ public class ChangedTblPropertiesUtil {
                 .map(s -> s.split(SPLIT_ON_EQUALS))
                 .filter(a -> a.length > 1)
                  .map(a -> new String[]{a[0].trim(), a[1].trim()})
-                .filter(a -> !PROPERTIES_STOP_LIST.contains(a[0].replace("'", "")))
+                .filter(a -> !a[0].replace("'", "").matches("^delta.+"))
                 .collect(Collectors.toMap(a -> a[0], a -> a[1]));
     }
 
