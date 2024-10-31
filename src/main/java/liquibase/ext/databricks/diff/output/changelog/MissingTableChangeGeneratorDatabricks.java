@@ -31,9 +31,8 @@ public class MissingTableChangeGeneratorDatabricks extends MissingTableChangeGen
             return changes;
         }
         //so far we intentionally omit tableLocation in generated changelog
-        //TODO: add tableFormat extended property if needed in scope of DAT-18896
         ExtendedTableProperties extendedTableProperties = new ExtendedTableProperties(
-                null,
+                missingObject.getAttribute("tableFormat", String.class),
                 null,
                 missingObject.getAttribute("tblProperties", String.class),
                 missingObject.getAttribute("clusteringColumns", String.class),

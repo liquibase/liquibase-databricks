@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:databricks="http://www.liquibase.org/xml/ns/databricks"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="1" author="mykhailo">
+        <createTable tableName="test_external_csv_table">
+            <column name="id" type="BIGINT"/>
+            <column name="first_name" type="STRING"/>
+            <column name="last_name" type="STRING"/>
+            <column name="email" type="STRING"/>
+            <column name="birthdate" type="DATE"/>
+            <column name="added" type="TIMESTAMP"/>
+            <databricks:extendedTableProperties tableFormat="CSV OPTIONS (header 'true', inferSchema 'false', path 's3://databricks-th/files/csv_table.csv')"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

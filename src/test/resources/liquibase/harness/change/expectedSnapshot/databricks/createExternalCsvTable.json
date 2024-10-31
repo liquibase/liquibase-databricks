@@ -1,0 +1,45 @@
+{
+  "snapshot": {
+    "objects": {
+      "liquibase.structure.core.Table": [
+        {
+          "table": {
+            "name": "test_external_csv_table"
+          }
+        }
+      ],
+      "liquibase.structure.core.Column": [
+        {
+          "column": {
+            "name": "id"
+          }
+        },
+        {
+          "column": {
+            "name": "first_name"
+          }
+        },
+        {
+          "column": {
+            "name": "last_name"
+          }
+        },
+        {
+          "column": {
+            "name": "email"
+          }
+        },
+        {
+          "column": {
+            "name": "birthdate"
+          }
+        },
+        {
+          "column": {
+            "name": "added"
+          }
+        }
+      ]
+    }
+  }
+}

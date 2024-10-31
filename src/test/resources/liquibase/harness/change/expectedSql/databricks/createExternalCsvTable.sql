@@ -1,0 +1,1 @@
+CREATE TABLE main.liquibase_harness_test_ds.test_external_csv_table (id BIGINT, first_name STRING, last_name STRING, email STRING, birthdate date, added TIMESTAMP) USING CSV OPTIONS (header 'true', inferSchema 'false', path 's3://databricks-th/files/csv_table.csv')
