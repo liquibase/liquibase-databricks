@@ -2,15 +2,11 @@ package liquibase.ext.databricks.sqlgenerator;
 
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.database.Database;
-import liquibase.database.core.*;
-import liquibase.exception.ValidationErrors;
 import liquibase.sql.Sql;
 import liquibase.sql.UnparsedSql;
 import liquibase.sqlgenerator.SqlGeneratorChain;
 import liquibase.statement.core.RenameTableStatement;
-import liquibase.structure.core.Relation;
 import liquibase.structure.core.Table;
-import liquibase.sqlgenerator.core.AbstractSqlGenerator;
 import liquibase.sqlgenerator.core.RenameTableGenerator;
 
 public class RenameTableGeneratorDatabricks extends RenameTableGenerator {

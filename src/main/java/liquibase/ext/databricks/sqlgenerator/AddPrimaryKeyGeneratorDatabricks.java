@@ -1,7 +1,6 @@
 package liquibase.ext.databricks.sqlgenerator;
 
 import liquibase.database.Database;
-import liquibase.database.core.*;
 import liquibase.exception.ValidationErrors;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.sql.Sql;

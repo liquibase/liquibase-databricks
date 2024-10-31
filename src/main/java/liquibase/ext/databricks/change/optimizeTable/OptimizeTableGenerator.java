@@ -11,7 +11,6 @@ import liquibase.sqlgenerator.core.AbstractSqlGenerator;
 public class OptimizeTableGenerator extends AbstractSqlGenerator<OptimizeTableStatement> {
 
     @Override
-    //check support for optimizer operation
     public boolean supports(OptimizeTableStatement statement, Database database) {
         return database instanceof DatabricksDatabase;
     }
@@ -37,7 +36,7 @@ public class OptimizeTableGenerator extends AbstractSqlGenerator<OptimizeTableSt
 
 
         if (!statement.getZorderColumns().isEmpty()) {
-            sql.append(" ZORDER BY (" + String.join(", ", statement.getZorderColumns()) + ")");
+            sql.append(" ZORDER BY (").append(String.join(", ", statement.getZorderColumns())).append(")");
         }
 
         return new Sql[] { new UnparsedSql(sql.toString()) };

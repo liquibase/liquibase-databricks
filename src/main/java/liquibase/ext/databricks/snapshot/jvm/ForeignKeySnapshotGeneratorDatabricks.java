@@ -53,7 +53,7 @@ public class ForeignKeySnapshotGeneratorDatabricks extends ForeignKeySnapshotGen
 
 
     @Override
-    protected void addTo(DatabaseObject foundObject, DatabaseSnapshot snapshot) throws DatabaseException, InvalidExampleException {
+    protected void addTo(DatabaseObject foundObject, DatabaseSnapshot snapshot) throws DatabaseException {
         if (!snapshot.getSnapshotControl().shouldInclude(ForeignKey.class)) {
             return;
         }
@@ -85,7 +85,7 @@ public class ForeignKeySnapshotGeneratorDatabricks extends ForeignKeySnapshotGen
     }
 
     @Override
-    protected DatabaseObject snapshotObject(DatabaseObject example, DatabaseSnapshot snapshot) throws DatabaseException, InvalidExampleException {
+    protected DatabaseObject snapshotObject(DatabaseObject example, DatabaseSnapshot snapshot) throws DatabaseException {
 
         Database database = snapshot.getDatabase();
 

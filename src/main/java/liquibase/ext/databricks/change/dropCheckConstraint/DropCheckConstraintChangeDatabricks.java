@@ -8,41 +8,20 @@ import liquibase.database.Database;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.servicelocator.PrioritizedService;
 import liquibase.statement.SqlStatement;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.text.MessageFormat;
 
+@Setter
+@Getter
 @DatabaseChange(name = "dropCheckConstraint", description = "Drops check constraint to Delta Table", priority = PrioritizedService.PRIORITY_DATABASE)
 public class DropCheckConstraintChangeDatabricks extends AbstractChange {
 
     private String catalogName;
     private String schemaName;
     private String tableName;
-
     private String constraintName;
-
-    public String getCatalogName() {
-        return catalogName;
-    }
-
-    public void setCatalogName (String catalogName) {
-        this.catalogName = catalogName;
-    }
-
-    public String getTableName() {
-        return tableName;
-    }
-
-    public void setTableName (String tableName) {
-        this.tableName = tableName;
-    }
-
-    public String getSchemaName() {
-        return schemaName;
-    }
-
-    public void setSchemaName (String schemaName) {
-        this.schemaName = schemaName;
-    }
 
     @Override
     public boolean supports(Database database) {
@@ -55,10 +34,6 @@ public class DropCheckConstraintChangeDatabricks extends AbstractChange {
     )
     public String getConstraintName() {
         return this.constraintName;
-    }
-
-    public void setConstraintName(String name) {
-        this.constraintName = name;
     }
 
 

@@ -27,7 +27,7 @@ public class AnalyzeTableGenerator extends AbstractSqlGenerator<AnalyzeTableStat
         validationErrors.checkRequiredField("tableName", statement.getTableName());
 
         // if analyzeColumns columns if null, dont add to sql statement - just use defaults (all columns)
-        // If parititon is null, skip
+        // If partition is null, skip
         return validationErrors;
     }
 
@@ -46,13 +46,13 @@ public class AnalyzeTableGenerator extends AbstractSqlGenerator<AnalyzeTableStat
              String partitionColumnValue = partitionMap.getValue();
 
             // append partition column for each map element, but there should only be one
-            sql.append(" PARTITION (" + partitionColumnName + " = '" + partitionColumnValue + "') ");
+            sql.append(" PARTITION (").append(partitionColumnName).append(" = '").append(partitionColumnValue).append("') ");
 
 
         }
 
         if (!statement.getAnalyzeColumns().isEmpty()) {
-            sql.append("COMPUTE STATISTICS FOR COLUMNS  (" + String.join(", ", statement.getAnalyzeColumns()) + ")");
+            sql.append("COMPUTE STATISTICS FOR COLUMNS  (").append(String.join(", ", statement.getAnalyzeColumns())).append(")");
         }
         else {
             sql.append(" COMPUTE STATISTICS");

@@ -10,12 +10,8 @@ import lombok.Setter;
 public class VacuumTableStatement extends AbstractSqlStatement {
 
     private String catalogName;
-
     private String schemaName;
-
     private String tableName;
-
     private Integer retentionHours;
-
 
 }
