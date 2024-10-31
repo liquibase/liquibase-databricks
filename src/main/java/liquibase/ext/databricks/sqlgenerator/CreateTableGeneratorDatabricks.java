@@ -13,7 +13,7 @@ import liquibase.statement.core.CreateTableStatement;
 import liquibase.structure.DatabaseObject;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
 
@@ -63,8 +63,8 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
                 finalsql.append(" LOCATION '").append(thisStatement.getExtendedTableProperties().getTableLocation()).append("'");
             }
 
-            ArrayList<String> clusterCols = thisStatement.getClusterColumns();
-            ArrayList<String> partitionCols = thisStatement.getPartitionColumns();
+            List<String> clusterCols = thisStatement.getClusterColumns();
+            List<String> partitionCols = thisStatement.getPartitionColumns();
 
 
             // If there are any cluster columns, add the clause
