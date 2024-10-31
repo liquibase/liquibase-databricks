@@ -73,8 +73,8 @@ public class TimestampDatatypeDatabricks extends TimestampType {
          */
         DatabaseDataType type;
 
-        if (getParameters().length > 0 && !(database instanceof SybaseASADatabase)) {
-            int fractionalDigits = 0;
+        if (getParameters().length > 0) {
+            int fractionalDigits;
             String fractionalDigitsInput = getParameters()[0].toString();
             try {
                 fractionalDigits = Integer.parseInt(fractionalDigitsInput);
@@ -91,13 +91,10 @@ public class TimestampDatatypeDatabricks extends TimestampType {
                                 "%d digits. Because of this, the number of digits was reduced to %d.",
                         fractionalDigits, database.getDatabaseProductName(), maxFractionalDigits, maxFractionalDigits)
                 );
-                fractionalDigits = maxFractionalDigits;
             }
             // Do not return parameter p for Databricks
-            type = new DatabaseDataType("TIMESTAMP");
-        } else {
-            type = new DatabaseDataType("TIMESTAMP");
         }
+        type = new DatabaseDataType("TIMESTAMP");
 
         if (originalDefinition.startsWith("java.sql.Types.TIMESTAMP_WITH_TIMEZONE")
                 && (database instanceof PostgresDatabase

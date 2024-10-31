@@ -5,15 +5,16 @@ import liquibase.statement.core.CreateTableStatement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class CreateTableStatementDatabricks extends CreateTableStatement {
 
     private String tableFormat;
     private String tableLocation;
 
-    private ArrayList<String> clusterColumns;
+    private List<String> clusterColumns;
 
-    private ArrayList<String> partitionColumns;
+    private List<String> partitionColumns;
 
     private ExtendedTableProperties extendedTableProperties;
 
@@ -29,11 +30,11 @@ public class CreateTableStatementDatabricks extends CreateTableStatement {
     public void setTableLocation(String tableLocation) { this.tableLocation = tableLocation;}
 
     public String getTableLocation() {return this.tableLocation;}
-    public ArrayList<String> getClusterColumns () {
+    public List<String> getClusterColumns () {
         return clusterColumns;
     }
 
-    public ArrayList<String> getPartitionColumns () {
+    public List<String> getPartitionColumns () {
         return partitionColumns;
     }
 

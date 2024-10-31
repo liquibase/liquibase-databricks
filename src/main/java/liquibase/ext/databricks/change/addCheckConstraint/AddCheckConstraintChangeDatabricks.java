@@ -51,6 +51,7 @@ public class AddCheckConstraintChangeDatabricks extends AbstractChange {
                 getConstraintName());
     }
 
+    @Override
     protected Change[] createInverses() {
         DropCheckConstraintChangeDatabricks inverse = new DropCheckConstraintChangeDatabricks();
         inverse.setTableName(getTableName());

@@ -102,9 +102,7 @@ public class ForeignKeySnapshotGeneratorDatabricks extends ForeignKeySnapshotGen
             for (CachedRow row : importedKeyMetadataResultSet) {
                 String fk_name = cleanNameFromDatabase(row.getString("FK_NAME"), database);
                 if (snapshot.getDatabase().isCaseSensitive()) {
-                    if (!fk_name.equals(example.getName())) {
-                        continue;
-                    } else if (!fk_name.equalsIgnoreCase(example.getName())) {
+                    if (!fk_name.equalsIgnoreCase(example.getName())) {
                         continue;
                     }
                 }
@@ -217,7 +215,7 @@ public class ForeignKeySnapshotGeneratorDatabricks extends ForeignKeySnapshotGen
         }
     }
 
-
+    @Override
     protected ForeignKeyConstraintType convertToForeignKeyConstraintType(Integer jdbcType, Database database) throws DatabaseException {
         if (jdbcType == null) {
             return ForeignKeyConstraintType.importedKeyNoAction;
