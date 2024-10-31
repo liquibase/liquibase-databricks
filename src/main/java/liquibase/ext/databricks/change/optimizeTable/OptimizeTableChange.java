@@ -59,9 +59,8 @@ public class OptimizeTableChange extends AbstractChange {
         } else {
             statement.setZorderColumns(getZorderColumns());
         }
-        SqlStatement[] builtStatement = new SqlStatement[] {statement};
 
-        return builtStatement;
+        return new SqlStatement[] {statement};
 
     }
 }

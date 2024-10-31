@@ -11,7 +11,7 @@ public class ResultSetCacheDatabricks extends ResultSetCache {
     }
 
     public abstract static class SingleResultSetExtractor extends ResultSetCache.SingleResultSetExtractor {
-        public SingleResultSetExtractor(Database database) {
+        protected SingleResultSetExtractor(Database database) {
             super(database);
         }
     }

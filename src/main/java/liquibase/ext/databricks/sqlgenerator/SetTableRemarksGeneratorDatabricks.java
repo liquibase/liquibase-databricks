@@ -26,13 +26,6 @@ public class SetTableRemarksGeneratorDatabricks extends SetTableRemarksGenerator
 
 
     @Override
-    public ValidationErrors validate(SetTableRemarksStatement setTableRemarksStatement, Database database, SqlGeneratorChain sqlGeneratorChain) {
-        ValidationErrors validationErrors = new ValidationErrors();
-        validationErrors.checkRequiredField("tableName", setTableRemarksStatement.getTableName());
-        return validationErrors;
-    }
-
-    @Override
     public Sql[] generateSql(SetTableRemarksStatement statement, Database database, SqlGeneratorChain sqlGeneratorChain) {
         String sql;
         String remarksEscaped = database.escapeStringForDatabase(StringUtils.trimToEmpty(statement.getRemarks()));
@@ -43,7 +36,4 @@ public class SetTableRemarksGeneratorDatabricks extends SetTableRemarksGenerator
         return new Sql[] { new UnparsedSql(sql, getAffectedTable(statement)) };
     }
 
-    protected Relation getAffectedTable(SetTableRemarksStatement statement) {
-        return new Table().setName(statement.getTableName()).setSchema(statement.getCatalogName(), statement.getSchemaName());
-    }
 }

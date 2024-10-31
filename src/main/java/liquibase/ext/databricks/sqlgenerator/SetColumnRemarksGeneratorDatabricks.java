@@ -9,8 +9,6 @@ import liquibase.sql.Sql;
 import liquibase.sql.UnparsedSql;
 import liquibase.sqlgenerator.SqlGeneratorChain;
 import liquibase.statement.core.SetColumnRemarksStatement;
-import liquibase.structure.core.Column;
-import liquibase.structure.core.Table;
 import liquibase.sqlgenerator.core.SetColumnRemarksGenerator;
 import org.apache.commons.lang3.StringUtils;
 
@@ -61,7 +59,4 @@ public class SetColumnRemarksGeneratorDatabricks extends SetColumnRemarksGenerat
 
     }
 
-    protected Column getAffectedColumn(SetColumnRemarksStatement statement) {
-        return new Column().setName(statement.getColumnName()).setRelation(new Table().setName(statement.getTableName()).setSchema(statement.getCatalogName(), statement.getSchemaName()));
-    }
 }

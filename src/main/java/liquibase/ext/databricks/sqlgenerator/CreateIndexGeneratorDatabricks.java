@@ -102,8 +102,4 @@ public class CreateIndexGeneratorDatabricks extends CreateIndexGenerator {
         return new Sql[] {new UnparsedSql(buffer.toString(), getAffectedIndex(statement))};
     }
 
-    @Override
-    protected Index getAffectedIndex(CreateIndexStatement statement) {
-        return new Index().setName(statement.getIndexName()).setRelation(new Table().setName(statement.getTableName()).setSchema(statement.getTableCatalogName(), statement.getTableSchemaName()));
-    }
 }

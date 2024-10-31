@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 
 @Setter
@@ -16,7 +17,7 @@ public class OptimizeTableStatement extends AbstractSqlStatement {
     private String catalogName;
     private String schemaName;
     private String tableName;
-    private ArrayList<String> zorderColumns = new ArrayList<>();
+    private List<String> zorderColumns = new ArrayList<>();
 
     public void setZorderColumns(ArrayList<String> zorderColumns) {
         this.zorderColumns = zorderColumns;

@@ -24,6 +24,7 @@ import static liquibase.statement.SqlStatement.EMPTY_SQL_STATEMENT;
         description = "Creates a lookup table containing values stored in a column and creates a foreign key to the new table.")
 public class AddLookupTableChangeDatabricks extends AddLookupTableChange {
 
+    @Override
     public String getFinalConstraintName() {
         if (getConstraintName() == null) {
             return ("fk_" + getExistingTableName() + "_" + getNewTableName()).toLowerCase();

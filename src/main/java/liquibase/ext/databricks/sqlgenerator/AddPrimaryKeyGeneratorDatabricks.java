@@ -29,20 +29,8 @@ public class AddPrimaryKeyGeneratorDatabricks extends AddPrimaryKeyGenerator {
         validationErrors.checkRequiredField("columnNames", addPrimaryKeyStatement.getColumnNames());
         validationErrors.checkRequiredField("tableName", addPrimaryKeyStatement.getTableName());
 
-        if (addPrimaryKeyStatement.isClustered() != null) {
-            if (database instanceof PostgresDatabase) {
-                if (addPrimaryKeyStatement.isClustered() && addPrimaryKeyStatement.getConstraintName() == null) {
-                    validationErrors.addError("Postgresql requires constraintName on addPrimaryKey when clustered=true");
-                }
-            } else if (database instanceof MSSQLDatabase || database instanceof MockDatabase) {
-                //clustered is fine
-            } else if (addPrimaryKeyStatement.isClustered()) {
-                validationErrors.addError("Cannot specify clustered=true on "+database.getShortName());
-            }
-        }
-
-        if (!((database instanceof OracleDatabase) || (database instanceof AbstractDb2Database))) {
-            validationErrors.checkDisallowedField("forIndexName", addPrimaryKeyStatement.getForIndexName(), database);
+        if (Boolean.TRUE.equals(addPrimaryKeyStatement.isClustered())) {
+            validationErrors.addError("Cannot specify clustered=true on " + database.getShortName());
         }
 
         return validationErrors;

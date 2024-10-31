@@ -8,11 +8,17 @@ import liquibase.database.Database;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.servicelocator.PrioritizedService;
 import liquibase.statement.SqlStatement;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Collections;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+@Getter
+@Setter
 @DatabaseChange(name = "analyzeTable", description = "Analyze Table Stats", priority =  PrioritizedService.PRIORITY_DATABASE)
 public class AnalyzeTableChange extends AbstractChange {
 
@@ -21,39 +27,7 @@ public class AnalyzeTableChange extends AbstractChange {
     private String tableName;
     private Map<String, String> partition = Collections.emptyMap();
 
-    private ArrayList<String> analyzeColumns = new ArrayList<>();
-
-    public String getCatalogName() {
-        return catalogName;
-    }
-
-    public void setCatalogName (String catalogName) {
-        this.catalogName = catalogName;
-    }
-
-    public String getTableName() {
-        return tableName;
-    }
-
-    public void setTableName (String tableName) {
-        this.tableName = tableName;
-    }
-
-    public String getSchemaName() {
-        return schemaName;
-    }
-
-    public void setSchemaName (String schemaName) {
-        this.schemaName = schemaName;
-    }
-
-    public Map<String, String> getPartition () {return this.partition;}
-
-    public ArrayList<String> getAnalyzeColumns () {return this.analyzeColumns;}
-
-    public void setPartition (Map<String, String> partition) {this.partition = partition;}
-
-    public void setAnalyzeColumns (ArrayList<String> analyzeColumns) {this.analyzeColumns = analyzeColumns;}
+    private List<String> analyzeColumns = new ArrayList<>();
 
     @Override
     public boolean supports(Database database) {
@@ -88,14 +62,13 @@ public class AnalyzeTableChange extends AbstractChange {
         }
 
         if (getAnalyzeColumns() == null) {
-            ArrayList<String> noColsArray = new ArrayList<> ();
+            List<String> noColsArray = new ArrayList<> ();
 
             statement.setAnalyzeColumns(noColsArray);
         } else {
             statement.setAnalyzeColumns(getAnalyzeColumns());
         }
-        SqlStatement[] builtStatement = new SqlStatement[] {statement};
 
-        return builtStatement;
+        return new SqlStatement[] {statement};
     }
 }
