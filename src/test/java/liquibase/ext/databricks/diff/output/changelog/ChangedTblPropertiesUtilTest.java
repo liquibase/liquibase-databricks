@@ -37,7 +37,7 @@ class ChangedTblPropertiesUtilTest {
         Difference difference = new Difference("tblProperties", "", "'this.should.be.removed'=true");
 
         //Act
-        AbstractAlterPropertiesChangeDatabricks result[] = ChangedTblPropertiesUtil
+        AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
                 .getAlterTablePropertiesChangeDatabricks(table, control, difference);
 
         //Assert
@@ -54,7 +54,7 @@ class ChangedTblPropertiesUtilTest {
                 "'this.should.be.added'=35", "'this.should.be.removed'=true");
 
         //Act
-        AbstractAlterPropertiesChangeDatabricks result[] = ChangedTblPropertiesUtil
+        AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
                 .getAlterTablePropertiesChangeDatabricks(table, control, difference);
 
         //Assert
@@ -73,7 +73,7 @@ class ChangedTblPropertiesUtilTest {
                 "'this.should.be.changed'=35", "'this.should.be.changed'=20");
 
         //Act
-        AbstractAlterPropertiesChangeDatabricks result[] = ChangedTblPropertiesUtil
+        AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
                 .getAlterTablePropertiesChangeDatabricks(table, control, difference);
 
         //Assert
@@ -90,7 +90,7 @@ class ChangedTblPropertiesUtilTest {
                 "'this.should.be.ignored'=35", "'this.should.be.ignored'=35");
 
         //Act
-        AbstractAlterPropertiesChangeDatabricks result[] = ChangedTblPropertiesUtil
+        AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
                 .getAlterTablePropertiesChangeDatabricks(table, control, difference);
 
         //Assert
@@ -105,7 +105,7 @@ class ChangedTblPropertiesUtilTest {
                 "'this.should.be.ignored'=true,'this.should.be.added.too'=true,'this.should.be.added'=35,'this.should.be.changed'=true", "'this.should.be.changed'=false,'this.should.be.removed'='aaa','this.should.be.ignored'=true,this.should.be.removed.too'=bye");
 
         //Act
-        AbstractAlterPropertiesChangeDatabricks result[] = ChangedTblPropertiesUtil
+        AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
                 .getAlterTablePropertiesChangeDatabricks(table, control, difference);
 
         //Assert
@@ -114,6 +114,26 @@ class ChangedTblPropertiesUtilTest {
         assertEquals("'this.should.be.added.too'=true,'this.should.be.changed'=true,'this.should.be.added'=35", result[0].getSetExtendedTableProperties().getTblProperties());
         assertNull(result[0].getUnsetExtendedTableProperties());
         assertEquals("'this.should.be.removed',this.should.be.removed.too'", result[1].getUnsetExtendedTableProperties().getTblProperties());
+        assertNull(result[1].getSetExtendedTableProperties());
+    }
+
+    @Test
+    void ignoreInternalDeltaProperties() {
+        //Arrange
+        Difference difference = new Difference("tblProperties",
+                "'delta.columnMapping.maxColumnId'=35, 'this.should.be.added.too'=true",
+                "'this.should.be.dropped'=false, 'delta.feature.clustering'=20");
+
+        //Act
+        AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
+                .getAlterTablePropertiesChangeDatabricks(table, control, difference);
+
+        //Assert
+        assertNotNull(result);
+        assertEquals(2, result.length);
+        assertEquals("'this.should.be.added.too'=true", result[0].getSetExtendedTableProperties().getTblProperties());
+        assertNull(result[0].getUnsetExtendedTableProperties());
+        assertEquals("'this.should.be.dropped'", result[1].getUnsetExtendedTableProperties().getTblProperties());
         assertNull(result[1].getSetExtendedTableProperties());
     }
 }

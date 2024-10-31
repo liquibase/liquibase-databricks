@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static liquibase.ext.databricks.snapshot.jvm.TableSnapshotGeneratorDatabricks.PROPERTIES_STOP_LIST;
+
 /**
  * Utility class for changed table properties diff
  */
@@ -50,18 +52,8 @@ public class ChangedTblPropertiesUtil {
 
     static AbstractAlterPropertiesChangeDatabricks[] getAbstractTablePropertiesChangeDatabricks(AbstractDatabaseObject changedObject, DiffOutputControl control, Difference difference, Class<? extends AbstractAlterPropertiesChangeDatabricks> clazz) {
         AbstractAlterPropertiesChangeDatabricks[] changes = new AbstractAlterPropertiesChangeDatabricks[0];
-        String referenceValue = difference.getReferenceValue() == null ? "" : difference.getReferenceValue().toString();
-        Map<String, String> referencedValuesMap = Arrays.stream(referenceValue.split(SPLIT_ON_COMMAS))
-                .map(s -> s.split(SPLIT_ON_EQUALS))
-                .filter(a -> a.length > 1)
-                .collect(Collectors.toMap(a -> a[0], a -> a[1]));
-
-        String comparedValue = difference.getComparedValue() == null ? "" : difference.getComparedValue().toString();
-
-        Map<String, String> comparedValuesMap = Arrays.stream(comparedValue.split(SPLIT_ON_COMMAS))
-                .map(s -> s.split(SPLIT_ON_EQUALS))
-                .filter(a -> a.length > 1)
-                .collect(Collectors.toMap(a -> a[0], a -> a[1]));
+        Map<String, String> referencedValuesMap = convertToMap(difference.getReferenceValue());
+        Map<String, String> comparedValuesMap = convertToMap(difference.getComparedValue());
 
         Map<String, String> addPropertiesMap = new HashMap<>();
         //first we add the missing or changed properties
@@ -97,6 +89,16 @@ public class ChangedTblPropertiesUtil {
         }
 
         return changes;
+    }
+
+    private static Map<String, String> convertToMap(Object referenceValueObject) {
+        String referenceValue = referenceValueObject == null ? "" : referenceValueObject.toString();
+         return Arrays.stream(referenceValue.split(SPLIT_ON_COMMAS))
+                .map(s -> s.split(SPLIT_ON_EQUALS))
+                .filter(a -> a.length > 1)
+                 .map(a -> new String[]{a[0].trim(), a[1].trim()})
+                .filter(a -> !PROPERTIES_STOP_LIST.contains(a[0].replace("'", "")))
+                .collect(Collectors.toMap(a -> a[0], a -> a[1]));
     }
 
     private static AbstractAlterPropertiesChangeDatabricks getAbstractAlterPropertiesChangeDatabricks(AbstractDatabaseObject changedObject, DiffOutputControl control, Class<? extends AbstractAlterPropertiesChangeDatabricks> clazz) {
