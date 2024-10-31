@@ -23,7 +23,7 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
     private static final String TBL_PROPERTIES = "tblProperties";
     private static final String CLUSTER_COLUMNS = "clusteringColumns";
     private static final String DETAILED_TABLE_INFORMATION_NODE = "# Detailed Table Information";
-    protected  static final List<String> PROPERTIES_STOP_LIST = Arrays.asList(
+    public  static final List<String> PROPERTIES_STOP_LIST = Arrays.asList(
             "delta.columnMapping.maxColumnId",
             "delta.rowTracking.materializedRowCommitVersionColumnName",
             "delta.rowTracking.materializedRowIdColumnName",
