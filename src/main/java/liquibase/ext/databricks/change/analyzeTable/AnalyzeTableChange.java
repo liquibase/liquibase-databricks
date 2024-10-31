@@ -41,7 +41,7 @@ public class AnalyzeTableChange extends AbstractChange {
 
     @Override
     protected Change[] createInverses() {
-        // No Op for Databricks ANALYZE statement. there is no rolling this back. Its just a stats collection operation
+        // No Op for Databricks ANALYZE statement. there is no rolling this back. It's just a stats collection operation
         return new Change[]{
         };
     }

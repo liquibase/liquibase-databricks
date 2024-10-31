@@ -1,7 +1,11 @@
 package liquibase.ext.databricks.change.alterCluster;
 
 import liquibase.serializer.AbstractLiquibaseSerializable;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class ColumnConfig extends AbstractLiquibaseSerializable {
 
     private String name;
@@ -14,13 +18,5 @@ public class ColumnConfig extends AbstractLiquibaseSerializable {
     @Override
     public String getSerializedObjectNamespace() {
         return "http://www.liquibase.org/xml/ns/databricks";
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }

@@ -14,13 +14,9 @@ import java.util.Collections;
 public class AnalyzeTableStatement extends AbstractSqlStatement {
 
     private String catalogName;
-
     private String schemaName;
-
     private String tableName;
-
     private List<String> analyzeColumns = new ArrayList<>();
-
     private Map<String, String> partition = Collections.emptyMap();
 
 }

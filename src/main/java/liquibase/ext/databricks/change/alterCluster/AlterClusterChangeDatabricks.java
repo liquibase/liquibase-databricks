@@ -7,6 +7,7 @@ import liquibase.database.Database;
 import liquibase.exception.ValidationErrors;
 import liquibase.servicelocator.PrioritizedService;
 import liquibase.statement.SqlStatement;
+import lombok.Setter;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.List;
 
 import static liquibase.ext.databricks.parser.NamespaceDetailsDatabricks.DATABRICKS_NAMESPACE;
 
+@Setter
 @DatabaseChange(name = "alterCluster", description = "Alter Cluster", priority = PrioritizedService.PRIORITY_DATABASE +500)
 public class AlterClusterChangeDatabricks extends AbstractChange {
 
@@ -61,10 +63,6 @@ public class AlterClusterChangeDatabricks extends AbstractChange {
         return tableName;
     }
 
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
-    }
-
     @DatabaseChangeProperty
     public List<ColumnConfig> getColumns() {
         if (columns == null) {
@@ -73,26 +71,14 @@ public class AlterClusterChangeDatabricks extends AbstractChange {
         return columns;
     }
 
-    public void setColumns(List<ColumnConfig> columns) {
-        this.columns = columns;
-    }
-
     @DatabaseChangeProperty
     public String getCatalogName() {
         return catalogName;
     }
 
-    public void setCatalogName(String catalogName) {
-        this.catalogName = catalogName;
-    }
-
     @DatabaseChangeProperty
     public String getSchemaName() {
         return schemaName;
-    }
-
-    public void setSchemaName(String schemaName) {
-        this.schemaName = schemaName;
     }
 
     @DatabaseChangeProperty
@@ -101,10 +87,6 @@ public class AlterClusterChangeDatabricks extends AbstractChange {
             return new ArrayList<>();
         }
         return clusterBy;
-    }
-
-    public void setClusterBy(List<NoneConfig> clusterBy) {
-        this.clusterBy = clusterBy;
     }
 
     @Override

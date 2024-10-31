@@ -3,7 +3,6 @@ package liquibase.ext.databricks.sqlgenerator;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.Scope;
 import liquibase.database.Database;
-import liquibase.database.core.MySQLDatabase;
 import liquibase.datatype.DataTypeFactory;
 import liquibase.exception.DatabaseException;
 import liquibase.exception.ValidationErrors;

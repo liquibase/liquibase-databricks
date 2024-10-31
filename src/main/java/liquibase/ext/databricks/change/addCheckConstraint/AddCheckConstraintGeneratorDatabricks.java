@@ -35,7 +35,7 @@ public class AddCheckConstraintGeneratorDatabricks extends AbstractSqlGenerator<
 
         sql.append(" ADD CONSTRAINT ");
 
-        // Constrinat Name
+        // Constraint Name
         sql.append(statement.getConstraintName());
 
         sql.append(" CHECK (").append(statement.getConstraintBody()).append(")");

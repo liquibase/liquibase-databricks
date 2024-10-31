@@ -39,7 +39,7 @@ public class VacuumTableGenerator extends AbstractSqlGenerator<VacuumTableStatem
 
 
         if (statement.getRetentionHours() != null) {
-            sql.append(" RETAIN " + statement.getRetentionHours().toString() + " HOURS ");
+            sql.append(" RETAIN ").append(statement.getRetentionHours().toString()).append(" HOURS ");
         }
 
         return new Sql[] { new UnparsedSql(sql.toString()) };

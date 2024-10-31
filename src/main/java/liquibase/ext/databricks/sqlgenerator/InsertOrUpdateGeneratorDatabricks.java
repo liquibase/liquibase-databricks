@@ -43,7 +43,7 @@ public class InsertOrUpdateGeneratorDatabricks extends InsertOrUpdateGenerator {
 
         for (String columnKey : insertOrUpdateStatement.getColumnValues().keySet()) {
 
-            // Databricks does not support updating an identity column, so dont update if the column is part of the key youre merging on
+            // Databricks does not support updating an identity column, so don't update if the column is part of the key you're merging on
             if ((insertOrUpdateStatement.getAllowColumnUpdate(columnKey)) && (!whereClause.contains(columnKey))) {
                 sql.append("target.").append(columnKey).append(" = ");
                 sql.append(convertToString(insertOrUpdateStatement.getColumnValue(columnKey), database));

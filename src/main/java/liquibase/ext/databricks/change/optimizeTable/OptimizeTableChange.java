@@ -2,7 +2,6 @@ package liquibase.ext.databricks.change.optimizeTable;
 
 
 import liquibase.change.AbstractChange;
-import liquibase.change.ChangeMetaData;
 import liquibase.change.DatabaseChange;
 import liquibase.database.Database;
 import liquibase.ext.databricks.database.DatabricksDatabase;

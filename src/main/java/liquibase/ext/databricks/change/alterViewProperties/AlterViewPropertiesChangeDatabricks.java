@@ -4,7 +4,6 @@ import liquibase.change.DatabaseChange;
 import liquibase.change.DatabaseChangeProperty;
 import liquibase.database.Database;
 import liquibase.ext.databricks.change.AbstractAlterPropertiesChangeDatabricks;
-import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.servicelocator.PrioritizedService;
 import liquibase.statement.SqlStatement;
 import lombok.Setter;
@@ -15,11 +14,6 @@ public class AlterViewPropertiesChangeDatabricks extends AbstractAlterProperties
 
     private static final String CHANGE_TYPE_SUBJECT = "View";
     private String viewName;
-
-    @Override
-    public boolean supports(Database database) {
-        return database instanceof DatabricksDatabase;
-    }
 
     @Override
     protected String getNoPropertiesErrorMessage() {

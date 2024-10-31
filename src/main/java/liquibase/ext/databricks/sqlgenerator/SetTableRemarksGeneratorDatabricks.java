@@ -2,13 +2,10 @@ package liquibase.ext.databricks.sqlgenerator;
 
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.database.Database;
-import liquibase.exception.ValidationErrors;
 import liquibase.sql.Sql;
 import liquibase.sql.UnparsedSql;
 import liquibase.sqlgenerator.SqlGeneratorChain;
 import liquibase.statement.core.SetTableRemarksStatement;
-import liquibase.structure.core.Relation;
-import liquibase.structure.core.Table;
 import liquibase.sqlgenerator.core.SetTableRemarksGenerator;
 import org.apache.commons.lang3.StringUtils;
 

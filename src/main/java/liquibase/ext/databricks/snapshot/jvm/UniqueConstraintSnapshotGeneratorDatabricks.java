@@ -9,7 +9,7 @@ import liquibase.snapshot.CachedRow;
 import liquibase.snapshot.DatabaseSnapshot;
 import liquibase.snapshot.SnapshotGenerator;
 import liquibase.snapshot.jvm.UniqueConstraintSnapshotGenerator;
-import liquibase.statement.core.RawSqlStatement;
+import liquibase.statement.core.RawParameterizedSqlStatement;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.core.*;
 import java.sql.SQLException;
@@ -61,5 +61,5 @@ public class UniqueConstraintSnapshotGeneratorDatabricks extends UniqueConstrain
             sql = sql + "AND CONSTRAINT_NAME='" + constraintName + "'";
         }
 
-        return Scope.getCurrentScope().getSingleton(ExecutorService.class).getExecutor("jdbc", database).queryForList(new RawSqlStatement(sql));
+        return Scope.getCurrentScope().getSingleton(ExecutorService.class).getExecutor("jdbc", database).queryForList(new RawParameterizedSqlStatement(sql));
     }}
