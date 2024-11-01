@@ -13,7 +13,7 @@
             <column name="email" type="STRING"/>
             <column name="birthdate" type="DATE"/>
             <column name="added" type="TIMESTAMP"/>
-            <databricks:extendedTableProperties tableFormat="CSV OPTIONS (header 'true', inferSchema 'false', path 's3://databricks-th/files/csv_table.csv')"/>
+            <databricks:extendedTableProperties tableFormat="CSV OPTIONS (header 'true', inferSchema 'false', path 's3://databricks-th/integration-tests/files/csv_table.csv')"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>
