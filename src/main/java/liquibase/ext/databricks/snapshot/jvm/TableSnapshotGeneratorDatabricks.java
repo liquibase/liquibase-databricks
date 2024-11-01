@@ -24,7 +24,7 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
     private static final String TBL_PROPERTIES = "tblProperties";
     private static final String CLUSTER_COLUMNS = "clusteringColumns";
     private static final String DETAILED_TABLE_INFORMATION_NODE = "# Detailed Table Information";
-    private static final List<String> TBL_PROPERTIES_STOP_LIST = Arrays.asList(
+    private static final List<String> PROPERTIES_STOP_LIST = Arrays.asList(
             "delta.columnMapping.maxColumnId",
             "delta.rowTracking.materializedRowCommitVersionColumnName",
             "delta.rowTracking.materializedRowIdColumnName",
@@ -73,7 +73,7 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
             Map<String, String> tblProperties = getTblPropertiesMap(database, example.getName());
             if (tblProperties.containsKey(CLUSTER_COLUMNS)) {
                 // removing clusterColumns and other properties which are not allowed in create/alter table statements
-                TBL_PROPERTIES_STOP_LIST.forEach(tblProperties::remove);
+                PROPERTIES_STOP_LIST.forEach(tblProperties::remove);
                 table.setAttribute(CLUSTER_COLUMNS, sanitizeClusterColumns(tblProperties.remove(CLUSTER_COLUMNS)));
             }
             table.setAttribute(TBL_PROPERTIES, getTblPropertiesString(tblProperties));
