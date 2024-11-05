@@ -10,7 +10,7 @@
 
     <changeSet author="oleh" id="1">
         <createTable tableName="createTableWithTwoIdentityColumns" >
-            <column name="IdentityByDefault" type="long" autoIncrement="true" generationType="IDENTITY" startWith="10" incrementBy="5" defaultOnNull="true"/>
+            <column name="IdentityByDefault" type="long" autoIncrement="true" generationType="IDENTITY" startWith="10" incrementBy="5"/>
             <column name="IdentityAlways" type="long" defaultValueComputed="GENERATED ALWAYS AS IDENTITY (START WITH 11 INCREMENT BY 2)"/>
         </createTable>
     </changeSet>
