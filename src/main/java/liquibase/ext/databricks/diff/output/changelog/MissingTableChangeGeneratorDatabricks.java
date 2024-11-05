@@ -12,6 +12,8 @@ import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.core.Table;
 
+import static liquibase.ext.databricks.diff.output.changelog.ChangedTblPropertiesUtil.getExtendedProperties;
+
 public class MissingTableChangeGeneratorDatabricks extends MissingTableChangeGenerator {
 
     @Override
@@ -33,7 +35,7 @@ public class MissingTableChangeGeneratorDatabricks extends MissingTableChangeGen
         //so far we intentionally omit tableLocation in generated changelog
         ExtendedTableProperties extendedTableProperties = new ExtendedTableProperties(
                 null,
-                missingObject.getAttribute("tblProperties", String.class));
+                getExtendedProperties(missingObject.getAttribute("tblProperties", String.class)));
         String clusterColumns = missingObject.getAttribute("clusteringColumns", "");
 
         changes[0] = getCreateTableChangeDatabricks(extendedTableProperties, changes, clusterColumns);
