@@ -11,6 +11,8 @@ import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.core.View;
 
+import static liquibase.ext.databricks.diff.output.changelog.ChangedTblPropertiesUtil.getExtendedProperties;
+
 /**
  * Custom implementation of {@link MissingViewChangeGenerator} for Databricks.
  */
@@ -31,7 +33,7 @@ public class MissingViewChangeGeneratorDatabricks extends MissingViewChangeGener
         if (changes == null || changes.length == 0) {
             return changes;
         }
-        changes[0] = getCreateViewChangeDatabricks(missingObject.getAttribute("tblProperties", String.class), changes);
+        changes[0] = getCreateViewChangeDatabricks(getExtendedProperties(missingObject.getAttribute("tblProperties", String.class)), changes);
         return changes;
     }
 
