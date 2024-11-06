@@ -13,7 +13,6 @@ import liquibase.structure.core.Schema;
 import lombok.Setter;
 
 import java.math.BigInteger;
-import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
