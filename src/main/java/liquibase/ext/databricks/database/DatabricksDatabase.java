@@ -367,37 +367,20 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
     @Override
     public void checkDatabaseConnection() throws DatabaseException {
         DatabricksConnection connection = (DatabricksConnection) getConnection();
-        String usedCatalog = getConnectionCatalogName();
-        String usedSchema = getConnectionSchemaName();
         try {
-            verifySchemaAndCatalog(usedCatalog, usedSchema, connection.getMetaData());
-        } catch (SQLException e) {
-            Scope.getCurrentScope().getLog(getClass()).info("Error checking database connection with URL", e);
-        }
-    }
-
-    private void verifySchemaAndCatalog(String usedCatalog, String usedSchema, DatabaseMetaData metaData) throws SQLException, DatabaseException {
-        if (usedCatalog == null && usedSchema == null) {
-            return;
-        }
-        if (usedCatalog != null && usedSchema != null) {
-            ResultSet schemasAlikeUsed = metaData.getSchemas(usedCatalog, usedSchema);
+            String catalogName = getConnectionCatalogName();
+            String schemaName = getConnectionSchemaName();
+            ResultSet schemasAlikeUsed = connection.getMetaData().getSchemas(catalogName, schemaName);
             while (schemasAlikeUsed.next()) {
-                if (schemasAlikeUsed.getString(1).equals(usedSchema)) {
+                if (schemasAlikeUsed.getString(1).equals(schemaName)) {
                     return;
                 }
             }
+            throw new DatabaseException(String.format("Please specify existing schema and catalog in connection url. " +
+                    "Current connection points to '%s.%s'", catalogName, schemaName));
+        } catch (SQLException e) {
+            Scope.getCurrentScope().getLog(getClass()).info("Error checking database connection", e);
         }
-        //default schema might work and be expected
-        if (usedCatalog != null) {
-            ResultSet catalogs = metaData.getCatalogs();
-            while (catalogs.next()) {
-                if (catalogs.getString(1).equals(usedCatalog)) {
-                    return;
-                }
-            }
-        }
-        throw new DatabaseException(String.format("Please specify existing %s in connection url", Arrays.asList("ConnCatalog", "ConnSchema")));
     }
 
 }
