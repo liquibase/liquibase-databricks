@@ -370,18 +370,13 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
     public void checkDatabaseConnection() throws DatabaseException {
         DatabricksConnection connection = (DatabricksConnection) getConnection();
         String url = connection.getURL();
-        String usedCatalog = findPropertyInUrl("ConnCatalog", url);
-        String usedSchema = findPropertyInUrl("ConnSchema", url);
+        String usedCatalog = getConnectionCatalogName();
+        String usedSchema = getConnectionSchemaName();
         try {
             verifySchemaAndCatalog(usedCatalog, usedSchema, connection.getMetaData());
         } catch (SQLException e) {
             Scope.getCurrentScope().getLog(getClass()).info("Error checking database connection with URL=" + url, e);
         }
-    }
-
-    private String findPropertyInUrl(String matchingProperty, String url) {
-        Matcher matcher = Pattern.compile(matchingProperty + "=(.*?)(;|$)").matcher(url);
-        return matcher.find() ? matcher.group(1) : null;
     }
 
     private void verifySchemaAndCatalog(String usedCatalog, String usedSchema, DatabaseMetaData metaData) throws SQLException, DatabaseException {
@@ -401,15 +396,6 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
             ResultSet catalogs = metaData.getCatalogs();
             while (catalogs.next()) {
                 if (catalogs.getString(1).equals(usedCatalog)) {
-                    return;
-                }
-            }
-        }
-        //default catalog might work and be expected
-        if (usedSchema != null) {
-            ResultSet schemas = metaData.getSchemas();
-            while (schemas.next()) {
-                if (schemas.getString(1).equals(usedSchema)) {
                     return;
                 }
             }
