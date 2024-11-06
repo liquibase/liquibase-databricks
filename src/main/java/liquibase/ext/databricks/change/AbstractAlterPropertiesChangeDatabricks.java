@@ -81,4 +81,9 @@ public abstract class AbstractAlterPropertiesChangeDatabricks extends AbstractCh
     public UnsetExtendedTableProperties getUnsetExtendedTableProperties() {
         return unsetExtendedTableProperties;
     }
+
+    @Override
+    public String getSerializedObjectNamespace() {
+        return "http://www.liquibase.org/xml/ns/databricks";
+    }
 }

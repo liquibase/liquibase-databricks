@@ -11,7 +11,6 @@ import liquibase.statement.core.RawParameterizedSqlStatement;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.core.Table;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -25,12 +24,6 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
     private static final String PARTITION_COLUMNS = "partitionColumns";
     private static final String DETAILED_TABLE_INFORMATION_NODE = "# Detailed Table Information";
     private static final String TABLE_PARTITION_INFORMATION_NODE = "# Partition Information";
-    private static final List<String> TBL_PROPERTIES_STOP_LIST = Arrays.asList(
-            "delta.columnMapping.maxColumnId",
-            "delta.rowTracking.materializedRowCommitVersionColumnName",
-            "delta.rowTracking.materializedRowIdColumnName",
-            "delta.feature.clustering"
-    );
 
     @Override
     public int getPriority(Class<? extends DatabaseObject> objectType, Database database) {
@@ -79,8 +72,6 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
                 }
             }
             Map<String, String> tblProperties = getTblPropertiesMap(database, example.getName());
-            // removing Databricks system properties which are not allowed in create/alter table statements
-            TBL_PROPERTIES_STOP_LIST.forEach(tblProperties::remove);
             if (tblProperties.containsKey(CLUSTER_COLUMNS)) {
                 table.setAttribute(CLUSTER_COLUMNS, sanitizeClusterColumns(tblProperties.remove(CLUSTER_COLUMNS)));
             }
