@@ -367,13 +367,12 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
     @Override
     public void checkDatabaseConnection() throws DatabaseException {
         DatabricksConnection connection = (DatabricksConnection) getConnection();
-        String url = connection.getURL();
         String usedCatalog = getConnectionCatalogName();
         String usedSchema = getConnectionSchemaName();
         try {
             verifySchemaAndCatalog(usedCatalog, usedSchema, connection.getMetaData());
         } catch (SQLException e) {
-            Scope.getCurrentScope().getLog(getClass()).info("Error checking database connection with URL=" + url, e);
+            Scope.getCurrentScope().getLog(getClass()).info("Error checking database connection with URL", e);
         }
     }
 
