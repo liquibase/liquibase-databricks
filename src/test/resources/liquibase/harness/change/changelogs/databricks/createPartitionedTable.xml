@@ -19,7 +19,7 @@
         </ext:createTable>
     </changeSet>
     <changeSet id="2" author="mykhailo">
-        <createTable tableName="partitioned_delta_table_new">
+        <createTable tableName="partitioned_delta_table">
             <column name="id" type="int"/>
             <column name="name" type="varchar(20)"/>
             <column name="some_column" type="bigint"/>
@@ -27,7 +27,7 @@
                     tableFormat="delta"
                     partitionColumns="id, some_column"
                     tblProperties="'this.is.my.key'=12,'this.is.my.key2'=true"
-                    tableLocation="s3://databricks-th/partitioned_delta_table_new"/>
+                    tableLocation="s3://databricks-th/partitioned_delta_table"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>

@@ -11,6 +11,7 @@ import liquibase.ext.databricks.change.createTable.ExtendedTableProperties;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.core.Table;
+import org.apache.commons.lang3.ObjectUtils;
 
 import static liquibase.ext.databricks.diff.output.changelog.ChangedTblPropertiesUtil.getFilteredTblProperties;
 
@@ -32,15 +33,17 @@ public class MissingTableChangeGeneratorDatabricks extends MissingTableChangeGen
         if (changes == null || changes.length == 0) {
             return changes;
         }
+        String tblProperties = getFilteredTblProperties(missingObject.getAttribute("tblProperties", String.class));
+        tblProperties = tblProperties.isEmpty() ? null : tblProperties;
+        String clusteringColumns = missingObject.getAttribute("clusteringColumns", String.class);
+        String partitionColumns = missingObject.getAttribute("partitionColumns", String.class);
+        ExtendedTableProperties extendedTableProperties = null;
         //so far we intentionally omit tableLocation in generated changelog
         //TODO: add tableFormat extended property if needed in scope of DAT-18896
-        ExtendedTableProperties extendedTableProperties = new ExtendedTableProperties(
-                null,
-                null,
-                getFilteredTblProperties(missingObject.getAttribute("tblProperties", String.class)),
-                missingObject.getAttribute("clusteringColumns", String.class),
-                missingObject.getAttribute("partitionColumns", String.class)
-        );
+        if(ObjectUtils.anyNotNull(clusteringColumns, partitionColumns, tblProperties)) {
+            extendedTableProperties = new ExtendedTableProperties(null, null, tblProperties,
+                    clusteringColumns, partitionColumns);
+        }
 
         changes[0] = getCreateTableChangeDatabricks(extendedTableProperties, changes);
         return changes;
