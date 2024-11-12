@@ -11,6 +11,9 @@ import liquibase.ext.databricks.change.createTable.ExtendedTableProperties;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.core.Table;
+import org.apache.commons.lang3.ObjectUtils;
+
+import static liquibase.ext.databricks.diff.output.changelog.ChangedTblPropertiesUtil.getFilteredTblProperties;
 
 public class MissingTableChangeGeneratorDatabricks extends MissingTableChangeGenerator {
 
@@ -30,14 +33,17 @@ public class MissingTableChangeGeneratorDatabricks extends MissingTableChangeGen
         if (changes == null || changes.length == 0) {
             return changes;
         }
+        String tblProperties = getFilteredTblProperties(missingObject.getAttribute("tblProperties", String.class));
+        tblProperties = tblProperties.isEmpty() ? null : tblProperties;
+        String clusteringColumns = missingObject.getAttribute("clusteringColumns", String.class);
+        String partitionColumns = missingObject.getAttribute("partitionColumns", String.class);
+        String tableFormat = missingObject.getAttribute("tableFormat", String.class);
+        ExtendedTableProperties extendedTableProperties = null;
         //so far we intentionally omit tableLocation in generated changelog
-        ExtendedTableProperties extendedTableProperties = new ExtendedTableProperties(
-                missingObject.getAttribute("tableFormat", String.class),
-                null,
-                missingObject.getAttribute("tblProperties", String.class),
-                missingObject.getAttribute("clusteringColumns", String.class),
-                missingObject.getAttribute("partitionColumns", String.class)
-        );
+        if(ObjectUtils.anyNotNull(clusteringColumns, partitionColumns, tblProperties, tableFormat)) {
+            extendedTableProperties = new ExtendedTableProperties(tableFormat, null, tblProperties,
+                    clusteringColumns, partitionColumns);
+        }
 
         changes[0] = getCreateTableChangeDatabricks(extendedTableProperties, changes);
         return changes;

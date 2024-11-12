@@ -30,12 +30,6 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
     private static final String DETAILED_TABLE_INFORMATION_NODE = "# Detailed Table Information";
     private static final String TABLE_PARTITION_INFORMATION_NODE = "# Partition Information";
     private static final String DATA_TYPE = "DATA_TYPE";
-    private static final List<String> TBL_PROPERTIES_STOP_LIST = Arrays.asList(
-            "delta.columnMapping.maxColumnId",
-            "delta.rowTracking.materializedRowCommitVersionColumnName",
-            "delta.rowTracking.materializedRowIdColumnName",
-            "delta.feature.clustering"
-    );
     private static final List<String> FILE_TYPE_PROVIDERS = Arrays.asList("AVRO", "BINARYFILE", "CSV", "JSON", "ORC", "PARQUET", "TEXT");
 
     @Override
@@ -99,8 +93,6 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
                 }
             }
             Map<String, String> tblProperties = getTblPropertiesMap(database, example.getName());
-            // removing Databricks system properties which are not allowed in create/alter table statements
-            TBL_PROPERTIES_STOP_LIST.forEach(tblProperties::remove);
             if (tblProperties.containsKey(CLUSTER_COLUMNS)) {
                 table.setAttribute(CLUSTER_COLUMNS, sanitizeClusterColumns(tblProperties.remove(CLUSTER_COLUMNS)));
             }
