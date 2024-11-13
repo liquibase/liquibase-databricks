@@ -37,12 +37,10 @@ public class MissingTableChangeGeneratorDatabricks extends MissingTableChangeGen
         tblProperties = tblProperties.isEmpty() ? null : tblProperties;
         String clusteringColumns = missingObject.getAttribute("clusteringColumns", String.class);
         String partitionColumns = missingObject.getAttribute("partitionColumns", String.class);
-        String tableFormat = missingObject.getAttribute("tableFormat", String.class);
         ExtendedTableProperties extendedTableProperties = null;
-        //so far we intentionally omit tableLocation in generated changelog
-        if(ObjectUtils.anyNotNull(clusteringColumns, partitionColumns, tblProperties, tableFormat)) {
-            extendedTableProperties = new ExtendedTableProperties(tableFormat, null, tblProperties,
-                    clusteringColumns, partitionColumns);
+        //so far we intentionally omit tableLocation and tableFormat in generated changelog
+        if(ObjectUtils.anyNotNull(clusteringColumns, partitionColumns, tblProperties)) {
+            extendedTableProperties = new ExtendedTableProperties(null, null, tblProperties, clusteringColumns, partitionColumns);
         }
 
         changes[0] = getCreateTableChangeDatabricks(extendedTableProperties, changes);
