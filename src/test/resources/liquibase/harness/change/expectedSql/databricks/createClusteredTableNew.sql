@@ -1,3 +1,4 @@
 CREATE TABLE main.liquibase_harness_test_ds.test_table_clustered_new (test_id INT, test_new INT, test_present_new INT) USING delta TBLPROPERTIES('delta.feature.allowColumnDefaults' = 'supported', 'delta.columnMapping.mode' = 'name', 'delta.enableDeletionVectors' = true) CLUSTER BY (test_id, test_new, test_present_new)
 ALTER TABLE main.liquibase_harness_test_ds.test_table_clustered_new CLUSTER BY (test_id,test_present_new)
 ALTER TABLE main.liquibase_harness_test_ds.test_table_clustered_new DROP COLUMN test_new
+CREATE TABLE main.liquibase_harness_test_ds.clustered_delta_table (id INT, name VARCHAR(20), test_column VARCHAR(20)) USING delta TBLPROPERTIES('delta.feature.allowColumnDefaults' = 'supported', 'delta.columnMapping.mode' = 'name', 'delta.enableDeletionVectors' = true) CLUSTER BY (id, test_column)

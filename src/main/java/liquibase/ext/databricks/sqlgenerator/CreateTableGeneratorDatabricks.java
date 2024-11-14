@@ -47,10 +47,13 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
 
             if ((!StringUtils.isEmpty(thisStatement.getTableFormat()))) {
                 finalsql.append(" USING ").append(thisStatement.getTableFormat());
-            } else if (thisStatement.getExtendedTableProperties() != null && StringUtils.isNoneEmpty(thisStatement.getExtendedTableProperties().getTblProperties())) {
+            } else {
+                finalsql.append(" USING delta");
+            }
+            if (thisStatement.getExtendedTableProperties() != null && StringUtils.isNotEmpty(thisStatement.getExtendedTableProperties().getTblProperties())) {
                 finalsql.append(" TBLPROPERTIES (").append(thisStatement.getExtendedTableProperties().getTblProperties()).append(")");
             } else {
-                finalsql.append(" USING delta TBLPROPERTIES('delta.feature.allowColumnDefaults' = 'supported', 'delta.columnMapping.mode' = 'name', 'delta.enableDeletionVectors' = true)");
+                finalsql.append(" TBLPROPERTIES('delta.feature.allowColumnDefaults' = 'supported', 'delta.columnMapping.mode' = 'name', 'delta.enableDeletionVectors' = true)");
             }
 
             // Databricks can decide to have tables live in a particular location. If null, Databricks will handle the location automatically in DBFS

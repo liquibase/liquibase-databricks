@@ -7,8 +7,11 @@
 
     <xsd:element name="extendedTableProperties">
         <xsd:complexType>
+            <xsd:attribute name="tableFormat" type="xsd:string"/>
             <xsd:attribute name="tableLocation" type="xsd:string"/>
             <xsd:attribute name="tblProperties" type="xsd:string"/>
+            <xsd:attribute name="clusterColumns" type="xsd:string"/>
+            <xsd:attribute name="partitionColumns" type="xsd:string"/>
         </xsd:complexType>
     </xsd:element>
 
