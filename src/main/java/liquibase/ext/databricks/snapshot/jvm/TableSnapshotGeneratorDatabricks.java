@@ -11,19 +11,26 @@ import liquibase.statement.core.RawParameterizedSqlStatement;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.core.Table;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
 
     private static final String LOCATION = "Location";
+    private static final String PROVIDER = "Provider";
+    private static final String STORAGE_PROPERTIES = "Storage Properties";
+    private static final String TABLE_FORMAT = "tableFormat";
     private static final String TBL_PROPERTIES = "tblProperties";
     private static final String CLUSTER_COLUMNS = "clusteringColumns";
     private static final String PARTITION_COLUMNS = "partitionColumns";
     private static final String DETAILED_TABLE_INFORMATION_NODE = "# Detailed Table Information";
     private static final String TABLE_PARTITION_INFORMATION_NODE = "# Partition Information";
+    private static final String DATA_TYPE = "DATA_TYPE";
+    private static final List<String> FILE_TYPE_PROVIDERS = Arrays.asList("AVRO", "BINARYFILE", "CSV", "JSON", "ORC", "PARQUET", "TEXT");
 
     @Override
     public int getPriority(Class<? extends DatabaseObject> objectType, Database database) {
@@ -42,32 +49,46 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
                     example.getName());
             List<Map<String, ?>> tablePropertiesResponse = Scope.getCurrentScope().getSingleton(ExecutorService.class)
                     .getExecutor("jdbc", database).queryForList(new RawParameterizedSqlStatement(query));
+            StringBuilder tableFormat = new StringBuilder();
             // DESCRIBE TABLE EXTENDED returns both columns and additional information.
             // We need to make sure "Location" is not column in the table, but table location in s3
             boolean detailedInformationNode = false;
             boolean partitionInformationNode = false;
             StringBuilder partitionColumns = new StringBuilder();
             for (Map<String, ?> tableProperty : tablePropertiesResponse) {
-                if (tableProperty.get("COL_NAME").equals(DETAILED_TABLE_INFORMATION_NODE)) {
+                String currentColName = (String) tableProperty.get("COL_NAME");
+                if (currentColName.equals(DETAILED_TABLE_INFORMATION_NODE)) {
                     detailedInformationNode = true;
                     continue;
                 }
-                if (tableProperty.get("COL_NAME").equals(TABLE_PARTITION_INFORMATION_NODE)) {
+                if (detailedInformationNode) {
+                    if (currentColName.equals(LOCATION)) {
+                        table.setAttribute(LOCATION, tableProperty.get(DATA_TYPE));
+                    }
+                    if (currentColName.equals(PROVIDER) && FILE_TYPE_PROVIDERS.contains(tableProperty.get(DATA_TYPE).toString().toUpperCase())) {
+                        tableFormat.append(tableProperty.get(DATA_TYPE));
+                    }
+                    if (!tableFormat.toString().isEmpty() && currentColName.equals(STORAGE_PROPERTIES)) {
+                        if(table.getAttribute(LOCATION, String.class) != null) {
+                            tableFormat.append(" ").append(LOCATION.toUpperCase()).append("'").append(table.getAttribute(LOCATION, String.class)).append("' ");
+                        }
+                        tableFormat.append(extractOptionsFromStorageProperties(tableProperty.get(DATA_TYPE)));
+                        table.setAttribute(TABLE_FORMAT, tableFormat.toString());
+                    }
+                }
+                if (currentColName.equals(TABLE_PARTITION_INFORMATION_NODE)) {
                     partitionInformationNode = true;
                     continue;
                 }
-                if (detailedInformationNode && tableProperty.get("COL_NAME").equals(LOCATION)) {
-                    table.setAttribute(LOCATION, tableProperty.get("DATA_TYPE"));
-                }
-                if(partitionInformationNode && !tableProperty.get("COL_NAME").equals("# col_name")) {
-                    if(tableProperty.get("COL_NAME").equals("")) {
+                if (partitionInformationNode && !currentColName.equals("# col_name")) {
+                    if (currentColName.equals("")) {
                         partitionInformationNode = false;
                         continue;
                     }
                     if (partitionColumns.toString().isEmpty()) {
-                        partitionColumns.append(tableProperty.get("COL_NAME"));
+                        partitionColumns.append(currentColName);
                     } else {
-                        partitionColumns.append(',').append(tableProperty.get("COL_NAME"));
+                        partitionColumns.append(',').append(currentColName);
                     }
                 }
             }
@@ -75,12 +96,27 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
             if (tblProperties.containsKey(CLUSTER_COLUMNS)) {
                 table.setAttribute(CLUSTER_COLUMNS, sanitizeClusterColumns(tblProperties.remove(CLUSTER_COLUMNS)));
             }
-            if(!partitionColumns.toString().isEmpty()) {
+            if (!partitionColumns.toString().isEmpty()) {
                 table.setAttribute(PARTITION_COLUMNS, partitionColumns.toString());
             }
             table.setAttribute(TBL_PROPERTIES, getTblPropertiesString(tblProperties));
         }
         return table;
+    }
+
+    private String extractOptionsFromStorageProperties(Object storageProperties) {
+        StringBuilder options = new StringBuilder();
+        if (storageProperties instanceof String) {
+            Matcher matcher = Pattern.compile("(\\b\\w+\\b)=(.*?)(,|\\])").matcher((String) storageProperties);
+            if (matcher.find()) {
+                options.append(" OPTIONS (").append(matcher.group(1)).append(" '").append(matcher.group(2)).append("'");
+                while (matcher.find()) {
+                    options.append(", ").append(matcher.group(1)).append(" '").append(matcher.group(2)).append("'");
+                }
+                options.append(")");
+            }
+        }
+        return options.toString();
     }
     //TODO another way of getting Location is query like
     // select * from `system`.`information_schema`.`tables` where table_name = 'test_table_properties' AND table_schema='liquibase_harness_test_ds';
