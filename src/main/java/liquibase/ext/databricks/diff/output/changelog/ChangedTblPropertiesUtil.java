@@ -105,7 +105,7 @@ public class ChangedTblPropertiesUtil {
     /**
      * Get the extended properties excluding delta parameters
      */
-    public static String getExtendedProperties(String tblProperties) {
+    public static String getFilteredTblProperties(String tblProperties) {
         Map<String, String> properties = convertToMapExcludingDeltaParameters(tblProperties);
         return properties.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining(","));
     }

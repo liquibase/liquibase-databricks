@@ -12,6 +12,8 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import static liquibase.ext.databricks.parser.NamespaceDetailsDatabricks.DATABRICKS_NAMESPACE;
+
 @DatabaseChange(name = "alterCluster", description = "Alter Cluster", priority = PrioritizedService.PRIORITY_DATABASE +500)
 public class AlterClusterChangeDatabricks extends AbstractChange {
 
@@ -103,5 +105,10 @@ public class AlterClusterChangeDatabricks extends AbstractChange {
 
     public void setClusterBy(List<NoneConfig> clusterBy) {
         this.clusterBy = clusterBy;
+    }
+
+    @Override
+    public String getSerializedObjectNamespace() {
+        return DATABRICKS_NAMESPACE;
     }
 }

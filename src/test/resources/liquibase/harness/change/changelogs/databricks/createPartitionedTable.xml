@@ -2,6 +2,7 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:databricks="http://www.liquibase.org/xml/ns/databricks"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <changeSet id="1" author="codydavis">
@@ -16,5 +17,17 @@
                 <constraints nullable="false"/>
             </column>
         </ext:createTable>
+    </changeSet>
+    <changeSet id="2" author="mykhailo">
+        <createTable tableName="partitioned_delta_table">
+            <column name="id" type="int"/>
+            <column name="name" type="varchar(20)"/>
+            <column name="some_column" type="bigint"/>
+            <databricks:extendedTableProperties
+                    tableFormat="delta"
+                    partitionColumns="id, some_column"
+                    tblProperties="'this.is.my.key'=12,'this.is.my.key2'=true"
+                    tableLocation="s3://databricks-th/partitioned_delta_table"/>
+        </createTable>
     </changeSet>
 </databaseChangeLog>
