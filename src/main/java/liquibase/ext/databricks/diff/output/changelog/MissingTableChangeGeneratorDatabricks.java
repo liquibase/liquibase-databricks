@@ -11,8 +11,9 @@ import liquibase.ext.databricks.change.createTable.ExtendedTableProperties;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.core.Table;
+import org.apache.commons.lang3.ObjectUtils;
 
-import static liquibase.ext.databricks.diff.output.changelog.ChangedTblPropertiesUtil.getExtendedProperties;
+import static liquibase.ext.databricks.diff.output.changelog.ChangedTblPropertiesUtil.getFilteredTblProperties;
 
 public class MissingTableChangeGeneratorDatabricks extends MissingTableChangeGenerator {
 
@@ -32,18 +33,21 @@ public class MissingTableChangeGeneratorDatabricks extends MissingTableChangeGen
         if (changes == null || changes.length == 0) {
             return changes;
         }
-        //so far we intentionally omit tableLocation in generated changelog
-        ExtendedTableProperties extendedTableProperties = new ExtendedTableProperties(
-                null,
-                getExtendedProperties(missingObject.getAttribute("tblProperties", String.class)));
-        String clusterColumns = missingObject.getAttribute("clusteringColumns", "");
+        String tblProperties = getFilteredTblProperties(missingObject.getAttribute("tblProperties", String.class));
+        tblProperties = tblProperties.isEmpty() ? null : tblProperties;
+        String clusteringColumns = missingObject.getAttribute("clusteringColumns", String.class);
+        String partitionColumns = missingObject.getAttribute("partitionColumns", String.class);
+        ExtendedTableProperties extendedTableProperties = null;
+        //so far we intentionally omit tableLocation and tableFormat in generated changelog
+        if(ObjectUtils.anyNotNull(clusteringColumns, partitionColumns, tblProperties)) {
+            extendedTableProperties = new ExtendedTableProperties(null, null, tblProperties, clusteringColumns, partitionColumns);
+        }
 
-        changes[0] = getCreateTableChangeDatabricks(extendedTableProperties, changes, clusterColumns);
+        changes[0] = getCreateTableChangeDatabricks(extendedTableProperties, changes);
         return changes;
     }
 
-    private CreateTableChangeDatabricks getCreateTableChangeDatabricks(ExtendedTableProperties extendedTableProperties,
-                                                                       Change[] changes, String clusterColumns) {
+    private CreateTableChangeDatabricks getCreateTableChangeDatabricks(ExtendedTableProperties extendedTableProperties, Change[] changes) {
         CreateTableChange temp = (CreateTableChange) changes[0];
         CreateTableChangeDatabricks createTableChangeDatabricks = new CreateTableChangeDatabricks();
         createTableChangeDatabricks.setColumns(temp.getColumns());
@@ -55,10 +59,7 @@ public class MissingTableChangeGeneratorDatabricks extends MissingTableChangeGen
         createTableChangeDatabricks.setRemarks(temp.getRemarks());
         createTableChangeDatabricks.setIfNotExists(temp.getIfNotExists());
         createTableChangeDatabricks.setRowDependencies(temp.getRowDependencies());
-        if (!clusterColumns.isEmpty()) {
-            createTableChangeDatabricks.setClusterColumns(clusterColumns);
-        }
-
+        //All not null properties should be attached in the CreateTableChangeDatabricks::generateCreateTableStatement
         createTableChangeDatabricks.setExtendedTableProperties(extendedTableProperties);
         return createTableChangeDatabricks;
     }

@@ -3,6 +3,7 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:databricks="http://www.liquibase.org/xml/ns/databricks"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
 
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
@@ -14,7 +15,7 @@
             <column name="test_id" type="int" />
             <column name="test_new" type="int"/>
             <column name="test_present_new" type="int"/>
-            <databricks:clusterColumns>test_id,test_new,test_present_new</databricks:clusterColumns>
+            <databricks:extendedTableProperties clusterColumns="test_id,test_new,test_present_new"/>
         </createTable>
         <rollback>
             <!-- The dropTable will drop a full table whether it has clustered columns or not. -->
@@ -32,5 +33,12 @@
         <!-- The Databricks does not allow clustered columns to be dropped, so they should be unclustered before the dropColumn in the alterCluster. -->
         <dropColumn tableName="test_table_clustered_new" columnName="test_new"/>
         <rollback/>
+    </changeSet>
+    <changeSet id="4" author="mykhailo">
+        <ext:createTable tableName="clustered_delta_table" tableFormat="delta" clusterColumns="id,test_column">
+            <column name="id" type="int"/>
+            <column name="name" type="varchar(20)"/>
+            <column name="test_column" type="varchar(20)"/>
+        </ext:createTable>
     </changeSet>
 </databaseChangeLog>

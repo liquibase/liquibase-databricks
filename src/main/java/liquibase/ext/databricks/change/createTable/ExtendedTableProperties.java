@@ -12,8 +12,11 @@ import lombok.Setter;
 @Setter
 @Getter
 public class ExtendedTableProperties extends AbstractLiquibaseSerializable{
+    private String tableFormat;
     private String tableLocation;
     private String tblProperties;
+    private String clusterColumns;
+    private String partitionColumns;
 
     @Override
     public String getSerializedObjectName() {

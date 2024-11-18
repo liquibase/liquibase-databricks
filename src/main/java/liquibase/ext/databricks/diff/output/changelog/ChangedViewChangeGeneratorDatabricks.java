@@ -8,7 +8,6 @@ import liquibase.diff.output.DiffOutputControl;
 import liquibase.diff.output.changelog.ChangeGeneratorChain;
 import liquibase.diff.output.changelog.core.ChangedViewChangeGenerator;
 import liquibase.ext.databricks.change.AbstractAlterPropertiesChangeDatabricks;
-import liquibase.ext.databricks.change.alterViewProperties.AlterViewPropertiesChangeDatabricks;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.core.View;

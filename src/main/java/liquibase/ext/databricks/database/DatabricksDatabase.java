@@ -10,11 +10,11 @@ import liquibase.statement.core.RawCallStatement;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.core.Catalog;
 import liquibase.structure.core.Schema;
-import org.apache.commons.lang3.StringUtils;
 import lombok.Setter;
 
 import java.math.BigInteger;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 
@@ -361,6 +361,25 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
             dbConn = conn;
         }
         super.setConnection(dbConn);
+    }
+
+    @Override
+    public void checkDatabaseConnection() throws DatabaseException {
+        DatabricksConnection connection = (DatabricksConnection) getConnection();
+        try {
+            String catalogName = getConnectionCatalogName();
+            String schemaName = getConnectionSchemaName();
+            ResultSet schemasAlikeUsed = connection.getMetaData().getSchemas(catalogName, schemaName);
+            while (schemasAlikeUsed.next()) {
+                if (schemasAlikeUsed.getString(1).equals(schemaName)) {
+                    return;
+                }
+            }
+            throw new DatabaseException(String.format("Please specify existing schema and catalog in connection url. " +
+                    "Current connection points to '%s.%s'", catalogName, schemaName));
+        } catch (SQLException e) {
+            Scope.getCurrentScope().getLog(getClass()).info("Error checking database connection", e);
+        }
     }
 
 }
