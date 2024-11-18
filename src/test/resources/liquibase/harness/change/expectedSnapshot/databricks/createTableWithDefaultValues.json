@@ -14,6 +14,11 @@
             "name": "longcolumn",
             "type": {
               "typeName": "BIGINT"
+            },
+            "autoIncrementInformation": {
+              "generationType": "BY DEFAULT",
+              "startWith": "10\\!\\{java.math.BigInteger\\}",
+              "incrementBy": "5\\!\\{java.math.BigInteger\\}"
             }
           }
         },
