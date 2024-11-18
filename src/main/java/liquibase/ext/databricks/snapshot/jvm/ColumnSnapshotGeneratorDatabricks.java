@@ -75,7 +75,6 @@ public class ColumnSnapshotGeneratorDatabricks extends ColumnSnapshotGenerator {
                     if (functionMatcher.find()) {
                         DatabaseFunction function = new DatabaseFunction(defaultValue);
                         column.setDefaultValue(function);
-                        column.setComputed(true);
                     } else {
                         column.setDefaultValue(defaultValue);
                     }
