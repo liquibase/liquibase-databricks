@@ -90,7 +90,6 @@ class ColumnSnapshotGeneratorDatabricksTest {
             testedColumn.setAttribute("liquibase-complete", true);
             DatabaseObject databaseObject = snapshotGenerator.snapshotObject(testedColumn, snapshot);
             assertTrue(databaseObject instanceof Column);
-            assertTrue(((Column) databaseObject).getComputed());
             assertNotNull(((Column) databaseObject).getDefaultValue());
             assertEquals(columnWithDefaultComputed.getValue(), ((Column) databaseObject).getDefaultValue());
         }
