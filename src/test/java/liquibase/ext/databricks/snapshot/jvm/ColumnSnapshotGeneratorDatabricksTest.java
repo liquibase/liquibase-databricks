@@ -1,8 +1,6 @@
 package liquibase.ext.databricks.snapshot.jvm;
 
-import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.DatabaseException;
-import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.snapshot.JdbcDatabaseSnapshot;
 import liquibase.statement.DatabaseFunction;
 import liquibase.structure.DatabaseObject;
@@ -17,10 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,7 +40,7 @@ class ColumnSnapshotGeneratorDatabricksTest {
         put("eventDescription", "default string, regular ? almost();!$#@^%[] String bigint");
         put("eventShortDescription", "short desc");
     }};
-    private static final Map<String, DatabaseFunction> COLUMN_WITH_DEFAULT_COMPUTED_NAMES = new HashMap<String , DatabaseFunction>() {{
+    private static final Map<String, DatabaseFunction> COLUMNS_WITH_DEFAULT_COMPUTED = new HashMap<String , DatabaseFunction>() {{
         put("eventTime", new DatabaseFunction("current_timestamp()"));
         put("year", new DatabaseFunction("YEAR(CURRENT_TIMESTAMP())"));
         put("eventDate", new DatabaseFunction("CAST(CURRENT_TIMESTAMP() AS DATE)"));
@@ -67,7 +61,7 @@ class ColumnSnapshotGeneratorDatabricksTest {
 
 
     @BeforeEach
-    public void setUp() throws DatabaseException, SQLException {
+    public void setUp() {
         snapshotGenerator = new ColumnSnapshotGeneratorDatabricks();
         testedColumn = new Column();
         testedColumn.setAttribute("relation", new Table(TEST_CATALOG_NAME, TEST_SCHEMA_NAME, TEST_TABLE_NAME));
@@ -75,7 +69,7 @@ class ColumnSnapshotGeneratorDatabricksTest {
     }
 
     @Test
-    void snapshotObjectTest() throws DatabaseException, SQLException {
+    void snapshotObjectTest() throws DatabaseException {
         for(Map.Entry<String, String> columnWithDefault : COLUMN_WITH_DEFAULT_NAMES.entrySet()) {
             testedColumn.setName(columnWithDefault.getKey());
             testedColumn.setAttribute("liquibase-complete", true);
@@ -85,11 +79,12 @@ class ColumnSnapshotGeneratorDatabricksTest {
             assertNotNull(((Column) databaseObject).getDefaultValue());
             assertEquals(columnWithDefault.getValue(), ((Column) databaseObject).getDefaultValue());
         }
-        for(Map.Entry<String, DatabaseFunction> columnWithDefaultComputed: COLUMN_WITH_DEFAULT_COMPUTED_NAMES.entrySet()) {
+        for(Map.Entry<String, DatabaseFunction> columnWithDefaultComputed: COLUMNS_WITH_DEFAULT_COMPUTED.entrySet()) {
             testedColumn.setName(columnWithDefaultComputed.getKey());
             testedColumn.setAttribute("liquibase-complete", true);
             DatabaseObject databaseObject = snapshotGenerator.snapshotObject(testedColumn, snapshot);
             assertTrue(databaseObject instanceof Column);
+            assertNull(((Column) databaseObject).getComputed());
             assertNotNull(((Column) databaseObject).getDefaultValue());
             assertEquals(columnWithDefaultComputed.getValue(), ((Column) databaseObject).getDefaultValue());
         }
