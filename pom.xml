@@ -66,6 +66,7 @@
         <liquibase-test-harness.version>1.0.10</liquibase-test-harness.version>
         <junit.version>5.11.3</junit.version>
         <junit-platform.version>1.11.3</junit-platform.version>
+        <mockito.version>5.14.2</mockito.version>
         <jacoco.fileset.directory>target</jacoco.fileset.directory>
     </properties>
 
@@ -122,6 +123,18 @@
             <groupId>org.skyscreamer</groupId>
             <artifactId>jsonassert</artifactId>
             <version>${jsonassert.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
