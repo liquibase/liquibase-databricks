@@ -42,10 +42,7 @@ public class AddDefaultValueGeneratorDatabricks extends AddDefaultValueGenerator
         Object defaultValue = statement.getDefaultValue();
         String finalDefaultValue;
         if (defaultValue instanceof DatabaseFunction) {
-            finalDefaultValue = "("+defaultValue+")";
-            if (finalDefaultValue.startsWith("((")) {
-                finalDefaultValue = defaultValue.toString();
-            }
+            finalDefaultValue = defaultValue.toString();
         } else {
             finalDefaultValue =  DataTypeFactory.getInstance().fromObject(defaultValue, database).objectToSql(defaultValue, database);
         }
