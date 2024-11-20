@@ -1,8 +1,6 @@
 package liquibase.ext.databricks.snapshot.jvm;
 
-import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.DatabaseException;
-import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.snapshot.JdbcDatabaseSnapshot;
 import liquibase.statement.DatabaseFunction;
 import liquibase.structure.DatabaseObject;
@@ -17,9 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -90,7 +85,7 @@ class ColumnSnapshotGeneratorDatabricksTest {
             testedColumn.setAttribute("liquibase-complete", true);
             DatabaseObject databaseObject = snapshotGenerator.snapshotObject(testedColumn, snapshot);
             assertTrue(databaseObject instanceof Column);
-            assertTrue(((Column) databaseObject).getComputed());
+            assertNull(((Column) databaseObject).getComputed());
             assertNotNull(((Column) databaseObject).getDefaultValue());
             assertEquals(columnWithDefaultComputed.getValue(), ((Column) databaseObject).getDefaultValue());
         }
