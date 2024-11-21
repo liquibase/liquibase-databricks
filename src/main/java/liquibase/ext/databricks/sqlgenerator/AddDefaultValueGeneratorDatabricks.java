@@ -13,7 +13,11 @@ import liquibase.statement.DatabaseFunction;
 import liquibase.statement.core.AddDefaultValueStatement;
 import liquibase.sqlgenerator.core.AddDefaultValueGenerator;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class AddDefaultValueGeneratorDatabricks extends AddDefaultValueGenerator {
+    private static final List<String> NUMERIC_TYPES = Arrays.asList("TINYINT", "SMALLINT", "INT", "BIGINT", "FLOAT", "DOUBLE", "DECIMAL");
     @Override
     public int getPriority() {
         return PRIORITY_DATABASE;
@@ -40,11 +44,16 @@ public class AddDefaultValueGeneratorDatabricks extends AddDefaultValueGenerator
     @Override
     public Sql[] generateSql(AddDefaultValueStatement statement, Database database, SqlGeneratorChain sqlGeneratorChain) {
         Object defaultValue = statement.getDefaultValue();
+        String columnDataType = statement.getColumnDataType();
         String finalDefaultValue;
         if (defaultValue instanceof DatabaseFunction) {
             finalDefaultValue = defaultValue.toString();
         } else {
-            finalDefaultValue =  DataTypeFactory.getInstance().fromObject(defaultValue, database).objectToSql(defaultValue, database);
+            if(NUMERIC_TYPES.contains(columnDataType) && defaultValue instanceof String) {
+                finalDefaultValue = defaultValue.toString().replace("'", "").trim();
+            } else {
+                finalDefaultValue =  DataTypeFactory.getInstance().fromObject(defaultValue, database).objectToSql(defaultValue, database);
+            }
         }
         return new Sql[]{
                 new UnparsedSql("ALTER TABLE " + database.escapeTableName(statement.getCatalogName(), statement.getSchemaName(), statement.getTableName()) + " ALTER COLUMN " + database.escapeColumnName(statement.getCatalogName(), statement.getSchemaName(), statement.getTableName(), statement.getColumnName()) + " SET DEFAULT " + finalDefaultValue,
