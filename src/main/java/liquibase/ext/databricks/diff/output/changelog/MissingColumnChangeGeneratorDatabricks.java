@@ -38,8 +38,7 @@ public class MissingColumnChangeGeneratorDatabricks extends MissingColumnChangeG
     @Override
     public Change[] fixMissing(DatabaseObject missingObject, DiffOutputControl control, Database referenceDatabase, Database comparisonDatabase, ChangeGeneratorChain chain) {
         Change[] changes = super.fixMissing(missingObject, control, referenceDatabase, comparisonDatabase, chain);
-        changes = handleMissingColumnConstraints((Column) missingObject, control, changes);
-        return changes;
+        return changes == null ? null : handleMissingColumnConstraints((Column) missingObject, control, changes);
     }
 
     private Change[] handleMissingColumnConstraints(Column column, DiffOutputControl control, Change[] changes) {
