@@ -5,9 +5,13 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    labels:
+      - "sdou"
 
   - package-ecosystem: "maven"
     directory: "/"
     schedule:
       interval: "daily"
+    labels:
+      - "sdou"
 
