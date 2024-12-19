@@ -63,7 +63,7 @@
         <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
         <sonar.sources>src/main/java</sonar.sources>
         <sonar.tests>src/test</sonar.tests>
-        <liquibase-test-harness.version>1.1.0-SNAPSHOT</liquibase-test-harness.version>
+        <liquibase-test-harness.version>1.0.10</liquibase-test-harness.version>
         <junit.version>5.11.4</junit.version>
         <junit-platform.version>1.11.4</junit-platform.version>
         <mockito.version>5.14.2</mockito.version>
