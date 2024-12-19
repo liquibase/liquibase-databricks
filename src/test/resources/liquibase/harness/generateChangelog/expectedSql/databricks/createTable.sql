@@ -1,0 +1,1 @@
+CREATE TABLE test_table_xml (test_column INT) USING delta TBLPROPERTIES('delta.feature.allowColumnDefaults' = 'supported', 'delta.columnMapping.mode' = 'name', 'delta.enableDeletionVectors' = true);
