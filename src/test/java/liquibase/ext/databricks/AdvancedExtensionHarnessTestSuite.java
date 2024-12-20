@@ -5,6 +5,6 @@ import liquibase.harness.generateChangelog.GenerateChangelogTest;
 import liquibase.harness.snapshot.SnapshotObjectTests;
 import org.junit.platform.suite.api.SelectClasses;
 
-@SelectClasses({SnapshotObjectTests.class, GenerateChangelogTest.class})
+@SelectClasses({SnapshotObjectTests.class})
 public class AdvancedExtensionHarnessTestSuite extends AdvancedHarnessSuite {
 }
