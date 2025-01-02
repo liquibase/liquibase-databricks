@@ -66,7 +66,7 @@
         <liquibase-test-harness.version>1.0.10</liquibase-test-harness.version>
         <junit.version>5.11.4</junit.version>
         <junit-platform.version>1.11.4</junit-platform.version>
-        <mockito.version>5.14.2</mockito.version>
+        <mockito.version>5.15.2</mockito.version>
         <jacoco.fileset.directory>target</jacoco.fileset.directory>
     </properties>
 
