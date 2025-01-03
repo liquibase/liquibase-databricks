@@ -8,6 +8,7 @@ on:
       - reopened
       - synchronize
 
+
 jobs:
   build-test:
     uses: liquibase/build-logic/.github/workflows/os-extension-test.yml@main
