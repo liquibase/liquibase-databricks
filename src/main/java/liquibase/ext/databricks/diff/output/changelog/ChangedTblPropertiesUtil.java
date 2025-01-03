@@ -15,6 +15,7 @@ import liquibase.structure.core.View;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,6 +27,15 @@ public class ChangedTblPropertiesUtil {
 
     private static final String SPLIT_ON_COMMAS = ",(?=(?:[^\"]*\"[^\"]*\")*[^\"$])";
     private static final String SPLIT_ON_EQUALS = "=(?=(?:[^\"]*\"[^\"]*\")*[^\"$])";
+    private static final Set<String> ALLOWED_DELTA_PROPERTIES = Set.of(
+            "delta.columnMapping.mode",
+            "delta.enableDeletionVectors",
+            "delta.feature.allowColumnDefaults",
+            "delta.logRetentionDuration",
+            "delta.deletedFileRetentionDuration",
+            "delta.targetFileSize",
+            "delta.enableChangeDataFeed"
+    );
 
     private ChangedTblPropertiesUtil() {
     }
@@ -94,11 +104,14 @@ public class ChangedTblPropertiesUtil {
      */
     private static Map<String, String> convertToMapExcludingDeltaParameters(Object referenceValueObject) {
         String referenceValue = referenceValueObject == null ? "" : referenceValueObject.toString();
-         return Arrays.stream(referenceValue.split(SPLIT_ON_COMMAS))
+        return Arrays.stream(referenceValue.split(SPLIT_ON_COMMAS))
                 .map(s -> s.split(SPLIT_ON_EQUALS))
                 .filter(a -> a.length > 1)
-                 .map(a -> new String[]{a[0].trim(), a[1].trim()})
-                .filter(a -> !a[0].replace("'", "").matches("^delta.+"))
+                .map(a -> new String[]{a[0].trim(), a[1].trim()})
+                .filter(a -> {
+                    String propertyName = a[0].replace("'", "");
+                    return !propertyName.startsWith("delta.") || ALLOWED_DELTA_PROPERTIES.contains(propertyName);
+                })
                 .collect(Collectors.toMap(a -> a[0], a -> a[1]));
     }
 
