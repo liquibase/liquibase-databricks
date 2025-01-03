@@ -1,21 +1,42 @@
 package liquibase.ext.databricks.sqlgenerator;
 
 
+import liquibase.database.Database;
 import liquibase.exception.ValidationErrors;
 import liquibase.ext.databricks.change.createTable.CreateTableStatementDatabricks;
 import liquibase.ext.databricks.database.DatabricksDatabase;
-import liquibase.sqlgenerator.core.CreateTableGenerator;
-import liquibase.database.Database;
 import liquibase.sql.Sql;
 import liquibase.sql.UnparsedSql;
 import liquibase.sqlgenerator.SqlGeneratorChain;
+import liquibase.sqlgenerator.core.CreateTableGenerator;
 import liquibase.statement.core.CreateTableStatement;
-import liquibase.structure.DatabaseObject;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.List;
+import java.util.*;
+
+import static java.util.stream.Collectors.joining;
 
 public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
+
+    private static final Set<String> ESSENTIAL_PROPERTIES = Set.of(
+            "'delta.columnMapping.mode'",
+            "'delta.enableDeletionVectors'",
+            "'delta.feature.allowColumnDefaults'",
+            "'delta.logRetentionDuration'",
+            "'delta.deletedFileRetentionDuration'",
+            "'delta.targetFileSize'",
+            "'delta.enableChangeDataFeed'"
+    );
+
+    private static final Map<String, String> DEFAULT_VALUES = Map.of(
+            "'delta.columnMapping.mode'", "'name'",
+            "'delta.enableDeletionVectors'", "true",
+            "'delta.feature.allowColumnDefaults'", "'supported'",
+            "'delta.logRetentionDuration'", "'30 days'",
+            "'delta.deletedFileRetentionDuration'", "'7 days'",
+            "'delta.targetFileSize'", "134217728",
+            "'delta.enableChangeDataFeed'", "true"
+    );
 
     @Override
     public int getPriority() {
@@ -40,27 +61,32 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
     public Sql[] generateSql(CreateTableStatement statement, Database database, SqlGeneratorChain sqlGeneratorChain) {
 
         Sql[] sqls = super.generateSql(statement, database, sqlGeneratorChain);
-        StringBuilder finalsql = new StringBuilder(sqls[0].toSql());
+        String baseSQL = sqls[0].toSql();
+        baseSQL = baseSQL.substring(0, baseSQL.lastIndexOf(")")) + ")";
+        StringBuilder finalsql = new StringBuilder(baseSQL);
+        CreateTableStatementDatabricks thisStatement = (CreateTableStatementDatabricks) statement;
 
-        if (statement instanceof CreateTableStatementDatabricks) {
-            CreateTableStatementDatabricks thisStatement = (CreateTableStatementDatabricks) statement;
+        //if (statement instanceof CreateTableStatementDatabricks) {
 
-            if ((!StringUtils.isEmpty(thisStatement.getTableFormat()))) {
+            if (!StringUtils.isEmpty(thisStatement.getTableFormat())) {
                 finalsql.append(" USING ").append(thisStatement.getTableFormat());
             } else {
                 finalsql.append(" USING delta");
             }
-            if (thisStatement.getExtendedTableProperties() != null && StringUtils.isNotEmpty(thisStatement.getExtendedTableProperties().getTblProperties())) {
-                finalsql.append(" TBLPROPERTIES (").append(thisStatement.getExtendedTableProperties().getTblProperties()).append(")");
+
+            if (thisStatement.getExtendedTableProperties() != null) {
+                String properties = processTableProperties(
+                        thisStatement.getExtendedTableProperties().getTblProperties()
+                );
+                finalsql.append(" TBLPROPERTIES (").append(properties).append(")");
             } else {
-                finalsql.append(" TBLPROPERTIES('delta.feature.allowColumnDefaults' = 'supported', 'delta.columnMapping.mode' = 'name', 'delta.enableDeletionVectors' = true)");
+                String defaultProperties = processTableProperties("");
+                finalsql.append(" TBLPROPERTIES (").append(defaultProperties).append(")");
             }
 
             // Databricks can decide to have tables live in a particular location. If null, Databricks will handle the location automatically in DBFS
             if (!StringUtils.isEmpty(thisStatement.getTableLocation())) {
                 finalsql.append(" LOCATION '").append(thisStatement.getTableLocation()).append("'");
-            } else if (thisStatement.getExtendedTableProperties() != null && StringUtils.isNotEmpty(thisStatement.getExtendedTableProperties().getTableLocation())) {
-                finalsql.append(" LOCATION '").append(thisStatement.getExtendedTableProperties().getTableLocation()).append("'");
             }
 
             List<String> clusterCols = thisStatement.getClusterColumns();
@@ -68,47 +94,54 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
 
 
             // If there are any cluster columns, add the clause
-            // ONLY if there are NOT cluster columns, then do partitions, but never both.
+            // ONLY if there are NO cluster columns, then do partitions, but never both.
             if (!clusterCols.isEmpty()) {
-
-                finalsql.append(" CLUSTER BY (");
-
-                int val = 0;
-                while (clusterCols.size() > val) {
-                    finalsql.append(clusterCols.get(val));
-
-                    val +=1;
-                    if (clusterCols.size() > val) {
-                        finalsql.append(", ");
-                    }
-                    else {
-                        finalsql.append(")");
-                    }
-                }
+                finalsql.append(" CLUSTER BY (")
+                        .append(String.join(", ", clusterCols))
+                        .append(")");
             } else if (!partitionCols.isEmpty()) {
-                finalsql.append(" PARTITIONED BY (");
-
-                int val = 0;
-                while (partitionCols.size() > val) {
-                    finalsql.append(partitionCols.get(val));
-
-                    val +=1;
-                    if (partitionCols.size() > val) {
-                        finalsql.append(", ");
-                    }
-                    else {
-                        finalsql.append(")");
-                    }
-                }
+                finalsql.append(" PARTITIONED BY (")
+                        .append(String.join(", ", partitionCols))
+                        .append(")");
             }
+      //  }
 
-
-        }
-
-        sqls[0] = new UnparsedSql(finalsql.toString(), sqls[0].getAffectedDatabaseObjects().toArray(new DatabaseObject[0]));
-
-        return sqls;
-
+        return new Sql[]{new UnparsedSql(finalsql.toString(), getAffectedTable(thisStatement))};
     }
 
+    private String processTableProperties(String userProperties) {
+        // If there are no user properties, we return all essential properties with their default values
+        if (StringUtils.isEmpty(userProperties)) {
+            return ESSENTIAL_PROPERTIES.stream()
+                    .map(prop -> prop + " = " + DEFAULT_VALUES.get(prop))
+                    .collect(joining(", "));
+        }
+
+        // convert user properties into a Map for processing
+        Map<String, String> properties = new LinkedHashMap<>();
+
+        if (!StringUtils.isEmpty(userProperties)) {
+            Arrays.stream(userProperties.split(","))
+                    .map(String::trim)
+                    .map(prop -> prop.split("="))
+                    .forEach(parts -> {
+                        String key = parts[0].trim();
+                        String value = parts[1].trim();
+                        properties.put(key, value);
+                    });
+        }
+
+        // For each essential property, we check whether it exists
+        // If it doesn't exist, we add it with the default value
+        for (String essentialProp : ESSENTIAL_PROPERTIES) {
+            if (!properties.containsKey(essentialProp)) {
+                properties.put(essentialProp, DEFAULT_VALUES.get(essentialProp));
+            }
+        }
+
+        // convert the Map back to string
+        return properties.entrySet().stream()
+                .map(entry -> entry.getKey() + " = " + entry.getValue())
+                .collect(joining(", "));
+    }
 }
