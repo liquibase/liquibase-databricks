@@ -70,6 +70,7 @@ public class ChangedTblPropertiesUtil {
                 addPropertiesMap.put(key, value);
             }
         });
+
         //then we remove the properties that are not in the reference
         Map<String, String> removePropertiesMap = comparedValuesMap.entrySet().stream()
                 .filter(entry -> !referencedValuesMap.containsKey(entry.getKey()))
