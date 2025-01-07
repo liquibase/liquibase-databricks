@@ -43,11 +43,7 @@ class CreateTableGeneratorDatabricksTest {
     private static final String DEFAULT_PROPERTIES =
             "'delta.columnMapping.mode' = 'name', " +
                     "'delta.enableDeletionVectors' = true, " +
-                    "'delta.feature.allowColumnDefaults' = 'supported', " +
-                    "'delta.logRetentionDuration' = '30 days', " +
-                    "'delta.deletedFileRetentionDuration' = '7 days', " +
-                    "'delta.targetFileSize' = 134217728, " +
-                    "'delta.enableChangeDataFeed' = true";
+                    "'delta.feature.allowColumnDefaults' = 'supported'";
 
     private CreateTableStatementDatabricks statement;
 
