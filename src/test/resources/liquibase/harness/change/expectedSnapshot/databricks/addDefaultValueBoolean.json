@@ -1,0 +1,17 @@
+{
+  "snapshot": {
+    "objects": {
+      "liquibase.structure.core.Column": [
+        {
+          "column": {
+            "name": "booleanColumn",
+            "type": {
+              "typeName": "BOOLEAN"
+            },
+            "defaultValue": "TRUE"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "snapshot": {
+    "objects": {
+      "liquibase.structure.core.Column": [
+        {
+          "column": {
+            "name": "dateTimeColumn",
+            "type": {
+              "typeName": "TIMESTAMP"
+            },
+            "defaultValue": "'2008-02-12 12:34:03'",
+            "nullable": true
+          }
+        }
+      ]
+    }
+  }
+}

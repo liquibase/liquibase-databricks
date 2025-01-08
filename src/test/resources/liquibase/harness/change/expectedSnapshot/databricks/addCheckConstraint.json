@@ -1,3 +1,14 @@
 {
-
+  "snapshot": {
+    "objects": {
+      "liquibase.structure.core.Table": [
+        {
+          "table": {
+            "name": "posts",
+            "tblProperties": ".*'delta.constraints.test_check_constraint'='id > 0'.*"
+          }
+        }
+      ]
+    }
+  }
 }

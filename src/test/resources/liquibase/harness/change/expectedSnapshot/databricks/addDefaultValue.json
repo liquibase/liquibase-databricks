@@ -4,20 +4,18 @@
       "liquibase.structure.core.Table": [
         {
           "table": {
-            "name": "test_table_clustered",
-            "clusteringColumns": "test_id"
+            "name": "posts"
           }
         }
       ],
       "liquibase.structure.core.Column": [
         {
           "column": {
-            "name": "test_id"
-          }
-        },
-        {
-          "column": {
-            "name": "test_column"
+            "name": "title",
+            "type": {
+              "typeName": "VARCHAR"
+            },
+            "defaultValue": "title_test"
           }
         }
       ]
