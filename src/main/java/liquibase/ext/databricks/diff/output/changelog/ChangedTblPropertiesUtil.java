@@ -37,6 +37,7 @@ public class ChangedTblPropertiesUtil {
             "delta.enableChangeDataFeed"
     );
 
+
     private ChangedTblPropertiesUtil() {
     }
 
