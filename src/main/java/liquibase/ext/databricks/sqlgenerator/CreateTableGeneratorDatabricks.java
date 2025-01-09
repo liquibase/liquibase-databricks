@@ -22,9 +22,7 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
     private static final Set<String> ESSENTIAL_PROPERTIES = Set.of(
             "'delta.columnMapping.mode'",
             "'delta.enableDeletionVectors'",
-            "'delta.feature.allowColumnDefaults'",
-            "'delta.logRetentionDuration'",
-            "'delta.enableChangeDataFeed'"
+            "'delta.feature.allowColumnDefaults'"
     );
 
     private static final Map<String, String> DEFAULT_VALUES = Map.of(
