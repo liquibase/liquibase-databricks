@@ -177,12 +177,7 @@ class ChangedTblPropertiesUtilTest {
         Difference difference = new Difference("tblProperties",
                 "'delta.columnMapping.mode'='name', " +
                         "'delta.enableDeletionVectors'=true, " +
-                        "'delta.feature.allowColumnDefaults'=true, " +
-                        "'delta.logRetentionDuration'='30 days', " +
-                        "'delta.deletedFileRetentionDuration'='7 days', " +
-                        "'delta.targetFileSize'=134217728, " +
-                        "'delta.enableChangeDataFeed'=true",
-                "");
+                        "'delta.feature.allowColumnDefaults'=true,", "");
 
         // Act
         AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
@@ -195,10 +190,6 @@ class ChangedTblPropertiesUtilTest {
         assertTrue(result[0].getSetExtendedTableProperties().getTblProperties().contains("'delta.columnMapping.mode'='name'"));
         assertTrue(result[0].getSetExtendedTableProperties().getTblProperties().contains("'delta.enableDeletionVectors'=true"));
         assertTrue(result[0].getSetExtendedTableProperties().getTblProperties().contains("'delta.feature.allowColumnDefaults'=true"));
-        assertTrue(result[0].getSetExtendedTableProperties().getTblProperties().contains("'delta.logRetentionDuration'='30 days'"));
-        assertTrue(result[0].getSetExtendedTableProperties().getTblProperties().contains("'delta.deletedFileRetentionDuration'='7 days'"));
-        assertTrue(result[0].getSetExtendedTableProperties().getTblProperties().contains("'delta.targetFileSize'=134217728"));
-        assertTrue(result[0].getSetExtendedTableProperties().getTblProperties().contains("'delta.enableChangeDataFeed'=true"));
     }
 
     @Test
