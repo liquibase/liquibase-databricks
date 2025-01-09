@@ -54,7 +54,10 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
 
         // First, ensure all essential properties are present with default values if available
         ESSENTIAL_PROPERTIES.forEach(prop -> {
-            properties.put(prop, DEFAULT_VALUES.getOrDefault(prop, "null"));
+            String defaultValue = DEFAULT_VALUES.get(prop);
+            if (defaultValue != null) {
+                properties.put(prop, defaultValue);
+            }
         });
 
         // If there are custom properties, parse and add them
@@ -73,8 +76,9 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
         }
 
         return properties.entrySet().stream()
+                .filter(entry -> entry.getValue() != null && !entry.getValue().equals("null"))
                 .map(entry -> entry.getKey() + " = " + entry.getValue())
-                .collect(joining(", "));
+                .collect(joining(", ")).trim();
     }
 
     @Override
