@@ -14,7 +14,7 @@ concurrency:
 jobs:
   liquibase-test-harness:
     name: Liquibase Test Harness
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       checks: write
       pull-requests: write
