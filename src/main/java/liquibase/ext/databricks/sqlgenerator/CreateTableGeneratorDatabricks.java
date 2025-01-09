@@ -99,7 +99,7 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
             if (thisStatement.getExtendedTableProperties() != null) {
                 properties = thisStatement.getExtendedTableProperties().getTblProperties();
             }
-            finalsql.append(" TBLPROPERTIES (").append(mergeTableProperties(properties)).append(")");
+            finalsql.append(" TBLPROPERTIES(").append(mergeTableProperties(properties)).append(")");
 
             if (!StringUtils.isEmpty(thisStatement.getTableLocation())) {
                 finalsql.append(" LOCATION '").append(thisStatement.getTableLocation()).append("'");
