@@ -51,28 +51,54 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
         return validationErrors;
     }
 
+    private String mergeTableProperties(String customProperties) {
+        Map<String, String> properties = new HashMap<>();
+
+        // First, ensure all essential properties are present with default values if available
+        ESSENTIAL_PROPERTIES.forEach(prop -> {
+            properties.put(prop, DEFAULT_VALUES.getOrDefault(prop, "null"));
+        });
+
+        // If there are custom properties, parse and add them
+        if (StringUtils.isNotEmpty(customProperties)) {
+            Arrays.stream(customProperties.split(","))
+                  .map(String::trim)
+                  .filter(prop -> !prop.isEmpty())
+                  .forEach(prop -> {
+                      String[] parts = prop.split("=", 2);
+                      if (parts.length == 2) {
+                          String key = parts[0].trim();
+                          String value = parts[1].trim();
+                          properties.put(key, value);
+                      }
+                  });
+        }
+
+        return properties.entrySet().stream()
+                .map(entry -> entry.getKey() + " = " + entry.getValue())
+                .collect(joining(", "));
+    }
 
     @Override
     public Sql[] generateSql(CreateTableStatement statement, Database database, SqlGeneratorChain sqlGeneratorChain) {
-
         Sql[] sqls = super.generateSql(statement, database, sqlGeneratorChain);
         StringBuilder finalsql = new StringBuilder(sqls[0].toSql());
 
         if (statement instanceof CreateTableStatementDatabricks) {
-        CreateTableStatementDatabricks thisStatement = (CreateTableStatementDatabricks) statement;
+            CreateTableStatementDatabricks thisStatement = (CreateTableStatementDatabricks) statement;
 
             if ((!StringUtils.isEmpty(thisStatement.getTableFormat()))) {
                 finalsql.append(" USING ").append(thisStatement.getTableFormat());
             } else {
                 finalsql.append(" USING delta");
             }
-            if (thisStatement.getExtendedTableProperties() != null && StringUtils.isNotEmpty(thisStatement.getExtendedTableProperties().getTblProperties())) {
-                finalsql.append(" TBLPROPERTIES (").append(thisStatement.getExtendedTableProperties().getTblProperties()).append(")");
-            } else {
-                finalsql.append(" TBLPROPERTIES('delta.feature.allowColumnDefaults' = 'supported', 'delta.columnMapping.mode' = 'name', 'delta.enableDeletionVectors' = true)");
-            }
 
-            // Databricks can decide to have tables live in a particular location. If null, Databricks will handle the location automatically in DBFS
+            String properties = null;
+            if (thisStatement.getExtendedTableProperties() != null) {
+                properties = thisStatement.getExtendedTableProperties().getTblProperties();
+            }
+            finalsql.append(" TBLPROPERTIES (").append(mergeTableProperties(properties)).append(")");
+
             if (!StringUtils.isEmpty(thisStatement.getTableLocation())) {
                 finalsql.append(" LOCATION '").append(thisStatement.getTableLocation()).append("'");
             } else if (thisStatement.getExtendedTableProperties() != null && StringUtils.isNotEmpty(thisStatement.getExtendedTableProperties().getTableLocation())) {
@@ -82,49 +108,34 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
             List<String> clusterCols = thisStatement.getClusterColumns();
             List<String> partitionCols = thisStatement.getPartitionColumns();
 
-
-            // If there are any cluster columns, add the clause
-            // ONLY if there are NOT cluster columns, then do partitions, but never both.
             if (!clusterCols.isEmpty()) {
-
                 finalsql.append(" CLUSTER BY (");
-
                 int val = 0;
                 while (clusterCols.size() > val) {
                     finalsql.append(clusterCols.get(val));
-
-                    val +=1;
+                    val += 1;
                     if (clusterCols.size() > val) {
                         finalsql.append(", ");
-                    }
-                    else {
+                    } else {
                         finalsql.append(")");
                     }
                 }
             } else if (!partitionCols.isEmpty()) {
                 finalsql.append(" PARTITIONED BY (");
-
                 int val = 0;
                 while (partitionCols.size() > val) {
                     finalsql.append(partitionCols.get(val));
-
-                    val +=1;
+                    val += 1;
                     if (partitionCols.size() > val) {
                         finalsql.append(", ");
-                    }
-                    else {
+                    } else {
                         finalsql.append(")");
                     }
                 }
-    }
-
-
+            }
         }
 
         sqls[0] = new UnparsedSql(finalsql.toString(), sqls[0].getAffectedDatabaseObjects().toArray(new DatabaseObject[0]));
-
         return sqls;
-
-        }
-
+    }
 }

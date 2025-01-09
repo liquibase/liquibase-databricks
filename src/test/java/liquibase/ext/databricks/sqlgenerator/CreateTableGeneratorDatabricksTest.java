@@ -83,29 +83,29 @@ class CreateTableGeneratorDatabricksTest {
         }
     }
 
-//    @Test
-//    void createTableWithCustomProperties() {
-//        // Arrange
-//        ExtendedTableProperties properties = new ExtendedTableProperties();
-//        properties.setTblProperties(
-//                "'custom.property' = 'value', " +
-//                        "'delta.columnMapping.mode' = 'custom'"
-//        );
-//        statement.setExtendedTableProperties(properties);
-//
-//        // Act
-//        Sql[] result = generator.generateSql(statement, database, sqlGeneratorChain);
-//
-//        // Assert
-//        String sql = result[0].toSql();
-//
-//        // Check custom properties
-//        assertTrue(sql.contains("'custom.property' = 'value'"));
-//        assertTrue(sql.contains("'delta.columnMapping.mode' = 'custom'"));
-//
-//        // Checks if missing essential properties have been added
-//        assertTrue(sql.contains("'delta.enableDeletionVectors' = true"));
-//    }
+    @Test
+    void createTableWithCustomProperties() {
+        // Arrange
+        ExtendedTableProperties properties = new ExtendedTableProperties();
+        properties.setTblProperties(
+                "'custom.property' = 'value', " +
+                        "'delta.columnMapping.mode' = 'custom'"
+        );
+        statement.setExtendedTableProperties(properties);
+
+        // Act
+        Sql[] result = generator.generateSql(statement, database, sqlGeneratorChain);
+
+        // Assert
+        String sql = result[0].toSql();
+
+        // Check custom properties
+        assertTrue(sql.contains("'custom.property' = 'value'"));
+        assertTrue(sql.contains("'delta.columnMapping.mode' = 'custom'"));
+
+        // Checks if missing essential properties have been added
+        assertTrue(sql.contains("'delta.enableDeletionVectors' = true"));
+    }
 
     @Test
     void createTableWithAllCustomProperties() {
@@ -114,11 +114,7 @@ class CreateTableGeneratorDatabricksTest {
         String customProperties =
                 "'delta.columnMapping.mode' = 'custom', " +
                         "'delta.enableDeletionVectors' = false, " +
-                        "'delta.feature.allowColumnDefaults' = 'not_supported', " +
-                        "'delta.logRetentionDuration' = '60 days', " +
-                        "'delta.deletedFileRetentionDuration' = '14 days', " +
-                        "'delta.targetFileSize' = 268435456, " +
-                        "'delta.enableChangeDataFeed' = false";
+                        "'delta.feature.allowColumnDefaults' = not_supported";
 
         properties.setTblProperties(customProperties);
         statement.setExtendedTableProperties(properties);
@@ -139,27 +135,27 @@ class CreateTableGeneratorDatabricksTest {
         }
     }
 
-//    @Test
-//    void createTableWithLocationAndFormat() {
-//        // Arrange
-//        statement.setTableLocation("/path/to/table");
-//        statement.setTableFormat("delta");
-//        ExtendedTableProperties properties = new ExtendedTableProperties();
-//        properties.setTblProperties("'custom.property' = 'value'");
-//        statement.setExtendedTableProperties(properties);
-//
-//        // Act
-//        Sql[] result = generator.generateSql(statement, database, sqlGeneratorChain);
-//
-//        // Assert
-//        String sql = result[0].toSql();
-//        assertTrue(sql.contains("LOCATION '/path/to/table'"));
-//        assertTrue(sql.contains("USING delta"));
-//        assertTrue(sql.contains("'custom.property' = 'value'"));
-//
-//        // Checks whether essential properties are still present
-//        assertTrue(sql.contains("'delta.columnMapping.mode'"));
-//    }
+    @Test
+    void createTableWithLocationAndFormat() {
+        // Arrange
+        statement.setTableLocation("/path/to/table");
+        statement.setTableFormat("delta");
+        ExtendedTableProperties properties = new ExtendedTableProperties();
+        properties.setTblProperties("'custom.property' = 'value'");
+        statement.setExtendedTableProperties(properties);
+
+        // Act
+        Sql[] result = generator.generateSql(statement, database, sqlGeneratorChain);
+
+        // Assert
+        String sql = result[0].toSql();
+        assertTrue(sql.contains("LOCATION '/path/to/table'"));
+        assertTrue(sql.contains("USING delta"));
+        assertTrue(sql.contains("'custom.property' = 'value'"));
+
+        // Checks whether essential properties are still present
+        assertTrue(sql.contains("'delta.columnMapping.mode'"));
+    }
 
     @Test
     void createTableWithClusterColumns() {
