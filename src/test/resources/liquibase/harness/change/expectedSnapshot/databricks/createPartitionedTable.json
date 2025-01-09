@@ -4,7 +4,8 @@
       "liquibase.structure.core.Table": [
         {
           "table": {
-            "name": "test_table_partitioned"
+            "name": "test_table_partitioned",
+            "partitionColumns": "partition_column"
           }
         }
       ],

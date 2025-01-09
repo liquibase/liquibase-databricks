@@ -1,2 +1,1 @@
-INVALID TEST
--- Databricks supports default values and generated columns, but the object does not exist in the metadata returned in jdbc
+ALTER TABLE main.liquibase_harness_test_ds.posts ALTER COLUMN inserted_date SET DEFAULT CURRENT_TIMESTAMP

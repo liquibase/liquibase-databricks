@@ -1,3 +1,14 @@
 {
-
+  "snapshot": {
+    "objects": {
+      "liquibase.structure.core.View": [
+        {
+          "view": {
+            "name": "test_alter_view_properties",
+            "tblProperties": ".*'external.location'='s3://mybucket/mytable', 'this.is.my.key'='12', 'this.is.my.key2'='true'.*"
+          }
+        }
+      ]
+    }
+  }
 }
