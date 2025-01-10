@@ -66,7 +66,6 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
                     });
         }
 
-        // Build result in specified order
         StringBuilder result = new StringBuilder();
 
         for (String key : PROPERTY_ORDER) {
