@@ -21,15 +21,15 @@ import java.util.Map;
 public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
 
     private static final String[] PROPERTY_ORDER = {
-            "'delta.enableDeletionVectors'",
+            "'delta.feature.allowColumnDefaults'",
             "'delta.columnMapping.mode'",
-            "'delta.feature.allowColumnDefaults'"
+            "'delta.enableDeletionVectors'"
     };
 
     private static final Map<String, String> DEFAULT_VALUES = Map.of(
-            "'delta.enableDeletionVectors'", "true",
+            "'delta.feature.allowColumnDefaults'", "'supported'",
             "'delta.columnMapping.mode'", "'name'",
-            "'delta.feature.allowColumnDefaults'", "'supported'"
+            "'delta.enableDeletionVectors'", "true"
     );
 
     @Override
