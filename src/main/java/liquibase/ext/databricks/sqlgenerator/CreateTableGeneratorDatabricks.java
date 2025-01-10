@@ -51,8 +51,6 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
     }
 
     private String mergeTableProperties(String customProperties) {
-
-        // First, ensure all essential properties are present with default values
         Map<String, String> properties = new LinkedHashMap<>(DEFAULT_VALUES);
 
         // If there are custom properties, parse and add them
