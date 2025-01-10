@@ -13,16 +13,23 @@ import liquibase.statement.core.CreateTableStatement;
 import liquibase.structure.DatabaseObject;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.*;
-
-import static java.util.stream.Collectors.joining;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
 
+    private static final String[] PROPERTY_ORDER = {
+            "'delta.enableDeletionVectors'",
+            "'delta.columnMapping.mode'",
+            "'delta.feature.allowColumnDefaults'"
+    };
+
     private static final Map<String, String> DEFAULT_VALUES = Map.of(
-            "'delta.feature.allowColumnDefaults'", "'supported'",
+            "'delta.enableDeletionVectors'", "true",
             "'delta.columnMapping.mode'", "'name'",
-            "'delta.enableDeletionVectors'", "true"
+            "'delta.feature.allowColumnDefaults'", "'supported'"
     );
 
     @Override
@@ -37,7 +44,7 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
 
     public ValidationErrors validate(CreateTableStatementDatabricks createStatement, Database database, SqlGeneratorChain sqlGeneratorChain) {
         ValidationErrors validationErrors = new ValidationErrors();
-        if (!(createStatement.getPartitionColumns().isEmpty()) && !(createStatement.getClusterColumns().isEmpty())){
+        if (!(createStatement.getPartitionColumns().isEmpty()) && !(createStatement.getClusterColumns().isEmpty())) {
             validationErrors.addError("WARNING! Databricks does not supported creating tables with PARTITION and CLUSTER columns, please one supply one option.");
         }
         return validationErrors;
@@ -51,29 +58,40 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
         // If there are custom properties, parse and add them
         if (StringUtils.isNotEmpty(customProperties)) {
             Arrays.stream(customProperties.split(","))
-                  .map(String::trim)
-                  .filter(prop -> !prop.isEmpty())
-                  .forEach(prop -> {
-                      String[] parts = prop.split("=", 2);
-                      if (parts.length == 2) {
-                          String key = parts[0].trim();
-                          String value = parts[1].trim();
-                          // When updating default properties, maintain their position
-                          if (DEFAULT_VALUES.containsKey(key)) {
-                              properties.put(key, value);
-                          } else {
-                              // For non-default properties, add to the end
-                              properties.remove(key);
-                              properties.put(key, value);
-                          }
-                      }
-                  });
+                    .map(String::trim)
+                    .filter(prop -> !prop.isEmpty())
+                    .forEach(prop -> {
+                        String[] parts = prop.split("=", 2);
+                        if (parts.length == 2) {
+                            properties.put(parts[0].trim(), parts[1].trim());
+                        }
+                    });
         }
 
-        return properties.entrySet().stream()
-                .filter(entry -> entry.getValue() != null && !entry.getValue().equals("null"))
-                .map(entry -> entry.getKey() + " = " + entry.getValue())
-                .collect(joining(", ")).trim();
+        // Build result in specified order
+        StringBuilder result = new StringBuilder();
+
+        for (String key : PROPERTY_ORDER) {
+            if (properties.containsKey(key)) {
+                if (result.length() > 0) {
+                    result.append(", ");
+                }
+                result.append(key).append(" = ").append(properties.get(key));
+                properties.remove(key);
+            }
+        }
+
+        // Then add any remaining custom properties
+        for (Map.Entry<String, String> entry : properties.entrySet()) {
+            if (entry.getValue() != null && !entry.getValue().equals("null")) {
+                if (result.length() > 0) {
+                    result.append(", ");
+                }
+                result.append(entry.getKey()).append(" = ").append(entry.getValue());
+            }
+        }
+
+        return result.toString();
     }
 
     @Override
