@@ -20,9 +20,9 @@ import static java.util.stream.Collectors.joining;
 public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
 
     private static final Map<String, String> DEFAULT_VALUES = Map.of(
+            "'delta.feature.allowColumnDefaults'", "'supported'",
             "'delta.columnMapping.mode'", "'name'",
-            "'delta.enableDeletionVectors'", "true",
-            "'delta.feature.allowColumnDefaults'", "'supported'"
+            "'delta.enableDeletionVectors'", "true"
     );
 
     @Override
@@ -46,7 +46,7 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
     private String mergeTableProperties(String customProperties) {
 
         // First, ensure all essential properties are present with default values
-        Map<String, String> properties = new HashMap<>(DEFAULT_VALUES);
+        Map<String, String> properties = new LinkedHashMap<>(DEFAULT_VALUES);
 
         // If there are custom properties, parse and add them
         if (StringUtils.isNotEmpty(customProperties)) {
@@ -58,7 +58,14 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
                       if (parts.length == 2) {
                           String key = parts[0].trim();
                           String value = parts[1].trim();
-                          properties.put(key, value);
+                          // When updating default properties, maintain their position
+                          if (DEFAULT_VALUES.containsKey(key)) {
+                              properties.put(key, value);
+                          } else {
+                              // For non-default properties, add to the end
+                              properties.remove(key);
+                              properties.put(key, value);
+                          }
                       }
                   });
         }
