@@ -112,9 +112,9 @@ class CreateTableGeneratorDatabricksTest {
         // Arrange
         ExtendedTableProperties properties = new ExtendedTableProperties();
         String customProperties =
-                "'delta.columnMapping.mode' = 'custom', " +
-                        "'delta.enableDeletionVectors' = false, " +
-                        "'delta.feature.allowColumnDefaults' = not_supported";
+                "'delta.feature.allowColumnDefaults' = not_supported," +
+                        "'delta.columnMapping.mode' = 'custom', " +
+                        "'delta.enableDeletionVectors' = false";
 
         properties.setTblProperties(customProperties);
         statement.setExtendedTableProperties(properties);
