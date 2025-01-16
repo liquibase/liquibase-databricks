@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,7 +22,7 @@ class ChangedTblPropertiesUtilTest {
     @Test
     void justAdd() {
         //Arrange
-        Difference difference = new Difference("tblProperties","'this.should.be.added'=35", "");
+        Difference difference = new Difference("tblProperties", "'this.should.be.added'=35", "");
 
         //Act
         AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
@@ -30,7 +31,7 @@ class ChangedTblPropertiesUtilTest {
         //Assert
         assertNotNull(result);
         assertEquals(1, result.length);
-        assertEquals(table.getName(), ((AlterTablePropertiesChangeDatabricks)result[0]).getTableName());
+        assertEquals(table.getName(), ((AlterTablePropertiesChangeDatabricks) result[0]).getTableName());
         assertEquals("'this.should.be.added'=35", result[0].getSetExtendedTableProperties().getTblProperties());
         assertNull(result[0].getUnsetExtendedTableProperties());
     }
@@ -106,7 +107,8 @@ class ChangedTblPropertiesUtilTest {
     void addAndRemoveAndChangeManyAtSameTimeAndInRandomOrder() {
         //Arrange
         Difference difference = new Difference("tblProperties",
-                "'this.should.be.ignored'=true,'this.should.be.added.too'=true,'this.should.be.added'=35,'this.should.be.changed'=true", "'this.should.be.changed'=false,'this.should.be.removed'='aaa','this.should.be.ignored'=true,this.should.be.removed.too'=bye");
+                "'this.should.be.ignored'=true,'this.should.be.added.too'=true,'this.should.be.added'=35,'this.should.be.changed'=true", "'this.should.be" +
+                ".changed'=false,'this.should.be.removed'='aaa','this.should.be.ignored'=true,this.should.be.removed.too'=bye");
 
         //Act
         AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
@@ -115,7 +117,8 @@ class ChangedTblPropertiesUtilTest {
         //Assert
         assertNotNull(result);
         assertEquals(2, result.length);
-        assertEquals("'this.should.be.added.too'=true,'this.should.be.changed'=true,'this.should.be.added'=35", result[0].getSetExtendedTableProperties().getTblProperties());
+        assertEquals("'this.should.be.added.too'=true,'this.should.be.changed'=true,'this.should.be.added'=35",
+                result[0].getSetExtendedTableProperties().getTblProperties());
         assertNull(result[0].getUnsetExtendedTableProperties());
         assertEquals("'this.should.be.removed',this.should.be.removed.too'", result[1].getUnsetExtendedTableProperties().getTblProperties());
         assertNull(result[1].getSetExtendedTableProperties());
@@ -156,11 +159,8 @@ class ChangedTblPropertiesUtilTest {
         assertNotNull(result);
         assertEquals(1, result.length);
 
-        Set<String> expectedProperties = Set.of(
-                "'delta.columnMapping.mode'='name'",
-                "'delta.enableDeletionVectors'=true",
-                "'delta.feature.allowColumnDefaults'=true"
-        );
+        Set<String> expectedProperties = new TreeSet<>(
+                Arrays.asList("'delta.columnMapping.mode'='name'", "'delta.enableDeletionVectors'=true", "'delta.feature.allowColumnDefaults'=true"));
 
         Set<String> actualProperties = Arrays.stream(
                         result[0].getSetExtendedTableProperties().getTblProperties().split(","))

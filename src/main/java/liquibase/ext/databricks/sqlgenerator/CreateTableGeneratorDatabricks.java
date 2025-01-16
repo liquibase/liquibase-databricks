@@ -13,10 +13,9 @@ import liquibase.statement.core.CreateTableStatement;
 import liquibase.structure.DatabaseObject;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
 
@@ -26,11 +25,11 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
             "'delta.enableDeletionVectors'"
     };
 
-    private static final Map<String, String> DEFAULT_VALUES = Map.of(
-            "'delta.feature.allowColumnDefaults'", "'supported'",
-            "'delta.columnMapping.mode'", "'name'",
-            "'delta.enableDeletionVectors'", "true"
-    );
+    private static final Map<String, String> DEFAULT_VALUES = Stream.of(
+            new AbstractMap.SimpleEntry<>("'delta.feature.allowColumnDefaults'", "'supported'"),
+            new AbstractMap.SimpleEntry<>("'delta.columnMapping.mode'", "'name'"),
+            new AbstractMap.SimpleEntry<>("'delta.enableDeletionVectors'", "true")
+    ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
     @Override
     public int getPriority() {
