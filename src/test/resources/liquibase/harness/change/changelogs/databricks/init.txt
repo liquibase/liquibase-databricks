@@ -1,10 +1,10 @@
 --liquibase formatted sql
 --changeset liquibase:1 runAlways:true
 
-CREATE DATABASE IF NOT EXISTS main.oleh;
+CREATE DATABASE IF NOT EXISTS main.liquibase_harness_test_ds;
 
 USE CATALOG main;
-USE SCHEMA oleh;
+USE SCHEMA liquibase_harness_test_ds;
 
 DROP TABLE IF EXISTS main.liquibase_harness_test_ds.authors;
 
