@@ -12,6 +12,7 @@ import liquibase.serializer.core.xml.XMLChangeLogSerializer;
  */
 public class NamespaceDetailsDatabricks implements NamespaceDetails {
 
+    //TODO use it in all classes where this is hardcoded
     public static final String DATABRICKS_NAMESPACE = "http://www.liquibase.org/xml/ns/databricks";
 
     public static final String DATABRICKS_XSD = "http://www.liquibase.org/xml/ns/databricks/liquibase-databricks-latest.xsd";

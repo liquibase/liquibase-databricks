@@ -1,25 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<databaseChangeLog
-        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:databricks="http://www.liquibase.org/xml/ns/databricks"
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
-            http://www.liquibase.org/xml/ns/databricks
-            http://www.liquibase.org/xml/ns/databricks/liquibase-databricks-latest.xsd">
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <changeSet author="fl" id="1">
-        <createTable tableName="tableWithDefaultValues" >
+        <createTable tableName="tableWithDefaultValues">
             <column name="longcolumn" type="long" autoIncrement="true" generationType="IDENTITY" startWith="10" incrementBy="5"/>
             <column name="eventTime" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP()">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
             <column name="year" type="int" defaultValueComputed="YEAR(CURRENT_TIMESTAMP())"/>
-            <column name="eventDate" type="date" defaultValueComputed="CAST(CURRENT_TIMESTAMP() AS DATE)" />
+            <column name="eventDate" type="date" defaultValueComputed="CAST(CURRENT_TIMESTAMP() AS DATE)"/>
             <column name="eventDescription" type="string" defaultValue="default string, regular ? almost();!$#@^%[] String bigint">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
-            <column name="eventShortDescription" type="string" defaultValue="short desc" />
+            <column name="eventShortDescription" type="string" defaultValue="short desc"/>
         </createTable>
     </changeSet>
 
