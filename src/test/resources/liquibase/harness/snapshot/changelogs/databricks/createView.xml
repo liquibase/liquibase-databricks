@@ -14,7 +14,7 @@
     </changeSet>
     <changeSet id="2" author="mykhailo">
         <createView viewName="test_view">
-            select test_column from main.oleh.view_table
+            select test_column from main.liquibase_harness_test_ds.view_table
         </createView>
         <rollback>
             <dropView viewName="test_view"/>
