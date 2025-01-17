@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<databaseChangeLog
-        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:databricks="http://www.liquibase.org/xml/ns/databricks"
-
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
-            http://www.liquibase.org/xml/ns/databricks
-            http://www.liquibase.org/xml/ns/databricks/liquibase-databricks-latest.xsd">
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:databricks="http://www.liquibase.org/xml/ns/databricks"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                   http://www.liquibase.org/xml/ns/databricks http://www.liquibase.org/xml/ns/databricks/liquibase-databricks-latest.xsd">
 
     <changeSet id="1" author="oleh">
         <createTable tableName="test_table">
@@ -29,4 +25,5 @@
                                                 tableLocation="s3://databricks-th/test_table_properties"/>
         </createTable>
     </changeSet>
+
 </databaseChangeLog>

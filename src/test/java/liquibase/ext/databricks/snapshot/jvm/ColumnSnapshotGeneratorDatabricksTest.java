@@ -19,10 +19,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -75,7 +72,7 @@ class ColumnSnapshotGeneratorDatabricksTest {
             testedColumn.setName(columnWithDefault.getKey());
             testedColumn.setAttribute("liquibase-complete", true);
             DatabaseObject databaseObject = snapshotGenerator.snapshotObject(testedColumn, snapshot);
-            assertTrue(databaseObject instanceof Column);
+            assertInstanceOf(Column.class, databaseObject);
             assertNull(((Column) databaseObject).getComputed());
             assertNotNull(((Column) databaseObject).getDefaultValue());
             assertEquals(columnWithDefault.getValue(), ((Column) databaseObject).getDefaultValue());
@@ -84,7 +81,7 @@ class ColumnSnapshotGeneratorDatabricksTest {
             testedColumn.setName(columnWithDefaultComputed.getKey());
             testedColumn.setAttribute("liquibase-complete", true);
             DatabaseObject databaseObject = snapshotGenerator.snapshotObject(testedColumn, snapshot);
-            assertTrue(databaseObject instanceof Column);
+            assertInstanceOf(Column.class, databaseObject);
             assertNull(((Column) databaseObject).getComputed());
             assertNotNull(((Column) databaseObject).getDefaultValue());
             assertEquals(columnWithDefaultComputed.getValue(), ((Column) databaseObject).getDefaultValue());

@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<databaseChangeLog
-        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:databricks="http://www.liquibase.org/xml/ns/databricks"
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
-            http://www.liquibase.org/xml/ns/databricks
-            http://www.liquibase.org/xml/ns/databricks/liquibase-databricks-latest.xsd">
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <changeSet author="oleh" id="1">
-        <createTable tableName="createTableWithTwoIdentityColumns" >
+        <createTable tableName="createTableWithTwoIdentityColumns">
             <column name="IdentityByDefault" type="long" autoIncrement="true" generationType="IDENTITY" startWith="10" incrementBy="5"/>
             <column name="IdentityAlways" type="long" defaultValueComputed="GENERATED ALWAYS AS IDENTITY (START WITH 11 INCREMENT BY 2)"/>
         </createTable>

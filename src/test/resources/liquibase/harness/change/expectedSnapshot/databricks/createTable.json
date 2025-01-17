@@ -5,14 +5,14 @@
         {
           "table": {
             "name": "test_table",
-            "tblProperties" : "'delta.checkpoint.writeStatsAsJson'='false', 'delta.checkpoint.writeStatsAsStruct'='true', 'delta.columnMapping.maxColumnId'='2', 'delta.columnMapping.mode'='name', 'delta.enableDeletionVectors'='true', 'delta.feature.allowColumnDefaults'='supported', 'delta.feature.columnMapping'='supported', 'delta.feature.deletionVectors'='supported', 'delta.feature.invariants'='supported', 'delta.minReaderVersion'='3', 'delta.minWriterVersion'='7'"
+            "tblProperties": "'delta.checkpoint.writeStatsAsJson'='false', 'delta.checkpoint.writeStatsAsStruct'='true', 'delta.columnMapping.maxColumnId'='2', 'delta.columnMapping.mode'='name', 'delta.enableDeletionVectors'='true', 'delta.feature.allowColumnDefaults'='supported', 'delta.feature.columnMapping'='supported', 'delta.feature.deletionVectors'='supported', 'delta.feature.invariants'='supported', 'delta.minReaderVersion'='3', 'delta.minWriterVersion'='7'"
           }
         },
         {
           "table": {
             "name": "test_table_properties",
             "Location" : "s3://databricks-th/test_table_properties",
-            "tblProperties" : "'delta.checkpoint.writeStatsAsJson'='false', 'delta.checkpoint.writeStatsAsStruct'='true', 'delta.enableDeletionVectors'='true', 'delta.feature.deletionVectors'='supported', 'delta.feature.invariants'='supported', 'delta.minReaderVersion'='3', 'delta.minWriterVersion'='7', 'this.is.my.key'='12', 'this.is.my.key2'='true'"
+            "tblProperties": "'delta.checkpoint.writeStatsAsJson'='false', 'delta.checkpoint.writeStatsAsStruct'='true', 'delta.columnMapping.maxColumnId'='1', 'delta.columnMapping.mode'='name', 'delta.enableDeletionVectors'='true', 'delta.feature.allowColumnDefaults'='supported', 'delta.feature.columnMapping'='supported', 'delta.feature.deletionVectors'='supported', 'delta.feature.invariants'='supported', 'delta.minReaderVersion'='3', 'delta.minWriterVersion'='7', 'this.is.my.key'='12', 'this.is.my.key2'='true'"
           }
         }
       ],

@@ -1,18 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<databaseChangeLog
-        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:databricks="http://www.liquibase.org/xml/ns/databricks"
-        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
-
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
-            http://www.liquibase.org/xml/ns/databricks
-            http://www.liquibase.org/xml/ns/databricks/liquibase-databricks-latest.xsd">
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:databricks="http://www.liquibase.org/xml/ns/databricks"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                   http://www.liquibase.org/xml/ns/databricks http://www.liquibase.org/xml/ns/databricks/liquibase-databricks-latest.xsd">
 
     <changeSet id="1" author="as">
-        <createTable tableName="test_table_clustered_new" >
-            <column name="test_id" type="int" />
+        <createTable tableName="test_table_clustered_new">
+            <column name="test_id" type="int"/>
             <column name="test_new" type="int"/>
             <column name="test_present_new" type="int"/>
             <databricks:extendedTableProperties clusterColumns="test_id,test_new,test_present_new"/>
@@ -22,6 +18,7 @@
             <dropTable tableName="test_table_clustered_new"/>
         </rollback>
     </changeSet>
+
     <changeSet id="2" author="your.name">
         <databricks:alterCluster tableName="test_table_clustered_new">
             <databricks:column name="test_id"/>
@@ -29,11 +26,13 @@
         </databricks:alterCluster>
         <rollback/>
     </changeSet>
+
     <changeSet id="3" author="your.name">
         <!-- The Databricks does not allow clustered columns to be dropped, so they should be unclustered before the dropColumn in the alterCluster. -->
         <dropColumn tableName="test_table_clustered_new" columnName="test_new"/>
         <rollback/>
     </changeSet>
+
     <changeSet id="4" author="mykhailo">
         <ext:createTable tableName="clustered_delta_table" tableFormat="delta" clusterColumns="id,test_column">
             <column name="id" type="int"/>
@@ -41,4 +40,5 @@
             <column name="test_column" type="varchar(20)"/>
         </ext:createTable>
     </changeSet>
+
 </databaseChangeLog>
