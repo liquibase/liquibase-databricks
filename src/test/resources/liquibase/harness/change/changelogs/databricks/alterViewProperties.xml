@@ -7,8 +7,7 @@
 
     <changeSet id="1" author="as">
         <databricks:createView viewName="test_alter_view_properties">
-            select id, first_name, last_name, email
-            from authors
+            select id, first_name, last_name, email from authors
         </databricks:createView>
     </changeSet>
 

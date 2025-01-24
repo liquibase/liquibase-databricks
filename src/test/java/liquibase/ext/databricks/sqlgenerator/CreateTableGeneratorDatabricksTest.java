@@ -111,8 +111,8 @@ class CreateTableGeneratorDatabricksTest {
     void createTableWithAllCustomProperties() {
         // Arrange
         ExtendedTableProperties properties = new ExtendedTableProperties();
+        //'delta.feature.allowColumnDefaults' support only 'enabled' and 'supported', as for Jan 2025 there is no way to override it to set 'false'
         String customProperties =
-                "'delta.feature.allowColumnDefaults' = not_supported," +
                         "'delta.columnMapping.mode' = 'custom', " +
                         "'delta.enableDeletionVectors' = false";
 
