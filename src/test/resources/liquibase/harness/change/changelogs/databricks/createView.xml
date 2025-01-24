@@ -7,8 +7,7 @@
 
     <changeSet id="2" author="fl">
         <databricks:createView viewName="test_view" tblProperties="'external.location'='s3://mybucket/myview','this.is.my.key'=12,'this.is.my.key2'=true">
-            select id, first_name, last_name, email
-            from authors
+            select id, first_name, last_name, email from authors
         </databricks:createView>
     </changeSet>
 
