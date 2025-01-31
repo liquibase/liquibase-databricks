@@ -24,6 +24,8 @@ jobs:
       TF_VAR_DBX_TOKEN: ${{ secrets.TH_DATABRICKS_WORKSPACE_TOKEN }}
       TF_VAR_TEST_CATALOG: main
       TF_VAR_TEST_SCHEMA: liquibase_harness_test_ds
+    outputs:
+      DATABRICKS_URL: ${{ steps.collect-databricks-config.outputs.DATABRICKS_URL }}
 
     steps:
       - name: Checkout code
@@ -31,6 +33,10 @@ jobs:
 
       - run: terraform init
         working-directory: src/test/terraform
+
+      - name: Stop test database
+        working-directory: src/test/terraform
+        run: terraform destroy -auto-approve
 
       - run: terraform plan
         working-directory: src/test/terraform
@@ -40,6 +46,15 @@ jobs:
           terraform taint databricks_schema.test_harness || true
           terraform apply -auto-approve
         working-directory: src/test/terraform
+
+      - name: Collect Databricks Config
+        id: collect-databricks-config
+        working-directory: src/test/terraform
+        run: |
+          CLUSTER_ID=$(terraform output -raw endpoint_url)
+          DATABRICKS_HOST=${TF_VAR_DBX_HOST#https://}
+          echo "DATABRICKS_URL=jdbc:databricks://$DATABRICKS_HOST:443/default;transportMode=http;ssl=1;httpPath=/sql/1.0/warehouses/$CLUSTER_ID;AuthMech=3;ConnCatalog=$TF_VAR_TEST_CATALOG;ConnSchema=$TF_VAR_TEST_SCHEMA;EnableArrow=0" >> "$GITHUB_ENV" 
+          echo "DATABRICKS_URL=$DATABRICKS_URL" >> "$GITHUB_OUTPUT"
 
   liquibase-test-harness:
     name: Liquibase Test Harness
@@ -53,6 +68,7 @@ jobs:
       WORKSPACE_ID: ${{ secrets.TH_DATABRICKS_WORKSPACE_ID }}
       LIQUIBOT_TOKEN: ${{ secrets.LIQUIBOT_PAT }}
       GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
+      TF_VAR_DBX_TOKEN: ${{ secrets.TH_DATABRICKS_WORKSPACE_TOKEN }}
     strategy:
       max-parallel: 1
       matrix:
@@ -62,13 +78,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Collect Databricks Config
-        working-directory: src/test/terraform
-        run: |
-          CLUSTER_ID=$(terraform output -raw endpoint_url)
-          DATABRICKS_HOST=${TF_VAR_DBX_HOST#https://}
-          echo "DATABRICKS_URL=jdbc:databricks://$DATABRICKS_HOST:443/default;transportMode=http;ssl=1;httpPath=/sql/1.0/warehouses/$CLUSTER_ID;AuthMech=3;ConnCatalog=$TF_VAR_TEST_CATALOG;ConnSchema=$TF_VAR_TEST_SCHEMA;EnableArrow=0" >> "$GITHUB_ENV" 
 
       - name: Setup Temurin Java 17
         uses: actions/setup-java@v4
@@ -124,7 +133,7 @@ jobs:
 
       - name: Run ${{ matrix.liquibase-support-level }} Liquibase Test Harness # Run the Liquibase test harness at each test level
         if: always() # Run the action even if the previous steps fail
-        run: mvn -B -ntp -DdbPassword=${{env.TF_VAR_DBX_TOKEN}} -DdbUrl='${{env.DATABRICKS_URL}}' -Dtest=liquibase.ext.databricks.${{ matrix.liquibase-support-level }}ExtensionHarnessTestSuite test -Dliquibase.version=master-SNAPSHOT # Run the Liquibase test harness at each test level
+        run: mvn -B -ntp -DdbPassword=${{env.TF_VAR_DBX_TOKEN}} -DdbUrl='${{needs.start-test-harness-infra.outputs.DATABRICKS_URL}}' -Dtest=liquibase.ext.databricks.${{ matrix.liquibase-support-level }}ExtensionHarnessTestSuite test -Dliquibase.version=master-SNAPSHOT # Run the Liquibase test harness at each test level
 
       - name: Test Reporter # Generate a test report using the Test Reporter action
         uses: dorny/test-reporter@v1.9.1
@@ -156,18 +165,7 @@ jobs:
 
       - run: terraform init
         working-directory: src/test/terraform
+
       - name: Stop test database
         working-directory: src/test/terraform
-        run: |
-          set -e
-          TERRAFORM_OUTPUT=$(terraform show -json)
-          if [ -z "$TERRAFORM_OUTPUT" ]; then
-            echo "Terraform output is empty. Skipping removal."
-          else
-            SCHEMA_EXISTS=$(echo $TERRAFORM_OUTPUT | jq -r '.values.root_module.resources[] | select(.address == "databricks_schema.test_harness") | .values.name')
-            if [ "$SCHEMA_EXISTS" == "liquibase_harness_test_ds" ]; then
-              terraform destroy -auto-approve
-            else
-              echo "Schema does not exist. Skipping removal."
-            fi
-          fi
+        run: terraform destroy -auto-approve
