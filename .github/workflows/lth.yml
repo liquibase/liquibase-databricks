@@ -34,10 +34,6 @@ jobs:
       - run: terraform init
         working-directory: src/test/terraform
 
-      - name: Stop test database
-        working-directory: src/test/terraform
-        run: terraform destroy -auto-approve
-
       - run: terraform plan
         working-directory: src/test/terraform
 
@@ -146,7 +142,7 @@ jobs:
 
   stop-test-harness-infra:
     name: Stop Liquibase Test Harness infra
-    needs: liquibase-test-harness
+    needs: [liquibase-test-harness]
     if: always() # Always destroy, even if the previous steps fail
     runs-on: ubuntu-22.04
     permissions:
