@@ -12,8 +12,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  liquibase-test-harness:
-    name: Liquibase Test Harness
+  start-test-harness-infra:
+    name: Start Liquibase Test Harness infra
     runs-on: ubuntu-22.04
     permissions:
       checks: write
@@ -24,14 +24,6 @@ jobs:
       TF_VAR_DBX_TOKEN: ${{ secrets.TH_DATABRICKS_WORKSPACE_TOKEN }}
       TF_VAR_TEST_CATALOG: main
       TF_VAR_TEST_SCHEMA: liquibase_harness_test_ds
-      WORKSPACE_ID: ${{ secrets.TH_DATABRICKS_WORKSPACE_ID }}
-      LIQUIBOT_TOKEN: ${{ secrets.LIQUIBOT_PAT }}
-      GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
-    strategy:
-      max-parallel: 1
-      matrix:
-        liquibase-support-level: [Foundational, Contributed, Advanced] # Define the different test levels to run
-      fail-fast: false # Set fail-fast to false to run all test levels even if some of them fail
 
     steps:
       - name: Checkout code
@@ -48,6 +40,28 @@ jobs:
           terraform taint databricks_schema.test_harness || true
           terraform apply -auto-approve
         working-directory: src/test/terraform
+
+  liquibase-test-harness:
+    name: Liquibase Test Harness
+    runs-on: ubuntu-22.04
+    needs: start-test-harness-infra
+    permissions:
+      checks: write
+      pull-requests: write
+      contents: write
+    env:
+      WORKSPACE_ID: ${{ secrets.TH_DATABRICKS_WORKSPACE_ID }}
+      LIQUIBOT_TOKEN: ${{ secrets.LIQUIBOT_PAT }}
+      GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
+    strategy:
+      max-parallel: 1
+      matrix:
+        liquibase-support-level: [Foundational, Contributed, Advanced] # Define the different test levels to run
+      fail-fast: false # Set fail-fast to false to run all test levels even if some of them fail
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Collect Databricks Config
         working-directory: src/test/terraform
@@ -121,8 +135,28 @@ jobs:
           reporter: java-junit # Set the reporter to use
           fail-on-error: false # Set fail-on-error to false to show report even if it has failed tests
 
+  stop-test-harness-infra:
+    name: Stop Liquibase Test Harness infra
+    needs: liquibase-test-harness
+    if: always() # Always destroy, even if the previous steps fail
+    runs-on: ubuntu-22.04
+    permissions:
+      checks: write
+      pull-requests: write
+      contents: write
+    env:
+      TF_VAR_DBX_HOST: ${{ secrets.TH_DATABRICKS_WORKSPACE_HOST }}
+      TF_VAR_DBX_TOKEN: ${{ secrets.TH_DATABRICKS_WORKSPACE_TOKEN }}
+      TF_VAR_TEST_CATALOG: main
+      TF_VAR_TEST_SCHEMA: liquibase_harness_test_ds
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - run: terraform init
+        working-directory: src/test/terraform
       - name: Stop test database
-        if: always() # Always destroy, even if the previous steps fail
         working-directory: src/test/terraform
         run: |
           set -e
