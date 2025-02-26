@@ -65,7 +65,7 @@
         <sonar.tests>src/test</sonar.tests>
         <liquibase-test-harness.version>1.0.10</liquibase-test-harness.version>
         <junit.version>5.11.4</junit.version>
-        <junit-platform.version>1.11.4</junit-platform.version>
+        <junit-platform.version>1.12.0</junit-platform.version>
         <mockito.version>4.11.0</mockito.version>
         <jacoco.fileset.directory>target</jacoco.fileset.directory>
     </properties>
