@@ -24,7 +24,6 @@ public class DropForeignKeyConstraintGeneratorDatabricks extends DropForeignKeyC
 
     @Override
     public Sql[] generateSql(DropForeignKeyConstraintStatement statement, Database database, SqlGeneratorChain sqlGeneratorChain) {
-        // Use lowercase constraint name for Databricks
         String constraintName = statement.getConstraintName().toLowerCase();
         
         return new Sql[] {
