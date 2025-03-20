@@ -3,11 +3,12 @@
 
 
 ## Summary 
-This is the Liquibase Extension for Managing Delta Tables on DatabricksSQL. 
+This is the repository for the Open Source version of the Liquibase Extension for Managing Delta Tables on DatabricksSQL.
+The official documentation for this extension is here: [Using Liquibase with Databricks Platforms](https://docs.liquibase.com/start/tutorials/databricks/home.html)
 
-Base/Contributed and Foundational Change types should be supported at this stage. Change types such as procedures, triggers, sequences, indexes are not supported. 
-Databricks specific change types that are added are listed below along with their completion status. 
-Databricks tables creates with liquibase are automatically created with the Delta configs / versions that are required for all passing change types including: 'delta.feature.allowColumnDefaults' = 'supported', 'delta.columnMapping.mode' = 'name'
+Be aware that the official version of the documentation covers both Open Source as well as Liquibase Pro functionality for Databricks as well as how to use general Liquibase Pro features with Databricks. Liquibase Pro users should NOT use the Open Source version of the extension, but instead follow the instructions here: [Using Liquibase with Databricks SQL to set up the Pro version of the extension](https://docs.liquibase.com/start/tutorials/databricks/databricks.html).
+
+If you are curious about Liquibase Pro, you can find more information here: [Liquibase Pro | Update database schema quickly & reliably](https://www.liquibase.com/liquibase-pro)
 
 
 ## NOTE! ONLY TABLES CREATED WITH UNITY CATALOG ARE SUPPORTED FOR MOST ADVANCED OPERATIONS
