@@ -13,7 +13,6 @@ concurrency:
 
 jobs:
   start-test-harness-infra:
-    if: false
     name: Start Liquibase Test Harness infra
     runs-on: ubuntu-22.04
     permissions:
@@ -52,6 +51,12 @@ jobs:
           DATABRICKS_HOST=${TF_VAR_DBX_HOST#https://}
           echo "DATABRICKS_URL=jdbc:databricks://$DATABRICKS_HOST:443/default;transportMode=http;ssl=1;httpPath=/sql/1.0/warehouses/$CLUSTER_ID;AuthMech=3;ConnCatalog=$TF_VAR_TEST_CATALOG;ConnSchema=$TF_VAR_TEST_SCHEMA;EnableArrow=0" >> $GITHUB_OUTPUT
 
+      - name: Upload the terraform state file
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-state
+          path: src/test/terraform/terraform.tfstate
+        
   liquibase-test-harness:
     if: false
     name: Liquibase Test Harness
@@ -166,6 +171,12 @@ jobs:
       - run: terraform init
         working-directory: src/test/terraform
 
+      - name: Download the terraform state file
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-state
+          path: src/test/terraform
+
       - name: Stop test database
         working-directory: src/test/terraform
         run: |
@@ -175,7 +186,7 @@ jobs:
           terraform state list || echo "No resources in Terraform state."
 
           echo "Fetching Terraform state as JSON"
-          TERRAFORM_OUTPUT="$(terraform show -json)"
+          TERRAFORM_OUTPUT=$(terraform show -json)
 
           if [ -z "$TERRAFORM_OUTPUT" ]; then
             echo "Terraform state is empty. Skipping terraform destroy."
