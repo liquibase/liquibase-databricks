@@ -58,8 +58,8 @@ jobs:
           path: src/test/terraform/terraform.tfstate
         
   liquibase-test-harness:
-    if: false
     name: Liquibase Test Harness
+    if: false
     runs-on: ubuntu-22.04
     needs: start-test-harness-infra
     permissions:
@@ -152,22 +152,13 @@ jobs:
     needs: start-test-harness-infra
     if: always() # Always destroy, even if the previous steps fail
     runs-on: ubuntu-22.04
-    permissions:
-      checks: write
-      pull-requests: write
-      contents: write
-    env:
-      TF_VAR_DBX_HOST: ${{ secrets.TH_DATABRICKS_WORKSPACE_HOST }}
-      TF_VAR_DBX_TOKEN: ${{ secrets.TH_DATABRICKS_WORKSPACE_TOKEN }}
-      TF_VAR_TEST_CATALOG: main
-      TF_VAR_TEST_SCHEMA: liquibase_harness_test_ds
-
+    # permissions:
+    #   checks: write
+    #   pull-requests: write
+    #   contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
-      - name: Set up Databricks CLI
-        uses: databricks/setup-cli@main
 
       - run: terraform init
         working-directory: src/test/terraform
@@ -181,7 +172,6 @@ jobs:
       - name: Stop test database
         working-directory: src/test/terraform
         run: |
-          set -e
           echo "Checking Terraform-managed resources"
           terraform state list || echo "No resources in Terraform state."
 
@@ -191,21 +181,6 @@ jobs:
           if [ -z "$TERRAFORM_OUTPUT" ]; then
             echo "Terraform state is empty. Skipping terraform destroy."
           else
-            SCHEMA_EXISTS=$(echo "$TERRAFORM_OUTPUT" | jq -r '
-              [
-                .values.root_module.resources[]?,
-                (.values.root_module.child_modules[]?.resources[]?)
-              ]
-              | map(select(.address == "databricks_schema.test_harness"))
-              | .[0].values.name // ""
-            ')
-
-            if [ "$SCHEMA_EXISTS" == "liquibase_harness_test_ds" ]; then
               echo "Schema found in Terraform state. Destroying"
-              terraform destroy -auto-approve
-            else
-              echo "Schema not found in Terraform state. Attempting manual deletion"
-              databricks schema delete --catalog-name main --schema-name liquibase_harness_test_ds
-              echo "Manual deletion failed. Schema may not exist or is already deleted."
-            fi
+              terraform destroy -auto-approve 
           fi
