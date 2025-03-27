@@ -149,6 +149,7 @@ jobs:
   stop-test-harness-infra:
     name: Stop Liquibase Test Harness infra
     # needs: [liquibase-test-harness]
+    needs: start-test-harness-infra
     if: always() # Always destroy, even if the previous steps fail
     runs-on: ubuntu-22.04
     permissions:
