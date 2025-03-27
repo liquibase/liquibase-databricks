@@ -157,6 +157,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      
+      - name: Set up Databricks CLI
+        uses: databricks/setup-cli@main
+
+      - name: Authenticate Databricks CLI 
+        run: |
+          databricks auth login --host "$TF_VAR_DBX_HOST" --token "$TF_VAR_DBX_TOKEN"
 
       - run: terraform init
         working-directory: src/test/terraform
@@ -165,14 +172,31 @@ jobs:
         working-directory: src/test/terraform
         run: |
           set -e
+          echo "Checking Terraform-managed resources"
+          terraform init
+          terraform state list || echo "No resources in Terraform state."
+
+          echo "Fetching Terraform state as JSON"
           TERRAFORM_OUTPUT=$(terraform show -json)
+
           if [ -z "$TERRAFORM_OUTPUT" ]; then
-            echo "Terraform output is empty. Skipping removal."
+            echo "Terraform state is empty. Skipping terraform destroy."
           else
-            SCHEMA_EXISTS=$(echo $TERRAFORM_OUTPUT | jq -r '.values.root_module.resources[] | select(.address == "databricks_schema.test_harness") | .values.name')
+            SCHEMA_EXISTS=$(echo "$TERRAFORM_OUTPUT" | jq -r '
+              [
+                .values.root_module.resources[]?,
+                (.values.root_module.child_modules[]?.resources[]?)
+              ]
+              | map(select(.address == "databricks_schema.test_harness"))
+              | .[0].values.name // ""
+            ')
+
             if [ "$SCHEMA_EXISTS" == "liquibase_harness_test_ds" ]; then
+              echo "Schema found in Terraform state. Destroying"
               terraform destroy -auto-approve
             else
-              echo "Schema does not exist. Skipping removal."
+              echo "Schema not found in Terraform state. Attempting manual deletion
+              databricks schema delete --catalog-name main --schema-name liquibase_harness_test_ds || \
+              echo "Manual deletion failed. Schema may not exist or is already deleted."
             fi
           fi
