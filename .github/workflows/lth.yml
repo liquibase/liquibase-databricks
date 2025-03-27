@@ -152,10 +152,16 @@ jobs:
     needs: start-test-harness-infra
     if: always() # Always destroy, even if the previous steps fail
     runs-on: ubuntu-22.04
-    # permissions:
-    #   checks: write
-    #   pull-requests: write
-    #   contents: write
+    permissions:
+      checks: write
+      pull-requests: write
+      contents: write
+    env:
+      TF_VAR_DBX_HOST: ${{ secrets.TH_DATABRICKS_WORKSPACE_HOST }}
+      TF_VAR_DBX_TOKEN: ${{ secrets.TH_DATABRICKS_WORKSPACE_TOKEN }}
+      TF_VAR_TEST_CATALOG: main
+      TF_VAR_TEST_SCHEMA: liquibase_harness_test_ds
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -172,6 +178,7 @@ jobs:
       - name: Stop test database
         working-directory: src/test/terraform
         run: |
+          set -e
           echo "Checking Terraform-managed resources"
           terraform state list || echo "No resources in Terraform state."
 
