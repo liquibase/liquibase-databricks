@@ -163,4 +163,25 @@ jobs:
 
       - name: Stop test database
         working-directory: src/test/terraform
-        run: terraform destroy -auto-approve
+        run: |
+          set -e
+          TERRAFORM_OUTPUT=$(terraform show -json)
+          
+          if [ -z "$TERRAFORM_OUTPUT" ]; then
+            echo "Terraform output is empty. Skipping removal."
+          else
+            SCHEMA_EXISTS=$(echo "$TERRAFORM_OUTPUT" | jq -r '
+              [
+                .values.root_module.resources[]?,
+                (.values.root_module.child_modules[]?.resources[]?)
+              ] 
+              | map(select(.address == "databricks_schema.test_harness")) 
+              | .[0].values.name // ""
+            ')
+          
+            if [ "$SCHEMA_EXISTS" == "liquibase_harness_test_ds" ]; then
+              terraform destroy -auto-approve
+            else
+              echo "Schema does not exist in Terraform state. Skipping removal."
+            fi
+          fi
