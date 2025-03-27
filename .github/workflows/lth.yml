@@ -183,7 +183,6 @@ jobs:
         run: |
           set -e
           echo "Checking Terraform-managed resources"
-          terraform init
           terraform state list || echo "No resources in Terraform state."
 
           echo "Fetching Terraform state as JSON"
@@ -205,8 +204,8 @@ jobs:
               echo "Schema found in Terraform state. Destroying"
               terraform destroy -auto-approve
             else
-              echo "Schema not found in Terraform state. Attempting manual deletion
-              databricks schema delete --catalog-name main --schema-name liquibase_harness_test_ds || \
+              echo "Schema not found in Terraform state. Attempting manual deletion"
+              databricks schema delete --catalog-name main --schema-name liquibase_harness_test_ds
               echo "Manual deletion failed. Schema may not exist or is already deleted."
             fi
           fi
