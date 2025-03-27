@@ -161,10 +161,6 @@ jobs:
       - name: Set up Databricks CLI
         uses: databricks/setup-cli@main
 
-      - name: Authenticate Databricks CLI 
-        run: |
-          databricks auth login --host "$TF_VAR_DBX_HOST" --token "$TF_VAR_DBX_TOKEN"
-
       - run: terraform init
         working-directory: src/test/terraform
 
