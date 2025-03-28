@@ -51,6 +51,12 @@ jobs:
           DATABRICKS_HOST=${TF_VAR_DBX_HOST#https://}
           echo "DATABRICKS_URL=jdbc:databricks://$DATABRICKS_HOST:443/default;transportMode=http;ssl=1;httpPath=/sql/1.0/warehouses/$CLUSTER_ID;AuthMech=3;ConnCatalog=$TF_VAR_TEST_CATALOG;ConnSchema=$TF_VAR_TEST_SCHEMA;EnableArrow=0" >> $GITHUB_OUTPUT
 
+      - name: Upload the terraform state file
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-state
+          path: src/test/terraform/terraform.tfstate
+        
   liquibase-test-harness:
     name: Liquibase Test Harness
     runs-on: ubuntu-22.04
@@ -161,27 +167,25 @@ jobs:
       - run: terraform init
         working-directory: src/test/terraform
 
+      - name: Download the terraform state file
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-state
+          path: src/test/terraform
+
       - name: Stop test database
         working-directory: src/test/terraform
         run: |
           set -e
+          echo "Checking Terraform-managed resources"
+          terraform state list || echo "No resources in Terraform state."
+
+          echo "Fetching Terraform state as JSON"
           TERRAFORM_OUTPUT=$(terraform show -json)
-          
+
           if [ -z "$TERRAFORM_OUTPUT" ]; then
-            echo "Terraform output is empty. Skipping removal."
+            echo "Terraform state is empty. Skipping terraform destroy."
           else
-            SCHEMA_EXISTS=$(echo "$TERRAFORM_OUTPUT" | jq -r '
-              [
-                .values.root_module.resources[]?,
-                (.values.root_module.child_modules[]?.resources[]?)
-              ] 
-              | map(select(.address == "databricks_schema.test_harness")) 
-              | .[0].values.name // ""
-            ')
-          
-            if [ "$SCHEMA_EXISTS" == "liquibase_harness_test_ds" ]; then
-              terraform destroy -auto-approve
-            else
-              echo "Schema does not exist in Terraform state. Skipping removal."
-            fi
+              echo "Schema found in Terraform state. Destroying"
+              terraform destroy -auto-approve 
           fi
