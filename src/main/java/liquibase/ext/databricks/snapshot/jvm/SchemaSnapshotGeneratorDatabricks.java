@@ -5,6 +5,7 @@ import liquibase.database.Database;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.DatabaseException;
 import liquibase.ext.databricks.database.DatabricksDatabase;
+import liquibase.snapshot.SnapshotGenerator;
 import liquibase.snapshot.jvm.SchemaSnapshotGenerator;
 import liquibase.structure.DatabaseObject;
 import liquibase.util.JdbcUtil;
@@ -36,6 +37,11 @@ public class SchemaSnapshotGeneratorDatabricks extends SchemaSnapshotGenerator {
         }
 
         return returnList.toArray(new String[0]);
+    }
+
+    @Override
+    public Class<? extends SnapshotGenerator>[] replaces() {
+        return new Class[]{SchemaSnapshotGenerator.class};
     }
 
 }

@@ -8,6 +8,7 @@ import liquibase.exception.DatabaseException;
 import liquibase.executor.ExecutorService;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.snapshot.DatabaseSnapshot;
+import liquibase.snapshot.SnapshotGenerator;
 import liquibase.snapshot.jvm.ViewSnapshotGenerator;
 import liquibase.statement.core.RawParameterizedSqlStatement;
 import liquibase.structure.DatabaseObject;
@@ -87,5 +88,10 @@ public class ViewSnapshotGeneratorDatabricks extends ViewSnapshotGenerator {
             csvString.append("'").append(tableProperty.get("KEY")).append("'='").append(tableProperty.get("VALUE")).append("', ")
         );
         return csvString.toString().replaceAll(", $", "");
+    }
+
+    @Override
+    public Class<? extends SnapshotGenerator>[] replaces() {
+        return new Class[]{ViewSnapshotGenerator.class};
     }
 }
