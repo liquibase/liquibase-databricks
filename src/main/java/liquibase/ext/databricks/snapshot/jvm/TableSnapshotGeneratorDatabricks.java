@@ -7,6 +7,7 @@ import liquibase.executor.Executor;
 import liquibase.executor.ExecutorService;
 import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.snapshot.DatabaseSnapshot;
+import liquibase.snapshot.SnapshotGenerator;
 import liquibase.snapshot.jvm.TableSnapshotGenerator;
 import liquibase.statement.core.RawParameterizedSqlStatement;
 import liquibase.structure.DatabaseObject;
@@ -155,6 +156,11 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
     private String sanitizeClusterColumns(String clusterColumnProperty) {
         Pattern pattern = Pattern.compile("[\\[\\]\\\"]");
         return clusterColumnProperty.replaceAll(pattern.toString(), "");
+    }
+
+    @Override
+    public Class<? extends SnapshotGenerator>[] replaces() {
+        return new Class[]{TableSnapshotGenerator.class};
     }
 
 }
