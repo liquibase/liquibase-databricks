@@ -1,6 +1,35 @@
 {
   "snapshot": {
+    "created": ".*",
+    "database": {
+      "productVersion": "3.1.1",
+      "shortName": "databricks",
+      "majorVersion": "3",
+      "minorVersion": "1",
+      "user": ".*",
+      "productName": "SparkSQL",
+      "url": ".*"
+    },
     "objects": {
+      "liquibase.structure.core.Catalog": [
+        {
+          "catalog": {
+            "default": true,
+            "name": "main",
+            "snapshotId": ".*"
+          }
+        }
+      ],
+      "liquibase.structure.core.Schema": [
+        {
+          "schema": {
+            "catalog": "liquibase.structure.core.Catalog#.*",
+            "default": true,
+            "name": "liquibase_harness_test_ds",
+            "snapshotId": ".*"
+          }
+        }
+      ],
       "liquibase.structure.core.Table": [
         {
           "table": {
@@ -8,6 +37,21 @@
           }
         }
       ]
+    },
+    "snapshotControl": {
+      "snapshotControl": {
+        "includedType": [
+          "liquibase.structure.core.Catalog",
+          "liquibase.structure.core.Column",
+          "liquibase.structure.core.ForeignKey",
+          "liquibase.structure.core.Index",
+          "liquibase.structure.core.PrimaryKey",
+          "liquibase.structure.core.Schema",
+          "liquibase.structure.core.Table",
+          "liquibase.structure.core.UniqueConstraint",
+          "liquibase.structure.core.View"
+        ]
+      }
     }
   }
 }
