@@ -65,10 +65,9 @@ jobs:
       checks: write
       pull-requests: write
       contents: write
+      packages: write
     env:
       WORKSPACE_ID: ${{ secrets.TH_DATABRICKS_WORKSPACE_ID }}
-      LIQUIBOT_TOKEN: ${{ secrets.LIQUIBOT_PAT }}
-      GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
       TF_VAR_DBX_TOKEN: ${{ secrets.TH_DATABRICKS_WORKSPACE_TOKEN }}
     strategy:
       max-parallel: 1
@@ -119,13 +118,11 @@ jobs:
             [
               {
                 "id": "liquibase-pro",
-                "username": "liquibot",
-                "password": "${{ secrets.LIQUIBOT_PAT }}"
+                "password": "${{ secrets.GITHUB_TOKEN }}"
               },
               {
                 "id": "liquibase",
-                "username": "liquibot",
-                "password": "${{ secrets.LIQUIBOT_PAT }}"
+                "password": "${{ secrets.GITHUB_TOKEN }}"
               }
             ]
 
