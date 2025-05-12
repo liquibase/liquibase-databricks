@@ -41,7 +41,7 @@ public class ColumnSnapshotGeneratorDatabricks extends ColumnSnapshotGenerator {
 
     /**
      * Override the default implementation to ARRAY, MAP and STRUCT complex types as
-     * Liquibase core does not know how to handle values between <> in the data type.
+     * Liquibase core does not know how to handle values between &lt;&gt; in the data type.
      */
     @Override
     protected DataType readDataType(CachedRow columnMetadataResultSet, Column column, Database database) throws DatabaseException {
@@ -56,7 +56,7 @@ public class ColumnSnapshotGeneratorDatabricks extends ColumnSnapshotGenerator {
         }
         return super.readDataType(columnMetadataResultSet, column, database);
     }
-
+//I regenerated from the liquibase-databricks repository, moved it to the /opt/homebrew/Cellar/liquibase/4.31.1/libexec/internal/lib folder, but it didn't work, same result.
     @Override
     protected DatabaseObject snapshotObject(DatabaseObject example, DatabaseSnapshot snapshot) throws DatabaseException {
         //This should work after fix on Databricks side

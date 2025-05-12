@@ -32,6 +32,7 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
     private static final String DETAILED_TABLE_INFORMATION_NODE = "# Detailed Table Information";
     private static final String TABLE_PARTITION_INFORMATION_NODE = "# Partition Information";
     private static final String DATA_TYPE = "DATA_TYPE";
+    private static final String COMMENT = "Comment";
     private static final List<String> FILE_TYPE_PROVIDERS = Arrays.asList("AVRO", "BINARYFILE", "CSV", "JSON", "ORC", "PARQUET", "TEXT");
 
     @Override
@@ -76,6 +77,9 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
                 if (detailedInformationNode) {
                     if (currentColName.equals(LOCATION)) {
                         table.setAttribute(LOCATION, tableProperty.get(DATA_TYPE));
+                    }
+                    if (currentColName.equals(COMMENT)) {
+                        table.setRemarks((String) tableProperty.get(DATA_TYPE));
                     }
                     if (currentColName.equals(PROVIDER) && FILE_TYPE_PROVIDERS.contains(tableProperty.get(DATA_TYPE).toString().toUpperCase())) {
                         tableFormat.append(tableProperty.get(DATA_TYPE));
