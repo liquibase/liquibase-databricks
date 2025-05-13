@@ -6,7 +6,7 @@
                    http://www.liquibase.org/xml/ns/databricks http://www.liquibase.org/xml/ns/databricks/liquibase-databricks-latest.xsd">
 
     <changeSet id="1" author="oleh">
-        <createTable tableName="test_table">
+        <createTable tableName="test_table" remarks="This comprehensive dataset contains detailed transaction records for our global e-commerce platform spanning multiple regions and product categories.">
             <column name="test_id" type="int">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -17,7 +17,7 @@
     </changeSet>
 
     <changeSet id="2" author="as">
-        <createTable tableName="test_table_properties">
+        <createTable tableName="test_table_properties" remarks="This table includes configuration properties with vendor's settings and customer's preferences for application's behavior.">
             <column name="test_id" type="int">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
