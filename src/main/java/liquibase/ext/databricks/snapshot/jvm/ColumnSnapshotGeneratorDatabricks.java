@@ -56,7 +56,7 @@ public class ColumnSnapshotGeneratorDatabricks extends ColumnSnapshotGenerator {
         }
         return super.readDataType(columnMetadataResultSet, column, database);
     }
-//I regenerated from the liquibase-databricks repository, moved it to the /opt/homebrew/Cellar/liquibase/4.31.1/libexec/internal/lib folder, but it didn't work, same result.
+
     @Override
     protected DatabaseObject snapshotObject(DatabaseObject example, DatabaseSnapshot snapshot) throws DatabaseException {
         //This should work after fix on Databricks side
