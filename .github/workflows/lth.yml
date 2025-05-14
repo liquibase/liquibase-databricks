@@ -87,6 +87,10 @@ jobs:
           app-id: ${{ secrets.LIQUIBASE_GITHUB_APP_ID }}
           private-key: ${{ secrets.LIQUIBASE_GITHUB_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
+          repositories: |
+            liquibase
+            liquibase-pro
+            liquibase-databricks
           permission-contents: read
           permission-packages: write
 
