@@ -128,10 +128,12 @@ jobs:
             [
               {
                 "id": "liquibase-pro",
+                "username": "liquibot",
                 "password": "${{ steps.get-token.outputs.token }}"
               },
               {
                 "id": "liquibase",
+                "username": "liquibot",
                 "password": "${{ steps.get-token.outputs.token }}"
               }
             ]
