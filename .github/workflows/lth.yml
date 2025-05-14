@@ -69,6 +69,7 @@ jobs:
     env:
       WORKSPACE_ID: ${{ secrets.TH_DATABRICKS_WORKSPACE_ID }}
       TF_VAR_DBX_TOKEN: ${{ secrets.TH_DATABRICKS_WORKSPACE_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     strategy:
       max-parallel: 1
       matrix:
