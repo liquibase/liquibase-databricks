@@ -56,7 +56,7 @@ jobs:
         with:
           name: terraform-state
           path: src/test/terraform/terraform.tfstate
-        
+
   liquibase-test-harness:
     name: Liquibase Test Harness
     runs-on: ubuntu-22.04
@@ -84,17 +84,7 @@ jobs:
         with:
           java-version: 17
           distribution: temurin
-          cache: 'maven'
-          
-      - name: Get GitHub App token
-        id: get-token
-        uses: actions/create-github-app-token@v1
-        with:
-          app-id: ${{ secrets.LIQUIBASE_GITHUB_APP_ID }}
-          private-key: ${{ secrets.LIQUIBASE_GITHUB_APP_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-          permission-contents: read
-          permission-packages: read
+          cache: "maven"
 
       - name: maven-settings-xml-action
         uses: whelk-io/maven-settings-xml-action@v22
@@ -129,12 +119,12 @@ jobs:
               {
                 "id": "liquibase-pro",
                 "username": "liquibot",
-                "password": "${{ steps.get-token.outputs.token }}"
+                "password": "${{ secrets.LIQUIBOT_PAT_GPM_ACCESS }}"
               },
               {
                 "id": "liquibase",
                 "username": "liquibot",
-                "password": "${{ steps.get-token.outputs.token }}"
+                "password": "${{ secrets.LIQUIBOT_PAT_GPM_ACCESS }}"
               }
             ]
 
@@ -196,5 +186,5 @@ jobs:
             echo "Terraform state is empty. Skipping terraform destroy."
           else
               echo "Schema found in Terraform state. Destroying"
-              terraform destroy -auto-approve 
+              terraform destroy -auto-approve
           fi
