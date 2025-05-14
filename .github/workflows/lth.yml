@@ -188,3 +188,4 @@ jobs:
               echo "Schema found in Terraform state. Destroying"
               terraform destroy -auto-approve
           fi
+
