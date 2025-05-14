@@ -129,11 +129,11 @@ jobs:
             ]
 
       - name: Build with Maven # Build the code with Maven (skip tests)
-        run: mvn -B -ntp -Dmaven.test.skip package -Dliquibase.version=master-SNAPSHOT
+        run: mvn -B -Dmaven.test.skip package -Dliquibase.version=master-SNAPSHOT
 
       - name: Run ${{ matrix.liquibase-support-level }} Liquibase Test Harness # Run the Liquibase test harness at each test level
         if: always() # Run the action even if the previous steps fail
-        run: mvn -B -ntp -DdbPassword=${{env.TF_VAR_DBX_TOKEN}} -DdbUrl='${{needs.start-test-harness-infra.outputs.DATABRICKS_URL}}' -Dtest=liquibase.ext.databricks.${{ matrix.liquibase-support-level }}ExtensionHarnessTestSuite test -Dliquibase.version=master-SNAPSHOT # Run the Liquibase test harness at each test level
+        run: mvn -B -DdbPassword=${{env.TF_VAR_DBX_TOKEN}} -DdbUrl='${{needs.start-test-harness-infra.outputs.DATABRICKS_URL}}' -Dtest=liquibase.ext.databricks.${{ matrix.liquibase-support-level }}ExtensionHarnessTestSuite test -Dliquibase.version=master-SNAPSHOT # Run the Liquibase test harness at each test level
 
       - name: Test Reporter # Generate a test report using the Test Reporter action
         uses: dorny/test-reporter@v2.0.0
