@@ -80,20 +80,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Get GitHub App token
-        id: get-token
-        uses: actions/create-github-app-token@v2
-        with:
-          app-id: ${{ secrets.LIQUIBASE_GITHUB_APP_ID }}
-          private-key: ${{ secrets.LIQUIBASE_GITHUB_APP_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-          repositories: |
-            liquibase
-            liquibase-pro
-            liquibase-databricks
-          permission-contents: read
-          permission-packages: write
-
       - name: Setup Temurin Java 17
         uses: actions/setup-java@v4
         with:
@@ -134,12 +120,12 @@ jobs:
               {
                 "id": "liquibase-pro",
                 "username": "liquibot",
-                "password": "${{ steps.get-token.outputs.token }}"
+                "password": "${{ secrets.LIQUIBOT_PAT_GPM_ACCESS }}"
               },
               {
                 "id": "liquibase",
                 "username": "liquibot",
-                "password": "${{ steps.get-token.outputs.token }}"
+                "password": "${{ secrets.LIQUIBOT_PAT_GPM_ACCESS }}"
               }
             ]
 
