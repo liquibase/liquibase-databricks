@@ -56,7 +56,7 @@ jobs:
         with:
           name: terraform-state
           path: src/test/terraform/terraform.tfstate
-        
+
   liquibase-test-harness:
     name: Liquibase Test Harness
     runs-on: ubuntu-22.04
@@ -85,7 +85,7 @@ jobs:
         with:
           java-version: 17
           distribution: temurin
-          cache: 'maven'
+          cache: "maven"
 
       - name: maven-settings-xml-action
         uses: whelk-io/maven-settings-xml-action@v22
@@ -187,5 +187,6 @@ jobs:
             echo "Terraform state is empty. Skipping terraform destroy."
           else
               echo "Schema found in Terraform state. Destroying"
-              terraform destroy -auto-approve 
+              terraform destroy -auto-approve
           fi
+
