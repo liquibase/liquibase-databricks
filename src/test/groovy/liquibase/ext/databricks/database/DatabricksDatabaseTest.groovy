@@ -32,10 +32,11 @@ class DatabricksDatabaseTest extends Specification {
 
         where:
         input                       | output
+        null                        | null
         "a message"                 | "a message"
         "the 'quoted'"              | "the \\'quoted\\'"
         "mixed \\'quoted'"          | "mixed \\'quoted\\'"
-        "mixed \\\"quotes'"         | "mixed \\\"quotes\\'"
+        "mixed \"quotes'"           | "mixed \"quotes\\'"
         "mixed \\\"quotes\\''\\'"   | "mixed \\\"quotes\\'\\'\\'"
     }
 }
