@@ -16,7 +16,6 @@ import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.regex.Pattern;
 
 
 public class DatabricksDatabase extends AbstractJdbcDatabase {
