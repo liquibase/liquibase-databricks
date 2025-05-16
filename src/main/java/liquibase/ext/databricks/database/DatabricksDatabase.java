@@ -367,4 +367,12 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
         }
     }
 
+    @Override
+    public String escapeStringForDatabase(String string) {
+        if (string == null) {
+            return null;
+        }
+        return string.replaceAll("((?<!\\\\)')", "\\\\'");
+    }
+
 }
