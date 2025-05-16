@@ -21,4 +21,21 @@ class DatabricksDatabaseTest extends Specification {
         "SparkSQL"   | true
         "oracle"     | false
     }
+
+    def shouldHandleStringEscapingCorrectly() {
+        when:
+        def database = new DatabricksDatabase()
+        def result = database.escapeStringForDatabase(input)
+
+        then:
+        result == output
+
+        where:
+        input                       | output
+        "a message"                 | "a message"
+        "the 'quoted'"              | "the \\'quoted\\'"
+        "mixed \\'quoted'"          | "mixed \\'quoted\\'"
+        "mixed \\\"quotes'"         | "mixed \\\"quotes\\'"
+        "mixed \\\"quotes\\''\\'"   | "mixed \\\"quotes\\'\\'\\'"
+    }
 }
