@@ -16,6 +16,7 @@ import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.regex.Pattern;
 
 
 public class DatabricksDatabase extends AbstractJdbcDatabase {
@@ -365,6 +366,14 @@ public class DatabricksDatabase extends AbstractJdbcDatabase {
         } catch (SQLException e) {
             Scope.getCurrentScope().getLog(getClass()).info("Error checking database connection", e);
         }
+    }
+
+    @Override
+    public String escapeStringForDatabase(String string) {
+        if (string == null) {
+            return null;
+        }
+        return string.replaceAll("((?<!\\\\)')", "\\\\'");
     }
 
 }
