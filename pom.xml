@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.liquibase</groupId>
         <artifactId>liquibase-parent-pom</artifactId>
-        <version>0.5.4</version> <!-- Replace with the desired version -->
+        <version>0.5.8</version> <!-- Replace with the desired version -->
     </parent>
 
     <groupId>org.liquibase.ext</groupId>
@@ -53,7 +53,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <liquibase.version>4.30.0</liquibase.version>
+        <liquibase.version>4.31.1</liquibase.version>
         <sonar.organization>liquibase</sonar.organization>
         <sonar.projectKey>${sonar.organization}_${project.artifactId}</sonar.projectKey>
         <sonar.projectName>${project.name}</sonar.projectName>
@@ -64,9 +64,9 @@
         <sonar.sources>src/main/java</sonar.sources>
         <sonar.tests>src/test</sonar.tests>
         <liquibase-test-harness.version>1.0.10</liquibase-test-harness.version>
-        <junit.version>5.11.4</junit.version>
-        <junit-platform.version>1.11.4</junit-platform.version>
-        <mockito.version>5.15.2</mockito.version>
+        <junit.version>5.12.2</junit.version>
+        <junit-platform.version>1.12.2</junit-platform.version>
+        <mockito.version>4.11.0</mockito.version>
         <jacoco.fileset.directory>target</jacoco.fileset.directory>
     </properties>
 
@@ -79,17 +79,17 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>2.0.16</version>
+            <version>2.0.17</version>
         </dependency>
         <dependency>
             <groupId>com.databricks</groupId>
             <artifactId>databricks-jdbc</artifactId>
-            <version>2.6.40-patch-1</version>
+            <version>2.7.3</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.36</version>
+            <version>1.18.38</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -145,6 +145,10 @@
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
             </resource>
+            <resource>
+                <directory>src/main/resources-filtered</directory>
+                <filtering>true</filtering>
+            </resource>
         </resources>
 
         <plugins>
@@ -198,7 +202,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.12</version>
+                <version>0.8.13</version>
                 <configuration>
                     <fileSets>
                         <fileSet>
@@ -214,7 +218,7 @@
             <plugin>
                 <groupId>org.sonarsource.scanner.maven</groupId>
                 <artifactId>sonar-maven-plugin</artifactId>
-                <version>5.0.0.4389</version>
+                <version>5.1.0.4751</version>
             </plugin>
 
             <plugin>
@@ -226,7 +230,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
-                <version>1.6.0</version>
+                <version>1.7.0</version>
                 <configuration>
                     <embedBuildProfileDependencies>true</embedBuildProfileDependencies>
                     <updatePomFile>true</updatePomFile>

@@ -72,8 +72,7 @@
               "extendedTableProperties": {
                 "tableFormat": "delta",
                 "partitionColumns": "id, some_column",
-                "tblProperties": "'this.is.my.key'=12,'this.is.my.key2'=true",
-                "tableLocation": "s3://bucket/partitioned_delta_table_new"
+                "tblProperties": "'this.is.my.key'=12,'this.is.my.key2'=true"
               }
             }
           }

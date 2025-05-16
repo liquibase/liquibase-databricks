@@ -1,18 +1,50 @@
 {
   "snapshot": {
+    "created": ".*",
+    "database": {
+      "productVersion": "3.1.1",
+      "shortName": "databricks",
+      "majorVersion": "3",
+      "minorVersion": "1",
+      "user": ".*",
+      "productName": "SparkSQL",
+      "url": ".*"
+    },
     "objects": {
+      "liquibase.structure.core.Catalog": [
+        {
+          "catalog": {
+            "default": true,
+            "name": "main",
+            "snapshotId": ".*"
+          }
+        }
+      ],
+      "liquibase.structure.core.Schema": [
+        {
+          "schema": {
+            "catalog": "liquibase.structure.core.Catalog#.*",
+            "default": true,
+            "name": "liquibase_harness_test_ds",
+            "snapshotId": ".*"
+          }
+        }
+      ],
       "liquibase.structure.core.Table": [
         {
           "table": {
             "name": "test_table",
-            "tblProperties" : "'delta.checkpoint.writeStatsAsJson'='false', 'delta.checkpoint.writeStatsAsStruct'='true', 'delta.columnMapping.maxColumnId'='2', 'delta.columnMapping.mode'='name', 'delta.enableDeletionVectors'='true', 'delta.feature.allowColumnDefaults'='supported', 'delta.feature.columnMapping'='supported', 'delta.feature.deletionVectors'='supported', 'delta.feature.invariants'='supported', 'delta.minReaderVersion'='3', 'delta.minWriterVersion'='7'"
+            "schema": "liquibase.structure.core.Schema#.*",
+            "snapshotId": ".*",
+            "tblProperties": "'delta.checkpoint.writeStatsAsJson'='false', 'delta.checkpoint.writeStatsAsStruct'='true', 'delta.columnMapping.maxColumnId'='2', 'delta.columnMapping.mode'='name', 'delta.enableDeletionVectors'='true', 'delta.feature.allowColumnDefaults'='supported', 'delta.feature.appendOnly'='supported', 'delta.feature.columnMapping'='supported', 'delta.feature.deletionVectors'='supported', 'delta.feature.invariants'='supported', 'delta.minReaderVersion'='3', 'delta.minWriterVersion'='7'"
           }
         },
         {
           "table": {
             "name": "test_table_properties",
-            "Location" : "s3://databricks-th/test_table_properties",
-            "tblProperties" : "'delta.checkpoint.writeStatsAsJson'='false', 'delta.checkpoint.writeStatsAsStruct'='true', 'delta.enableDeletionVectors'='true', 'delta.feature.deletionVectors'='supported', 'delta.feature.invariants'='supported', 'delta.minReaderVersion'='3', 'delta.minWriterVersion'='7', 'this.is.my.key'='12', 'this.is.my.key2'='true'"
+            "schema": "liquibase.structure.core.Schema#.*",
+            "snapshotId": ".*",
+            "tblProperties": "'delta.checkpoint.writeStatsAsJson'='false', 'delta.checkpoint.writeStatsAsStruct'='true', 'delta.columnMapping.maxColumnId'='1', 'delta.columnMapping.mode'='name', 'delta.enableDeletionVectors'='true', 'delta.feature.allowColumnDefaults'='supported', 'delta.feature.appendOnly'='supported', 'delta.feature.columnMapping'='supported', 'delta.feature.deletionVectors'='supported', 'delta.feature.invariants'='supported', 'delta.minReaderVersion'='3', 'delta.minWriterVersion'='7', 'this.is.my.key'='12', 'this.is.my.key2'='true'"
           }
         }
       ],
@@ -23,6 +55,21 @@
           }
         }
       ]
+    },
+    "snapshotControl": {
+      "snapshotControl": {
+        "includedType": [
+          "liquibase.structure.core.Catalog",
+          "liquibase.structure.core.Column",
+          "liquibase.structure.core.ForeignKey",
+          "liquibase.structure.core.Index",
+          "liquibase.structure.core.PrimaryKey",
+          "liquibase.structure.core.Schema",
+          "liquibase.structure.core.Table",
+          "liquibase.structure.core.UniqueConstraint",
+          "liquibase.structure.core.View"
+        ]
+      }
     }
   }
 }
