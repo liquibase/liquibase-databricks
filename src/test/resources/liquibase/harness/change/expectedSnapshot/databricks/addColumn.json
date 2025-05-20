@@ -22,6 +22,7 @@
         {
           "column": {
             "name": "stringColumn",
+            "remarks": "Quite complicated remarks with \"some text\" double quoted and 'another' single quoted",
             "type": {
               "columnSize": "255.*",
               "typeName": "STRING"
