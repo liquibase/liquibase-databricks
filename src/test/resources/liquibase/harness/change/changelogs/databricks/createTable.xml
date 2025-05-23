@@ -17,7 +17,7 @@
     </changeSet>
 
     <changeSet id="2" author="as">
-        <createTable tableName="test_table_properties" remarks="This table includes configuration properties with vendor's settings and customer's preferences for application's behavior.">
+        <createTable tableName="test_table_properties" remarks="This table includes configuration properties with vendor settings and customer preferences for application behavior.">
             <column name="test_id" type="int">
                 <constraints primaryKey="true" nullable="false"/>
             </column>

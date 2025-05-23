@@ -45,7 +45,7 @@
             "name": "test_table_properties",
             "schema": "liquibase.structure.core.Schema#.*",
             "snapshotId": ".*",
-            "remarks": "This table includes configuration properties with vendor's settings and customer's preferences for application's behavior.",
+            "remarks": "This table includes configuration properties with vendor settings and customer preferences for application behavior.",
             "tblProperties": "'delta.checkpoint.writeStatsAsJson'='false', 'delta.checkpoint.writeStatsAsStruct'='true', 'delta.columnMapping.maxColumnId'='1', 'delta.columnMapping.mode'='name', 'delta.enableDeletionVectors'='true', 'delta.feature.allowColumnDefaults'='supported', 'delta.feature.appendOnly'='supported', 'delta.feature.columnMapping'='supported', 'delta.feature.deletionVectors'='supported', 'delta.feature.invariants'='supported', 'delta.minReaderVersion'='3', 'delta.minWriterVersion'='7', 'this.is.my.key'='12', 'this.is.my.key2'='true'"
           }
         }
