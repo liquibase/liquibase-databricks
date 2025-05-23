@@ -1,0 +1,1 @@
+INVALID TEST -- Databricks support indexes via the CLUSTER BY commands

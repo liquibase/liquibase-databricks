@@ -5,10 +5,12 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
                    http://www.liquibase.org/xml/ns/databricks http://www.liquibase.org/xml/ns/databricks/liquibase-databricks-latest.xsd">
 
-    <changeSet id="2" author="fl">
-        <databricks:createView viewName="test_view" tblProperties="'external.location'='s3://mybucket/myview','this.is.my.key'=12,'this.is.my.key2'=true, 'comment'='comment with, commas and \'quotes\''">
+    <changeSet id="2" author="oleh">
+        <databricks:createView viewName="test_view" tblProperties="'comment'='The bu_details table contains information about various business units within the organization. It includes details such as the name of the business unit. This data can be used to identify and categorize different business units, as well as to track their performance and progress over time. It can also be used to facilitate communication and collaboration between different business units.'">
             select id, first_name, last_name, email from authors
         </databricks:createView>
+        <rollback>
+            <dropView viewName="test_view"/>
+        </rollback>
     </changeSet>
-
 </databaseChangeLog>
