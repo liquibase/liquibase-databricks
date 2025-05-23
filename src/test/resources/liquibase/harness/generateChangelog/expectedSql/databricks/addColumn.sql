@@ -1,0 +1,1 @@
+CREATE TABLE "test_table" ("test_column" INTCREATE TABLE test_table (test_column INT, varcharColumn VARCHAR(25), intColumn INT, dateColumn date) USING delta TBLPROPERTIES('delta.feature.allowColumnDefaults' = 'supported', 'delta.columnMapping.mode' = 'name', 'delta.enableDeletionVectors' = 'true');EGER, "varcharColumn" VARCHAR(25), "intColumn" INTEGER, "dateColumn" date);

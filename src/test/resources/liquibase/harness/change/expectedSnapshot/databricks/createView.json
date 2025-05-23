@@ -6,7 +6,7 @@
           "view": {
             "definition": "select id, first_name, last_name, email from authors",
             "name": "test_view",
-            "tblProperties": "'external.location'='s3://mybucket/myview', 'this.is.my.key'='12', 'this.is.my.key2'='true'"
+            "tblProperties": "'comment'='comment with, commas and 'quotes'', 'external.location'='s3://mybucket/myview', 'this.is.my.key'='12', 'this.is.my.key2'='true'"
           }
         }]
     }

@@ -25,8 +25,8 @@ import java.util.stream.Stream;
 public class ChangedTblPropertiesUtil {
 
 
-    private static final String SPLIT_ON_COMMAS = ",(?=(?:[^\"]*\"[^\"]*\")*[^\"$])";
-    private static final String SPLIT_ON_EQUALS = "=(?=(?:[^\"]*\"[^\"]*\")*[^\"$])";
+    private static final String SPLIT_ON_COMMAS = ",(?=(?:[^\"']*(\"[^\"']*\"|'[^\"']*'))*[^\"']*$)";
+    private static final String SPLIT_ON_EQUALS = "=(?=(?:[^\"']*(\"[^\"]*\"|'[^']*'))*[^\"']*$)";;
     private static final Set<String> ALLOWED_DELTA_PROPERTIES = Stream.of(
             "delta.columnMapping.mode",
             "delta.enableDeletionVectors",
@@ -103,7 +103,7 @@ public class ChangedTblPropertiesUtil {
     /**
      * Convert the reference value to a map excluding delta parameters
      */
-    private static Map<String, String> convertToMapExcludingDeltaParameters(Object referenceValueObject) {
+    static Map<String, String> convertToMapExcludingDeltaParameters(Object referenceValueObject) {
         String referenceValue = referenceValueObject == null ? "" : referenceValueObject.toString();
         return Arrays.stream(referenceValue.split(SPLIT_ON_COMMAS))
                 .map(s -> s.split(SPLIT_ON_EQUALS))

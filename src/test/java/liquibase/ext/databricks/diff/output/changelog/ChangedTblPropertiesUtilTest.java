@@ -8,6 +8,7 @@ import liquibase.structure.core.Table;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -86,6 +87,27 @@ class ChangedTblPropertiesUtilTest {
         assertEquals(1, result.length);
         assertEquals("'this.should.be.changed'=35", result[0].getSetExtendedTableProperties().getTblProperties());
         assertNull(result[0].getUnsetExtendedTableProperties());
+    }
+
+    @Test
+    void handleTblPropertiesWithComments() {
+        //Arrange
+        String tblProperties = "'comment'='The bu_details table contains information about various business units within the organization. " +
+                "It includes details such as the name of the business unit. This data can be used to identify and categorize different business units, as well as to track their performance and progress over time. " +
+                "It can also be used to facilitate communication and collaboration between different business units.'," +
+                "'key1'='value1','key2'='a=b','key3'='another=value','key4'=\"a=b\", 'key5'='c'";
+
+        //Act
+        Map<String, String> parcedMap = ChangedTblPropertiesUtil.convertToMapExcludingDeltaParameters(tblProperties);
+
+        //Assert
+        assertEquals(6, parcedMap.size());
+        assertEquals("'value1'", parcedMap.get("'key1'"));
+        assertEquals("'a=b'", parcedMap.get("'key2'"));
+        assertEquals("'another=value'", parcedMap.get("'key3'"));
+        assertEquals("\"a=b\"", parcedMap.get("'key4'"));
+        assertEquals("'c'", parcedMap.get("'key5'"));
+        assertEquals("'The bu_details table contains information about various business units within the organization. It includes details such as the name of the business unit. This data can be used to identify and categorize different business units, as well as to track their performance and progress over time. It can also be used to facilitate communication and collaboration between different business units.'", parcedMap.get("'comment'"));
     }
 
     @Test
