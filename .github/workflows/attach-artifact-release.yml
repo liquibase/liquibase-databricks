@@ -4,7 +4,12 @@ on:
   pull_request:
     types:
       - closed
-  workflow_dispatch:    
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+  packages: write
 
 jobs:
   attach-artifact-to-release:

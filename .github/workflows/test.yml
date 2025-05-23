@@ -8,6 +8,11 @@ on:
       - reopened
       - synchronize
 
+permissions:
+  contents: write
+  pull-requests: write
+  packages: read
+
 jobs:
   build-test:
     uses: liquibase/build-logic/.github/workflows/os-extension-test.yml@main
