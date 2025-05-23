@@ -26,7 +26,7 @@ public class ChangedTblPropertiesUtil {
 
 
     private static final String SPLIT_ON_COMMAS = ",(?=(?:[^\"']*(\"[^\"']*\"|'[^\"']*'))*[^\"']*$)";
-    private static final String SPLIT_ON_EQUALS = "=(?=(?:[^\"']*(\"[^\"]*\"|'[^']*'))*[^\"']*$)";;
+    private static final String SPLIT_ON_EQUALS = "=(?=(?:[^\"']*(\"[^\"]*\"|'[^']*'))*[^\"']*$)";
     private static final Set<String> ALLOWED_DELTA_PROPERTIES = Stream.of(
             "delta.columnMapping.mode",
             "delta.enableDeletionVectors",
