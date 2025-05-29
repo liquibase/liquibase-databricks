@@ -5,7 +5,7 @@
 
     <changeSet id="1" author="codydavis">
         <addColumn tableName="authors">
-            <column name="stringColumn" type="STRING" value="INITIAL_VALUE"/>
+            <column name="stringColumn" type="STRING" value="INITIAL_VALUE" remarks="Quite complicated remarks with &quot;some text&quot; double quoted and 'another' single quoted"/>
             <column name="varcharColumn" type="varchar(50)" value="INITIAL_VALUE"/>
             <column name="intColumn" type="INTEGER" valueNumeric="5"/>
             <column name="dateColumn" type="DATE" valueDate="2023-09-21"/>
