@@ -67,15 +67,16 @@ public class DatabricksConnection extends JdbcConnection {
     }
 
     public void openConn(String url, Driver driverObject, Properties driverProperties) throws DatabaseException {
+        String sanitizedUrl = sanitizeUrl(url);
         try {
-            Scope.getCurrentScope().getLog(this.getClass()).info("opening connection " + url);
+            Scope.getCurrentScope().getLog(this.getClass()).info("opening connection " + sanitizedUrl);
             this.con = (S42Connection) driverObject.connect(url, driverProperties);
             if (this.con == null) {
                 Scope.getCurrentScope().getLog(this.getClass()).severe("Connection could not be created");
-                throw new DatabaseException("Connection could not be created to " + url + " with driver " + driverObject.getClass().getName() + ".  Possibly the wrong driver for the given database URL");
+                throw new DatabaseException("Connection could not be created to " + sanitizedUrl + " with driver " + driverObject.getClass().getName() + ".  Possibly the wrong driver for the given database URL");
             }
         } catch (SQLException sqle) {
-            throw new DatabaseException("Connection could not be created to " + url + " with driver " + driverObject.getClass().getName() + ".  " + sqle.getMessage());
+            throw new DatabaseException("Connection could not be created to " + sanitizedUrl + " with driver " + driverObject.getClass().getName() + ".  " + sqle.getMessage());
         }
     }
 
