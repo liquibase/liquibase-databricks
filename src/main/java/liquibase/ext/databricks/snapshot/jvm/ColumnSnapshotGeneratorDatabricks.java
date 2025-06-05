@@ -41,7 +41,7 @@ public class ColumnSnapshotGeneratorDatabricks extends ColumnSnapshotGenerator {
 
     /**
      * Override the default implementation to ARRAY, MAP and STRUCT complex types as
-     * Liquibase core does not know how to handle values between <> in the data type.
+     * Liquibase core does not know how to handle values between &lt;&gt; in the data type.
      */
     @Override
     protected DataType readDataType(CachedRow columnMetadataResultSet, Column column, Database database) throws DatabaseException {
