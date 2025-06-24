@@ -30,26 +30,12 @@ resource "databricks_schema" "test_harness" {
   }
 }
 
-# Grant specific schema-level permissions to current user/service principal
-# These permissions provide comprehensive management capabilities for the test schema:
-# - USE_SCHEMA: Allows viewing and using the schema
-# - CREATE_TABLE: Allows creating new tables within the schema
-# - MODIFY: Allows modifying existing tables and their data
-# - SELECT: Allows reading data from tables in the schema
+# Grant MANAGE permission to current user/service principal
 resource "databricks_grant" "schema_manage" {
-  schema = databricks_schema.test_harness.id
+  schema = "${var.TF_VAR_TEST_CATALOG}.${var.TF_VAR_TEST_SCHEMA}"
 
   principal  = data.databricks_current_user.me.user_name
-  privileges = ["USE_SCHEMA", "CREATE_TABLE", "MODIFY", "SELECT"]
-}
+  privileges = ["MANAGE"]
 
-# Alternative grant providing ALL_PRIVILEGES (equivalent to MANAGE permission)
-# This grants the most comprehensive permission set possible on the schema
-# Use this if you need full administrative control over the schema
-# Note: You may choose to use either this grant OR the specific permissions above
-resource "databricks_grant" "schema_full_manage" {
-  schema = databricks_schema.test_harness.id
-
-  principal  = data.databricks_current_user.me.user_name
-  privileges = ["ALL_PRIVILEGES"]
+  depends_on = [databricks_schema.test_harness]
 }
