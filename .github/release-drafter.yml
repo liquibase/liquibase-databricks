@@ -50,3 +50,4 @@ template: |
   $CHANGES
 
   **Full Changelog**: https://github.com/liquibase/liquibase-databricks/compare/liquibase-databricks-$PREVIOUS_TAG...liquibase-databricks-$RESOLVED_VERSION
+  
