@@ -153,22 +153,6 @@
 
         <plugins>
             <plugin>
-                <groupId>org.liquibase</groupId>
-                <artifactId>liquibase-maven-plugin</artifactId>
-                <version>${liquibase.version}</version>
-                <configuration>
-                    <propertyFileWillOverride>true</propertyFileWillOverride>
-                    <propertyFile>target/classes/liquibase.properties</propertyFile>
-                    <logging>DEBUG</logging>
-                    <changeLogFile>target/classes/changelog.sql</changeLogFile>
-                    <outputChangeLogFile>target/classes/generatedChangelog.databricks.sql</outputChangeLogFile>
-                    <diffTypes>tables,views</diffTypes>
-                    <diffIncludeCatalog>true</diffIncludeCatalog>
-                    <diffIncludeSchema>true</diffIncludeSchema>
-                </configuration>
-            </plugin>
-
-            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <version>3.6.1</version>
