@@ -36,10 +36,10 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
 
     @Override
     public int getPriority(Class<? extends DatabaseObject> objectType, Database database) {
-        if (database instanceof DatabricksDatabase)
-            return PRIORITY_DATABASE;
+        if (database instanceof DatabricksDatabase) {
+            return super.getPriority(objectType, database) + PRIORITY_DATABASE;
+        }
         return PRIORITY_NONE;
-
     }
 
     @Override
