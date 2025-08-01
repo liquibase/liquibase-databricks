@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.liquibase</groupId>
         <artifactId>liquibase-parent-pom</artifactId>
-        <version>0.5.8</version> <!-- Replace with the desired version -->
+        <version>0.6.0</version> <!-- Replace with the desired version -->
     </parent>
 
     <groupId>org.liquibase.ext</groupId>
@@ -64,8 +64,6 @@
         <sonar.sources>src/main/java</sonar.sources>
         <sonar.tests>src/test</sonar.tests>
         <liquibase-test-harness.version>1.0.10</liquibase-test-harness.version>
-        <junit.version>5.13.3</junit.version>
-        <junit-platform.version>1.13.3</junit-platform.version>
         <mockito.version>4.11.0</mockito.version>
         <jacoco.fileset.directory>target</jacoco.fileset.directory>
     </properties>
@@ -95,7 +93,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>${junit.version}</version>
+            <version>${jupiter.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -112,12 +110,12 @@
         <dependency>
             <groupId>org.junit.vintage</groupId>
             <artifactId>junit-vintage-engine</artifactId>
-            <version>${junit.version}</version>
+            <version>${jupiter.version}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.version}</version>
+            <version>${jupiter.version}</version>
         </dependency>
         <dependency>
             <groupId>org.skyscreamer</groupId>
