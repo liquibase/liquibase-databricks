@@ -8,7 +8,7 @@ resource "databricks_sql_endpoint" "this" {
   cluster_size     = "Small"
   max_num_clusters = 1
   warehouse_type   = "PRO"
-  auto_stop_mins   = 3
+  auto_stop_mins   = 10
   lifecycle {
     create_before_destroy = true
   }
