@@ -55,7 +55,7 @@ jobs:
           TF_VAR_DBX_TOKEN: ${{ env.TH_DATABRICKS_WORKSPACE_TOKEN }}
         working-directory: src/test/terraform
 
-      - mane: Import and apply
+      - name: Import and apply
         env:
           TF_VAR_DBX_HOST: ${{ env.TH_DATABRICKS_WORKSPACE_HOST }}
           TF_VAR_DBX_TOKEN: ${{ env.TH_DATABRICKS_WORKSPACE_TOKEN }}
