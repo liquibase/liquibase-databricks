@@ -82,12 +82,12 @@
         <dependency>
             <groupId>com.databricks</groupId>
             <artifactId>databricks-jdbc</artifactId>
-            <version>2.7.3</version>
+            <version>2.7.4</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.38</version>
+            <version>1.18.40</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -159,7 +159,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.11.2</version>
+                <version>3.11.3</version>
                 <configuration>
                     <attach>true</attach>
                     <author>false</author>
@@ -200,7 +200,7 @@
             <plugin>
                 <groupId>org.sonarsource.scanner.maven</groupId>
                 <artifactId>sonar-maven-plugin</artifactId>
-                <version>5.1.0.4751</version>
+                <version>5.2.0.4988</version>
             </plugin>
 
             <plugin>
@@ -212,7 +212,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
-                <version>1.7.1</version>
+                <version>1.7.2</version>
                 <configuration>
                     <embedBuildProfileDependencies>true</embedBuildProfileDependencies>
                     <updatePomFile>true</updatePomFile>
