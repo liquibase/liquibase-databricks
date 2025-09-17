@@ -46,17 +46,17 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
     protected DatabaseObject snapshotObject(DatabaseObject example, DatabaseSnapshot snapshot) throws DatabaseException {
         Table table = (Table) super.snapshotObject(example, snapshot);
         Database database = snapshot.getDatabase();
+
         if (table != null) {
-            String query = String.format("DESCRIBE TABLE EXTENDED %s.%s.%s;", database.getDefaultCatalogName(), database.getDefaultSchemaName(),
-                    example.getName());
+            String fullyQualifiedTableName = getQualifiedTableName(table, database);
+            String query = String.format("DESCRIBE TABLE EXTENDED %s;", fullyQualifiedTableName);
             Executor jdbcExecutor = Scope.getCurrentScope().getSingleton(ExecutorService.class).getExecutor("jdbc", database);
             List<Map<String, ?>> tablePropertiesResponse = jdbcExecutor.queryForList(new RawParameterizedSqlStatement(query));
             //Skipping changelog tables default values processing
             List<String> changelogTableNames = Arrays.asList(database.getDatabaseChangeLogLockTableName(), database.getDatabaseChangeLogTableName());
-            if(!changelogTableNames.contains(table.getName())) {
-                String showCreateTableQuery = String.format("SHOW CREATE TABLE %s.%s.%s;", table.getSchema().getCatalog(),
-                        table.getSchema().getName(), table.getName());
-                if(snapshot.getScratchData(showCreateTableQuery) == null) {
+            if (!changelogTableNames.contains(table.getName())) {
+                String showCreateTableQuery = String.format("SHOW CREATE TABLE %s;", fullyQualifiedTableName);
+                if (snapshot.getScratchData(showCreateTableQuery) == null) {
                     String createTableStatement = jdbcExecutor.queryForObject(new RawParameterizedSqlStatement(showCreateTableQuery), String.class);
                     snapshot.setScratchData(showCreateTableQuery, createTableStatement);
                 }
@@ -81,7 +81,7 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
                         tableFormat.append(tableProperty.get(DATA_TYPE));
                     }
                     if (!tableFormat.toString().isEmpty() && currentColName.equals(STORAGE_PROPERTIES)) {
-                        if(table.getAttribute(LOCATION, String.class) != null) {
+                        if (table.getAttribute(LOCATION, String.class) != null) {
                             tableFormat.append(" ").append(LOCATION.toUpperCase()).append("'").append(table.getAttribute(LOCATION, String.class)).append("' ");
                         }
                         tableFormat.append(extractOptionsFromStorageProperties(tableProperty.get(DATA_TYPE)));
@@ -93,7 +93,7 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
                     continue;
                 }
                 if (partitionInformationNode && !currentColName.equals("# col_name")) {
-                    if (currentColName.equals("")) {
+                    if (currentColName.isEmpty()) {
                         partitionInformationNode = false;
                         continue;
                     }
@@ -104,7 +104,7 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
                     }
                 }
             }
-            Map<String, String> tblProperties = getTblPropertiesMap(database, example.getName());
+            Map<String, String> tblProperties = getTblPropertiesMap(database, fullyQualifiedTableName);
             if (tblProperties.containsKey(CLUSTER_COLUMNS)) {
                 table.setAttribute(CLUSTER_COLUMNS, sanitizeClusterColumns(tblProperties.remove(CLUSTER_COLUMNS)));
             }
@@ -114,6 +114,12 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
             table.setAttribute(TBL_PROPERTIES, getTblPropertiesString(tblProperties));
         }
         return table;
+    }
+
+    protected static String getQualifiedTableName(Table table, Database database) {
+        String catalogName = table.getSchema().getCatalog() != null ? table.getSchema().getCatalog().getName() : database.getDefaultCatalogName();
+        String schemaName = table.getSchema().getName() != null ? table.getSchema().getName() : database.getDefaultSchemaName();
+        return database.escapeTableName(catalogName, schemaName, table.getName());
     }
 
     private String extractOptionsFromStorageProperties(Object storageProperties) {
@@ -130,14 +136,9 @@ public class TableSnapshotGeneratorDatabricks extends TableSnapshotGenerator {
         }
         return options.toString();
     }
-    //TODO another way of getting Location is query like
-    // select * from `system`.`information_schema`.`tables` where table_name = 'test_table_properties' AND table_schema='liquibase_harness_test_ds';
-    // get column 'table_type', if 'EXTERNAL' then
-    // Location = get column 'storage_path'
-    // cleanup this after approach of getting all properties is settled
 
-    private Map<String, String> getTblPropertiesMap(Database database, String table) throws DatabaseException {
-        String query = String.format("SHOW TBLPROPERTIES %s.%s.%s;", database.getDefaultCatalogName(), database.getDefaultSchemaName(), table);
+    private Map<String, String> getTblPropertiesMap(Database database, String fullyQualifiedTableName) throws DatabaseException {
+        String query = String.format("SHOW TBLPROPERTIES %s;", fullyQualifiedTableName);
         List<Map<String, ?>> tablePropertiesResponse = Scope.getCurrentScope().getSingleton(ExecutorService.class)
                 .getExecutor("jdbc", database).queryForList(new RawParameterizedSqlStatement(query));
         return tablePropertiesResponse.stream()
