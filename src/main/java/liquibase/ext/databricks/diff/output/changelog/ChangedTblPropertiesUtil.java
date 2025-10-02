@@ -15,6 +15,7 @@ import liquibase.structure.core.View;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,8 +25,17 @@ import java.util.stream.Stream;
 public class ChangedTblPropertiesUtil {
 
 
-    private static final String SPLIT_ON_COMMAS = ",(?=(?:[^\"]*\"[^\"]*\")*[^\"$])";
-    private static final String SPLIT_ON_EQUALS = "=(?=(?:[^\"]*\"[^\"]*\")*[^\"$])";
+    /**
+     * Delta properties that are volatile and automatically maintained by Delta.
+     * These properties should be excluded from diff operations as they change frequently
+     * and are not user-controlled.
+     */
+    private static final Set<String> NON_ALLOWED_DELTA_PROPERTIES = Stream.of(
+            "delta.rowTracking.materializedRowCommitVersionColumnName",
+            "delta.rowTracking.materializedRowIdColumnName", 
+            "delta.columnMapping.maxColumnId",
+            "delta.feature.clustering"
+    ).collect(Collectors.toSet());
 
     private ChangedTblPropertiesUtil() {
     }
@@ -121,7 +131,10 @@ public class ChangedTblPropertiesUtil {
                 break;
             }
             
-            result.put(pair.key, pair.value);
+            // Filter out blocked delta properties
+            if (!isBlockedDeltaProperty(pair.key)) {
+                result.put(pair.key, pair.value);
+            }
             i = pair.nextIndex;
         }
         
@@ -242,9 +255,27 @@ public class ChangedTblPropertiesUtil {
         // and should contain at least one letter or dot (property-like)
         return cleanKey.matches("[a-zA-Z0-9._-]+") || key.startsWith("'") || key.startsWith("\"");
     }
+    
+    /**
+     * Check if a property key should be blocked from diff operations.
+     * Blocked properties are volatile delta properties that are automatically maintained.
+     */
+    private static boolean isBlockedDeltaProperty(String key) {
+        if (key == null) {
+            return false;
+        }
+        
+        // Remove quotes if present to get the clean property name
+        String cleanKey = key;
+        if ((key.startsWith("'") && key.endsWith("'")) || (key.startsWith("\"") && key.endsWith("\""))) {
+            cleanKey = key.substring(1, key.length() - 1);
+        }
+        
+        return NON_ALLOWED_DELTA_PROPERTIES.contains(cleanKey);
+    }
 
     /**
-     * Get the extended properties
+     * Get the extended properties excluding blocked delta properties
      */
     public static String getFilteredTblProperties(String tblProperties) {
         Map<String, String> properties = convertToMap(tblProperties);

@@ -211,4 +211,119 @@ class ChangedTblPropertiesUtilTest {
         assertTrue(setProperties.contains("another.simple=false"));
         assertNull(result[0].getUnsetExtendedTableProperties());
     }
+
+    @Test
+    void filterOutVolatileDeltaProperties() {
+        // Test that volatile delta properties are filtered out
+        Difference difference = new Difference("tblProperties",
+                "'delta.rowTracking.materializedRowCommitVersionColumnName'='_row-commit-version-col-d4dcd376-5186-4100-9a5e-5400b200dcd6'," +
+                "'delta.rowTracking.materializedRowIdColumnName'='_row-id-col-b67cce63-1793-4426-8f1d-fc346691b6fc'," +
+                "'delta.columnMapping.maxColumnId'='59'," +
+                "'regular.property'=true",
+                "");
+
+        // Act
+        AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
+                .getAlterTablePropertiesChangeDatabricks(table, control, difference);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.length);
+        String setProperties = result[0].getSetExtendedTableProperties().getTblProperties();
+        
+        // Volatile delta properties should be filtered out
+        assertFalse(setProperties.contains("delta.rowTracking.materializedRowCommitVersionColumnName"));
+        assertFalse(setProperties.contains("delta.rowTracking.materializedRowIdColumnName"));
+        assertFalse(setProperties.contains("delta.columnMapping.maxColumnId"));
+        
+        // Regular properties should be included
+        assertTrue(setProperties.contains("'regular.property'=true"));
+        assertNull(result[0].getUnsetExtendedTableProperties());
+    }
+
+    @Test
+    void filterOutVolatileDeltaPropertiesInRemoval() {
+        // Test that volatile delta properties are also filtered out when being removed
+        Difference difference = new Difference("tblProperties",
+                "",
+                "'delta.rowTracking.materializedRowCommitVersionColumnName'='_row-commit-version-col-old'," +
+                "'delta.columnMapping.maxColumnId'='45'," +
+                "'regular.property'=false");
+
+        // Act
+        AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
+                .getAlterTablePropertiesChangeDatabricks(table, control, difference);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.length);
+        String unsetProperties = result[0].getUnsetExtendedTableProperties().getTblProperties();
+        
+        // Volatile delta properties should be filtered out from removal
+        assertFalse(unsetProperties.contains("delta.rowTracking.materializedRowCommitVersionColumnName"));
+        assertFalse(unsetProperties.contains("delta.columnMapping.maxColumnId"));
+        
+        // Regular properties should be included for removal
+        assertTrue(unsetProperties.contains("'regular.property'"));
+        assertNull(result[0].getSetExtendedTableProperties());
+    }
+
+    @Test
+    void allowedDeltaPropertiesStillWork() {
+        // Test that non-volatile delta properties are still processed normally
+        Difference difference = new Difference("tblProperties",
+                "'delta.enableDeletionVectors'=true," +
+                "'delta.logRetentionDuration'='30 days'," +
+                "'delta.columnMapping.maxColumnId'='59'," + // This should be filtered
+                "'delta.targetFileSize'='128MB'",
+                "'delta.enableDeletionVectors'=false");
+
+        // Act
+        AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
+                .getAlterTablePropertiesChangeDatabricks(table, control, difference);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.length);
+        
+        String setProperties = result[0].getSetExtendedTableProperties().getTblProperties();
+        // Allowed delta properties should be included
+        assertTrue(setProperties.contains("'delta.enableDeletionVectors'=true"));
+        assertTrue(setProperties.contains("'delta.logRetentionDuration'='30 days'"));
+        assertTrue(setProperties.contains("'delta.targetFileSize'='128MB'"));
+        
+        // Volatile delta property should be filtered out
+        assertFalse(setProperties.contains("delta.columnMapping.maxColumnId"));
+        
+        assertNull(result[0].getUnsetExtendedTableProperties());
+    }
+
+    @Test
+    void quotedAndUnquotedVolatilePropertiesFiltered() {
+        // Test that both quoted and unquoted volatile properties are filtered
+        Difference difference = new Difference("tblProperties",
+                "delta.columnMapping.maxColumnId=59," +
+                "'delta.rowTracking.materializedRowIdColumnName'='_row-id-col-test'," +
+                "\"delta.rowTracking.materializedRowCommitVersionColumnName\"=\"_row-commit-version-col-test\"," +
+                "'regular.property'=true",
+                "");
+
+        // Act
+        AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
+                .getAlterTablePropertiesChangeDatabricks(table, control, difference);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.length);
+        String setProperties = result[0].getSetExtendedTableProperties().getTblProperties();
+        
+        // All volatile properties should be filtered regardless of quoting
+        assertFalse(setProperties.contains("delta.columnMapping.maxColumnId"));
+        assertFalse(setProperties.contains("delta.rowTracking.materializedRowIdColumnName"));
+        assertFalse(setProperties.contains("delta.rowTracking.materializedRowCommitVersionColumnName"));
+        
+        // Regular property should be included
+        assertTrue(setProperties.contains("'regular.property'=true"));
+        assertNull(result[0].getUnsetExtendedTableProperties());
+    }
 }
