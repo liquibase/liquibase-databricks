@@ -103,8 +103,8 @@ class ChangedTblPropertiesUtilTest {
     void addAndRemoveAndChangeManyAtSameTimeAndInRandomOrder() {
         //Arrange
         Difference difference = new Difference("tblProperties",
-                "'this.should.be.ignored'=true,'this.should.be.added.too'=true,'this.should.be.added'=35,'this.should.be.changed'=true", "'this.should.be" +
-                ".changed'=false,'this.should.be.removed'='aaa','this.should.be.ignored'=true,this.should.be.removed.too'=bye");
+                "'this.should.be.ignored'=true,'this.should.be.added.too'=true,'this.should.be.added'=35,'this.should.be.changed'=true", 
+                "'this.should.be.changed'=false,'this.should.be.removed'='aaa','this.should.be.ignored'=true,'this.should.be.removed.too'=bye");
 
         //Act
         AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
@@ -116,7 +116,7 @@ class ChangedTblPropertiesUtilTest {
         assertEquals("'this.should.be.added.too'=true,'this.should.be.changed'=true,'this.should.be.added'=35",
                 result[0].getSetExtendedTableProperties().getTblProperties());
         assertNull(result[0].getUnsetExtendedTableProperties());
-        assertEquals("'this.should.be.removed',this.should.be.removed.too'", result[1].getUnsetExtendedTableProperties().getTblProperties());
+        assertEquals("'this.should.be.removed','this.should.be.removed.too'", result[1].getUnsetExtendedTableProperties().getTblProperties());
         assertNull(result[1].getSetExtendedTableProperties());
     }
 
@@ -149,5 +149,66 @@ class ChangedTblPropertiesUtilTest {
         assertTrue(unsetProperties.contains("'other.property'"));
         assertTrue(unsetProperties.contains("'delta.oldProperty'"));
         assertNull(result[1].getSetExtendedTableProperties());
+    }
+
+    @Test
+    void complexArrayPropertyParsing() {
+        // Test parsing of complex array properties like clusteringColumns
+        Difference difference = new Difference("tblProperties",
+                "clusteringColumns=[[\"column_1\"],[\"column_2\"],[\"column_3\"]]",
+                "");
+
+        // Act
+        AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
+                .getAlterTablePropertiesChangeDatabricks(table, control, difference);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.length);
+        assertEquals("clusteringColumns=[[\"column_1\"],[\"column_2\"],[\"column_3\"]]", 
+                result[0].getSetExtendedTableProperties().getTblProperties());
+        assertNull(result[0].getUnsetExtendedTableProperties());
+    }
+
+
+    @Test
+    void complexCommaSeparatedPropertyParsing() {
+        // Test parsing of comma-separated properties like delta.dataSkippingStatsColumns
+        Difference difference = new Difference("tblProperties",
+                "delta.dataSkippingStatsColumns=column_1,column_2,column_3,column_4",
+                "");
+
+        // Act
+        AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
+                .getAlterTablePropertiesChangeDatabricks(table, control, difference);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.length);
+        assertEquals("delta.dataSkippingStatsColumns=column_1,column_2,column_3,column_4", 
+                result[0].getSetExtendedTableProperties().getTblProperties());
+        assertNull(result[0].getUnsetExtendedTableProperties());
+    }
+
+    @Test
+    void mixedComplexAndSimpleProperties() {
+        // Test parsing when complex and simple properties are mixed
+        Difference difference = new Difference("tblProperties",
+                "simple.property=true,clusteringColumns=[[\"column_1\"],[\"column_2\"]],delta.dataSkippingStatsColumns=COL_1,COL_2,COL_3,another.simple=false",
+                "");
+
+        // Act
+        AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
+                .getAlterTablePropertiesChangeDatabricks(table, control, difference);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.length);
+        String setProperties = result[0].getSetExtendedTableProperties().getTblProperties();
+        assertTrue(setProperties.contains("simple.property=true"));
+        assertTrue(setProperties.contains("clusteringColumns=[[\"column_1\"],[\"column_2\"]]"));
+        assertTrue(setProperties.contains("delta.dataSkippingStatsColumns=COL_1,COL_2,COL_3"));
+        assertTrue(setProperties.contains("another.simple=false"));
+        assertNull(result[0].getUnsetExtendedTableProperties());
     }
 }

@@ -5,6 +5,7 @@ import liquibase.database.Database;
 import liquibase.exception.ValidationErrors;
 import liquibase.ext.databricks.change.createTable.CreateTableStatementDatabricks;
 import liquibase.ext.databricks.database.DatabricksDatabase;
+import liquibase.ext.databricks.diff.output.changelog.ChangedTblPropertiesUtil;
 import liquibase.sql.Sql;
 import liquibase.sql.UnparsedSql;
 import liquibase.sqlgenerator.SqlGeneratorChain;
@@ -52,17 +53,10 @@ public class CreateTableGeneratorDatabricks extends CreateTableGenerator {
     private String mergeTableProperties(String customProperties) {
         Map<String, String> properties = new LinkedHashMap<>(DEFAULT_VALUES);
 
-        // If there are custom properties, parse and add them
+        // If there are custom properties, parse and add them using robust parsing
         if (StringUtils.isNotEmpty(customProperties)) {
-            Arrays.stream(customProperties.split(","))
-                    .map(String::trim)
-                    .filter(prop -> !prop.isEmpty())
-                    .forEach(prop -> {
-                        String[] parts = prop.split("=", 2);
-                        if (parts.length == 2) {
-                            properties.put(parts[0].trim(), parts[1].trim());
-                        }
-                    });
+            Map<String, String> customPropsMap = ChangedTblPropertiesUtil.parsePropertiesString(customProperties);
+            properties.putAll(customPropsMap);
         }
 
         StringBuilder result = new StringBuilder();
