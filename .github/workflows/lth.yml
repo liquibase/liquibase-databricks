@@ -222,7 +222,7 @@ jobs:
         working-directory: src/test/terraform
 
       - name: Download the terraform state file
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: terraform-state
           path: src/test/terraform
