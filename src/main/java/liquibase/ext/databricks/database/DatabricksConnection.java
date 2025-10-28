@@ -31,6 +31,13 @@ public class DatabricksConnection extends JdbcConnection {
         return con;
     }
 
+    public SparkJDBCConnection getUnderlyingSparkConnection() {
+        if (con.getConnection() instanceof SparkJDBCConnection) {
+            return (SparkJDBCConnection) con.getConnection();
+        }
+        return null;
+    }
+
     @Override
     public Connection getUnderlyingConnection() {
         return con;
@@ -39,8 +46,14 @@ public class DatabricksConnection extends JdbcConnection {
     @Override
     public void open(String url, Driver driverObject, Properties driverProperties) throws DatabaseException {
 
-        driverProperties.setProperty("UserAgentEntry", "Liquibase");
-        driverProperties.setProperty("EnableArrow", "0");
+        if(!url.contains("UserAgentEntry")) {
+            driverProperties.setProperty("UserAgentEntry", "Liquibase");
+        }
+
+        if(!url.contains("EnableArrow")) {
+            driverProperties.setProperty("EnableArrow", "0");
+        }
+
         // Set UserAgent to specify to Databricks that liquibase is the tool running these commands
         // Set EnableArrow because the arrow results break everything. And the JDBC release notes say to just disable it.
 
@@ -49,9 +62,7 @@ public class DatabricksConnection extends JdbcConnection {
             url += ";";
         }
 
-        String updatedUrl = url + "UserAgentEntry=Liquibase;EnableArrow=0";
-
-        this.openConn(updatedUrl, driverObject, driverProperties);
+        this.openConn(url, driverObject, driverProperties);
     }
 
     public void openConn(String url, Driver driverObject, Properties driverProperties) throws DatabaseException {
