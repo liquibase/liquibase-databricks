@@ -1,25 +1,20 @@
 package liquibase.ext.databricks.database;
 
-import com.databricks.client.jdbc.jdbc42.S42Connection;
-import com.databricks.client.spark.core.SparkJDBCConnection;
 import liquibase.Scope;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.DatabaseException;
 import liquibase.exception.UnexpectedLiquibaseException;
 
 import java.sql.*;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 
 public class DatabricksConnection extends JdbcConnection {
 
-    private S42Connection con;
+    private Connection con;
     public DatabricksConnection() {}
 
     public DatabricksConnection(Connection conn) {
-        this.con = (S42Connection) conn;
+        this.con = conn;
     }
 
     @Override
@@ -34,13 +29,6 @@ public class DatabricksConnection extends JdbcConnection {
     @Override
     public Connection getWrappedConnection() {
         return con;
-    }
-
-    public SparkJDBCConnection getUnderlyingSparkConnection() {
-        if (con.getConnection() instanceof SparkJDBCConnection) {
-            return (SparkJDBCConnection) con.getConnection();
-        }
-        return null;
     }
 
     @Override
@@ -70,7 +58,7 @@ public class DatabricksConnection extends JdbcConnection {
         String sanitizedUrl = sanitizeUrl(url);
         try {
             Scope.getCurrentScope().getLog(this.getClass()).info("opening connection " + sanitizedUrl);
-            this.con = (S42Connection) driverObject.connect(url, driverProperties);
+            this.con = driverObject.connect(url, driverProperties);
             if (this.con == null) {
                 Scope.getCurrentScope().getLog(this.getClass()).severe("Connection could not be created");
                 throw new DatabaseException("Connection could not be created to " + sanitizedUrl + " with driver " + driverObject.getClass().getName() + ".  Possibly the wrong driver for the given database URL");
@@ -335,7 +323,11 @@ public class DatabricksConnection extends JdbcConnection {
 
     @Override
     public boolean isClosed() throws DatabaseException {
-        return con.isClosed();
+        try {
+            return con.isClosed();
+        } catch (SQLException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     @Override
