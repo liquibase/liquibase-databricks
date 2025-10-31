@@ -31,13 +31,6 @@ public class DatabricksConnection extends JdbcConnection {
         return con;
     }
 
-    public SparkJDBCConnection getUnderlyingSparkConnection() {
-        if (con.getConnection() instanceof SparkJDBCConnection) {
-            return (SparkJDBCConnection) con.getConnection();
-        }
-        return null;
-    }
-
     @Override
     public Connection getUnderlyingConnection() {
         return con;
