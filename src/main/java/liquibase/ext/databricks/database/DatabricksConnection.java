@@ -15,11 +15,11 @@ import java.util.Properties;
 
 public class DatabricksConnection extends JdbcConnection {
 
-    private S42Connection con;
+    private Connection con;
     public DatabricksConnection() {}
 
     public DatabricksConnection(Connection conn) {
-        this.con = (S42Connection) conn;
+        this.con = conn;
     }
 
     @Override
@@ -37,9 +37,14 @@ public class DatabricksConnection extends JdbcConnection {
     }
 
     public SparkJDBCConnection getUnderlyingSparkConnection() {
-        if (con.getConnection() instanceof SparkJDBCConnection) {
-            return (SparkJDBCConnection) con.getConnection();
+        // Handle both S42Connection (JDBC42 driver) and standard DatabricksConnection
+        if (con instanceof S42Connection) {
+            S42Connection s42Con = (S42Connection) con;
+            if (s42Con.getConnection() instanceof SparkJDBCConnection) {
+                return (SparkJDBCConnection) s42Con.getConnection();
+            }
         }
+        // For standard DatabricksConnection, we can't access the underlying Spark connection
         return null;
     }
 
@@ -51,10 +56,16 @@ public class DatabricksConnection extends JdbcConnection {
     @Override
     public void open(String url, Driver driverObject, Properties driverProperties) throws DatabaseException {
 
-        driverProperties.setProperty("UserAgentEntry", "Liquibase");
-        driverProperties.setProperty("EnableArrow", "0");
+        // Remove UserAgentEntry and EnableArrow from driverProperties to avoid duplicates
+        // The JDBC driver may read from driverProperties and add them to the URL, causing duplicates
+        driverProperties.remove("UserAgentEntry");
+        driverProperties.remove("EnableArrow");
+        
         // Set UserAgent to specify to Databricks that liquibase is the tool running these commands
         // Set EnableArrow because the arrow results break everything. And the JDBC release notes say to just disable it.
+
+        // First, deduplicate all parameters in the URL to handle any existing duplicates
+        url = deduplicateUrlParameters(url);
 
         // Ensure there's a terminating semicolon for consistent parsing
         if (!url.endsWith(";")) {
@@ -71,6 +82,9 @@ public class DatabricksConnection extends JdbcConnection {
         }
 
         String updatedUrl = urlBuilder.toString();
+        
+        // Deduplicate again after adding parameters to ensure no duplicates
+        updatedUrl = deduplicateUrlParameters(updatedUrl);
 
         this.openConn(updatedUrl, driverObject, driverProperties);
     }
@@ -122,12 +136,12 @@ public class DatabricksConnection extends JdbcConnection {
         // Remove spaces and split by semicolon
         String[] uriArgs = url.replace(" ", "").split(";");
 
-       // System.out.println("PARSE URL - url args" + uriArgs.toString());
+        // System.out.println("PARSE URL - url args" + uriArgs.toString());
 
         // Use Java Streams to find the parameter value
         Optional<String> paramString = Arrays.stream(uriArgs)
-                .filter(x -> x.startsWith(paramName + "="))
-                .findFirst();
+            .filter(x -> x.startsWith(paramName + "="))
+            .findFirst();
         // Return the parameter value if found, otherwise return the default value
         if (!paramString.isPresent()) {
             return defaultValue;
@@ -150,7 +164,7 @@ public class DatabricksConnection extends JdbcConnection {
         }
         // Remove spaces and split by semicolon
         String[] uriArgs = normalizedUrl.replace(" ", "").split(";");
-        
+
         // Use case-insensitive matching to find the parameter
         String lowerParamName = paramName.toLowerCase();
         return Arrays.stream(uriArgs)
@@ -162,6 +176,63 @@ public class DatabricksConnection extends JdbcConnection {
                 });
     }
 
+    /**
+     * Deduplicate all parameters in the JDBC URL to avoid "Multiple entries with same key" errors.
+     * This method removes duplicate parameters, keeping the first occurrence of each parameter (case-insensitive).
+     */
+    protected static String deduplicateUrlParameters(String url) {
+        if (url == null || url.isEmpty()) {
+            return url;
+        }
+        
+        // Find where the URL parameters start (after the base URL)
+        int paramStart = url.indexOf(';');
+        if (paramStart == -1) {
+            // No parameters, return as-is
+            return url;
+        }
+        
+        String baseUrl = url.substring(0, paramStart + 1); // Include the semicolon
+        String paramString = url.substring(paramStart + 1);
+        
+        // Ensure there's a terminating semicolon for consistent parsing
+        if (!paramString.endsWith(";")) {
+            paramString += ";";
+        }
+        
+        // Remove spaces and split by semicolon
+        String[] uriArgs = paramString.replace(" ", "").split(";");
+        
+        // Use LinkedHashMap to preserve order and deduplicate (case-insensitive)
+        Map<String, String> paramMap = new java.util.LinkedHashMap<>();
+        for (String arg : uriArgs) {
+            if (arg.isEmpty()) {
+                continue;
+            }
+            int equalsIndex = arg.indexOf('=');
+            if (equalsIndex == -1) {
+                // Parameter without value, skip or handle as needed
+                continue;
+            }
+            String paramName = arg.substring(0, equalsIndex);
+            String paramValue = arg.substring(equalsIndex + 1);
+            
+            // Use lowercase key for case-insensitive comparison
+            String lowerKey = paramName.toLowerCase();
+            if (!paramMap.containsKey(lowerKey)) {
+                // Keep the original case of the first occurrence
+                paramMap.put(lowerKey, paramName + "=" + paramValue);
+            }
+        }
+        
+        // Reconstruct the URL
+        StringBuilder urlBuilder = new StringBuilder(baseUrl);
+        for (String param : paramMap.values()) {
+            urlBuilder.append(param).append(";");
+        }
+        
+        return urlBuilder.toString();
+    }
 
     @Override
     public String getDatabaseProductVersion() throws DatabaseException {
@@ -201,14 +272,17 @@ public class DatabricksConnection extends JdbcConnection {
             rawUrl = "";
         }
         
+        // First, deduplicate all parameters in the URL to handle any existing duplicates
+        rawUrl = deduplicateUrlParameters(rawUrl);
+        
         // Check for ; characters
         StringBuilder urlBuilder = new StringBuilder(rawUrl);
-        
+
         // Ensure there's a terminating semicolon for consistent parsing
         if (rawUrl.isEmpty() || rawUrl.charAt(rawUrl.length() - 1) != ';') {
             urlBuilder.append(";");
         }
-        
+
         // Only append parameters that don't already exist in the URL to avoid duplicate key errors
         if (!urlContainsParam(rawUrl, "UserAgentEntry")) {
             urlBuilder.append("UserAgentEntry=Liquibase;");
@@ -216,8 +290,10 @@ public class DatabricksConnection extends JdbcConnection {
         if (!urlContainsParam(rawUrl, "EnableArrow")) {
             urlBuilder.append("EnableArrow=0;");
         }
-        
-        return urlBuilder.toString();
+
+        String result = urlBuilder.toString();
+        // Deduplicate again after adding parameters to ensure no duplicates
+        return deduplicateUrlParameters(result);
     }
 
     @Override
@@ -270,11 +346,11 @@ public class DatabricksConnection extends JdbcConnection {
 
     @Override
     public Statement createStatement(int resultSetType,
-                                     int resultSetConcurrency, int resultSetHoldability)
-            throws DatabaseException {
+        int resultSetConcurrency, int resultSetHoldability)
+        throws DatabaseException {
         try {
             return con.createStatement(resultSetType, resultSetConcurrency,
-                    resultSetHoldability);
+                resultSetHoldability);
         } catch (SQLException e) {
             throw new DatabaseException(e);
         }
@@ -282,7 +358,7 @@ public class DatabricksConnection extends JdbcConnection {
 
     @Override
     public Statement createStatement(int resultSetType, int resultSetConcurrency)
-            throws DatabaseException {
+        throws DatabaseException {
         try {
             return con.createStatement(resultSetType, resultSetConcurrency);
         } catch (SQLException e) {
@@ -414,11 +490,11 @@ public class DatabricksConnection extends JdbcConnection {
 
     @Override
     public CallableStatement prepareCall(String sql, int resultSetType,
-                                         int resultSetConcurrency, int resultSetHoldability)
-            throws DatabaseException {
+        int resultSetConcurrency, int resultSetHoldability)
+        throws DatabaseException {
         try {
             return con.prepareCall(sql, resultSetType, resultSetConcurrency,
-                    resultSetHoldability);
+                resultSetHoldability);
         } catch (SQLException e) {
             throw new DatabaseException(e);
         }
@@ -426,7 +502,7 @@ public class DatabricksConnection extends JdbcConnection {
 
     @Override
     public CallableStatement prepareCall(String sql, int resultSetType,
-                                         int resultSetConcurrency) throws DatabaseException {
+        int resultSetConcurrency) throws DatabaseException {
         try {
             return con.prepareCall(sql, resultSetType, resultSetConcurrency);
         } catch (SQLException e) {
@@ -445,11 +521,11 @@ public class DatabricksConnection extends JdbcConnection {
 
     @Override
     public PreparedStatement prepareStatement(String sql, int resultSetType,
-                                              int resultSetConcurrency, int resultSetHoldability)
-            throws DatabaseException {
+        int resultSetConcurrency, int resultSetHoldability)
+        throws DatabaseException {
         try {
             return con.prepareStatement(sql, resultSetType, resultSetConcurrency,
-                    resultSetHoldability);
+                resultSetHoldability);
         } catch (SQLException e) {
             throw new DatabaseException(e);
         }
@@ -457,7 +533,7 @@ public class DatabricksConnection extends JdbcConnection {
 
     @Override
     public PreparedStatement prepareStatement(String sql, int resultSetType,
-                                              int resultSetConcurrency) throws DatabaseException {
+        int resultSetConcurrency) throws DatabaseException {
         try {
             return con.prepareStatement(sql, resultSetType, resultSetConcurrency);
         } catch (SQLException e) {
@@ -467,7 +543,7 @@ public class DatabricksConnection extends JdbcConnection {
 
     @Override
     public PreparedStatement prepareStatement(String sql, int autoGeneratedKeys)
-            throws DatabaseException {
+        throws DatabaseException {
         try {
             return con.prepareStatement(sql, autoGeneratedKeys);
         } catch (SQLException e) {
@@ -477,7 +553,7 @@ public class DatabricksConnection extends JdbcConnection {
 
     @Override
     public PreparedStatement prepareStatement(String sql, int[] columnIndexes)
-            throws DatabaseException {
+        throws DatabaseException {
         try {
             return con.prepareStatement(sql, columnIndexes);
         } catch (SQLException e) {
@@ -487,7 +563,7 @@ public class DatabricksConnection extends JdbcConnection {
 
     @Override
     public PreparedStatement prepareStatement(String sql, String[] columnNames)
-            throws DatabaseException {
+        throws DatabaseException {
         try {
             return con.prepareStatement(sql, columnNames);
         } catch (SQLException e) {
