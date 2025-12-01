@@ -154,7 +154,12 @@ public class DatabricksConnection extends JdbcConnection {
         // Use case-insensitive matching to find the parameter
         String lowerParamName = paramName.toLowerCase();
         return Arrays.stream(uriArgs)
-                .anyMatch(x -> x.toLowerCase().startsWith(lowerParamName + "="));
+                .anyMatch(x -> {
+                    int equalsIndex = x.indexOf('=');
+                    if (equalsIndex == -1) return false;
+                    String paramPart = x.substring(0, equalsIndex).toLowerCase();
+                    return paramPart.equals(lowerParamName);
+                });
     }
 
 
