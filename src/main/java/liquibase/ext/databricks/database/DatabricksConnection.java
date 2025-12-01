@@ -61,7 +61,16 @@ public class DatabricksConnection extends JdbcConnection {
             url += ";";
         }
 
-        String updatedUrl = url + "UserAgentEntry=Liquibase;EnableArrow=0";
+        // Only append parameters that don't already exist in the URL to avoid duplicate key errors
+        StringBuilder urlBuilder = new StringBuilder(url);
+        if (!urlContainsParam(url, "UserAgentEntry")) {
+            urlBuilder.append("UserAgentEntry=Liquibase;");
+        }
+        if (!urlContainsParam(url, "EnableArrow")) {
+            urlBuilder.append("EnableArrow=0");
+        }
+
+        String updatedUrl = urlBuilder.toString();
 
         this.openConn(updatedUrl, driverObject, driverProperties);
     }
@@ -127,6 +136,27 @@ public class DatabricksConnection extends JdbcConnection {
         return defaultParamsArr.length > 1 ? defaultParamsArr[1] : defaultValue; // Check to avoid index out of bound
     }
 
+    /**
+     * Check if a parameter exists in the URL (case-insensitive) to avoid duplicate key errors
+     */
+    protected static boolean urlContainsParam(String url, String paramName) {
+        if (url == null || paramName == null) {
+            return false;
+        }
+        // Ensure there's a terminating semicolon for consistent parsing
+        String normalizedUrl = url;
+        if (!normalizedUrl.endsWith(";")) {
+            normalizedUrl += ";";
+        }
+        // Remove spaces and split by semicolon
+        String[] uriArgs = normalizedUrl.replace(" ", "").split(";");
+        
+        // Use case-insensitive matching to find the parameter
+        String lowerParamName = paramName.toLowerCase();
+        return Arrays.stream(uriArgs)
+                .anyMatch(x -> x.toLowerCase().startsWith(lowerParamName + "="));
+    }
+
 
     @Override
     public String getDatabaseProductVersion() throws DatabaseException {
@@ -161,16 +191,22 @@ public class DatabricksConnection extends JdbcConnection {
 
         String rawUrl = con.getMetaData().getURL();
         // Check for ; characters
-        String updatedUrl;
-
-        if (rawUrl.charAt(rawUrl.length() - 1) == ';') {
-            updatedUrl = rawUrl + "UserAgentEntry=Liquibase;EnableArrow=0;";
+        StringBuilder urlBuilder = new StringBuilder(rawUrl);
+        
+        // Ensure there's a terminating semicolon for consistent parsing
+        if (rawUrl.charAt(rawUrl.length() - 1) != ';') {
+            urlBuilder.append(";");
         }
-        else {
-            updatedUrl = rawUrl + ";UserAgentEntry=Liquibase;EnableArrow=0;";
-
+        
+        // Only append parameters that don't already exist in the URL to avoid duplicate key errors
+        if (!urlContainsParam(rawUrl, "UserAgentEntry")) {
+            urlBuilder.append("UserAgentEntry=Liquibase;");
         }
-        return updatedUrl;
+        if (!urlContainsParam(rawUrl, "EnableArrow")) {
+            urlBuilder.append("EnableArrow=0;");
+        }
+        
+        return urlBuilder.toString();
     }
 
     @Override
