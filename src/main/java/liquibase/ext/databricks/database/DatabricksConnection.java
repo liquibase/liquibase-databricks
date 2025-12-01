@@ -15,11 +15,11 @@ import java.util.Properties;
 
 public class DatabricksConnection extends JdbcConnection {
 
-    private Connection con;
+    private S42Connection con;
     public DatabricksConnection() {}
 
     public DatabricksConnection(Connection conn) {
-        this.con = conn;
+        this.con = (S42Connection) conn;
     }
 
     @Override
@@ -37,14 +37,9 @@ public class DatabricksConnection extends JdbcConnection {
     }
 
     public SparkJDBCConnection getUnderlyingSparkConnection() {
-        // Handle both S42Connection (JDBC42 driver) and standard DatabricksConnection
-        if (con instanceof S42Connection) {
-            S42Connection s42Con = (S42Connection) con;
-            if (s42Con.getConnection() instanceof SparkJDBCConnection) {
-                return (SparkJDBCConnection) s42Con.getConnection();
-            }
+        if (con.getConnection() instanceof SparkJDBCConnection) {
+            return (SparkJDBCConnection) con.getConnection();
         }
-        // For standard DatabricksConnection, we can't access the underlying Spark connection
         return null;
     }
 
