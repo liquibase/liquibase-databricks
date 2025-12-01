@@ -67,7 +67,7 @@ public class DatabricksConnection extends JdbcConnection {
             urlBuilder.append("UserAgentEntry=Liquibase;");
         }
         if (!urlContainsParam(url, "EnableArrow")) {
-            urlBuilder.append("EnableArrow=0");
+            urlBuilder.append("EnableArrow=0;");
         }
 
         String updatedUrl = urlBuilder.toString();
@@ -195,11 +195,17 @@ public class DatabricksConnection extends JdbcConnection {
     protected String getConnectionUrl() throws SQLException {
 
         String rawUrl = con.getMetaData().getURL();
+        
+        // Handle null or empty URL according to JDBC spec
+        if (rawUrl == null) {
+            rawUrl = "";
+        }
+        
         // Check for ; characters
         StringBuilder urlBuilder = new StringBuilder(rawUrl);
         
         // Ensure there's a terminating semicolon for consistent parsing
-        if (rawUrl.charAt(rawUrl.length() - 1) != ';') {
+        if (rawUrl.isEmpty() || rawUrl.charAt(rawUrl.length() - 1) != ';') {
             urlBuilder.append(";");
         }
         
