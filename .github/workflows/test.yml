@@ -22,10 +22,11 @@ jobs:
       - run: "true"
       
   build-test:
+    needs: authorize
     uses: liquibase/build-logic/.github/workflows/os-extension-test.yml@main
     secrets: inherit
 
   dependabot-automerge:
-    needs: build-test
+    needs: [ build-test,authorize ]
     uses: liquibase/build-logic/.github/workflows/dependabot-automerge.yml@main
     secrets: inherit
