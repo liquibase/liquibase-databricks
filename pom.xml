@@ -51,8 +51,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <liquibase.version>5.0.1</liquibase.version>
         <sonar.organization>liquibase</sonar.organization>
         <sonar.projectKey>${sonar.organization}_${project.artifactId}</sonar.projectKey>
@@ -82,12 +82,12 @@
         <dependency>
             <groupId>com.databricks</groupId>
             <artifactId>databricks-jdbc</artifactId>
-            <version>2.7.4</version>
+            <version>3.0.5</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.42</version>
+            <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -151,6 +151,20 @@
 
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <version>3.6.1</version>
@@ -200,13 +214,13 @@
             <plugin>
                 <groupId>org.sonarsource.scanner.maven</groupId>
                 <artifactId>sonar-maven-plugin</artifactId>
-                <version>5.2.0.4988</version>
+                <version>5.5.0.6356</version>
             </plugin>
 
             <plugin>
                 <groupId>org.liquibase.ext</groupId>
                 <artifactId>liquibase-sdk-maven-plugin</artifactId>
-                <version>0.10.25</version>
+                <version>0.11.0</version>
             </plugin>
 
             <plugin>
@@ -254,7 +268,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.4.2</version>
+                <version>3.5.0</version>
                 <configuration>
                     <archive>
                         <manifestEntries>
