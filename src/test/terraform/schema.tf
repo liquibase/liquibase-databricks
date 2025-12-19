@@ -16,10 +16,6 @@ variable "schema_force_destroy" {
   default = true
 }
 
-# Data source to retrieve information about the currently authenticated user or service principal
-# This will automatically detect whether authentication is via user account or service principal
-data "databricks_current_user" "me" {}
-
 resource "databricks_schema" "test_harness" {
   catalog_name  = var.TF_VAR_TEST_CATALOG
   name          = var.TF_VAR_TEST_SCHEMA
@@ -28,14 +24,4 @@ resource "databricks_schema" "test_harness" {
   properties = {
     purpose = "testing"
   }
-}
-
-# Grant MANAGE permission to current user/service principal
-resource "databricks_grant" "schema_manage" {
-  schema = "${var.TF_VAR_TEST_CATALOG}.${var.TF_VAR_TEST_SCHEMA}"
-
-  principal  = data.databricks_current_user.me.user_name
-  privileges = ["MANAGE"]
-
-  depends_on = [databricks_schema.test_harness]
 }
