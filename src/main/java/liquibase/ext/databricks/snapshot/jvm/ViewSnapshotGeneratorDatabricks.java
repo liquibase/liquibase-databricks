@@ -26,7 +26,10 @@ public class ViewSnapshotGeneratorDatabricks extends ViewSnapshotGenerator {
 
     @Override
     public int getPriority(Class<? extends DatabaseObject> objectType, Database database) {
-        return database instanceof DatabricksDatabase ? PRIORITY_DATABASE : PRIORITY_NONE;
+        if (database instanceof DatabricksDatabase) {
+            return super.getPriority(objectType, database) + PRIORITY_DATABASE;
+        }
+        return PRIORITY_NONE;
     }
 
     @Override

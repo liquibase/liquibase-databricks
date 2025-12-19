@@ -29,7 +29,7 @@ public class ColumnSnapshotGeneratorDatabricks extends ColumnSnapshotGenerator {
     @Override
     public int getPriority(Class<? extends DatabaseObject> objectType, Database database) {
         if (database instanceof DatabricksDatabase) {
-            return PRIORITY_DATABASE;
+            return super.getPriority(objectType, database) + PRIORITY_DATABASE;
         }
         return PRIORITY_NONE;
     }
@@ -62,11 +62,7 @@ public class ColumnSnapshotGeneratorDatabricks extends ColumnSnapshotGenerator {
         //This should work after fix on Databricks side
         if (example instanceof Column) {
             Column column = (Column) super.snapshotObject(example, snapshot);
-            //These two are used too often, avoiding them? otherwise there would be too much DB calls
-            String showCreateRelatedTableQuery = String.format("SHOW CREATE TABLE %s.%s.%s;",
-                    column.getRelation().getSchema().getCatalog(),
-                    column.getRelation().getSchema().getName(),
-                    column.getRelation().getName());
+            String showCreateRelatedTableQuery = getShowCreateTableQuery(snapshot, column);
             if (snapshot.getScratchData(showCreateRelatedTableQuery) != null) {
                 String showCreateTableStatement = (String) snapshot.getScratchData(showCreateRelatedTableQuery);
                 String defaultValue = extractDefaultValue(showCreateTableStatement, column.getName());
@@ -85,6 +81,16 @@ public class ColumnSnapshotGeneratorDatabricks extends ColumnSnapshotGenerator {
         } else {
             return example;
         }
+    }
+
+    protected static String getShowCreateTableQuery(DatabaseSnapshot snapshot, Column column) {
+        Database database = snapshot.getDatabase();
+        String catalogName = column.getRelation().getSchema().getCatalog() != null ? column.getRelation().getSchema().getCatalog().getName() :
+                database.getDefaultCatalogName();
+        String schemaName = column.getRelation().getSchema().getName() != null ? column.getRelation().getSchema().getName() : database.getDefaultSchemaName();
+        String fullyQualifiedTableName = database.escapeTableName(catalogName, schemaName, column.getRelation().getName());
+
+        return String.format("SHOW CREATE TABLE %s;", fullyQualifiedTableName);
     }
 
     private String extractDefaultValue(String createTableStatement, String columnName) {
@@ -127,7 +133,7 @@ public class ColumnSnapshotGeneratorDatabricks extends ColumnSnapshotGenerator {
                 " BY (\\d+)\\))";
         Matcher findLineMatcher = Pattern.compile(findLineRegex).matcher(statement);
         if (findLineMatcher.find()) {
-            if(!findLineMatcher.group(1).startsWith(columnName)){
+            if (!findLineMatcher.group(1).startsWith(columnName)) {
                 return null;
             }
             return getAutoIncrementInformation(findLineMatcher);

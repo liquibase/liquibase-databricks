@@ -1,7 +1,6 @@
 name: Liquibase Test Harness
 on:
   workflow_dispatch:
-  pull_request:
   push:
     branches:
       - main
@@ -19,9 +18,8 @@ jobs:
       checks: write
       pull-requests: write
       contents: write
+      id-token: write
     env:
-      TF_VAR_DBX_HOST: ${{ secrets.TH_DATABRICKS_WORKSPACE_HOST }}
-      TF_VAR_DBX_TOKEN: ${{ secrets.TH_DATABRICKS_WORKSPACE_TOKEN }}
       TF_VAR_TEST_CATALOG: main
       TF_VAR_TEST_SCHEMA: liquibase_harness_test_ds
     outputs:
@@ -29,15 +27,39 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
+
+      - name: Configure AWS credentials for vault access
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ secrets.LIQUIBASE_VAULT_OIDC_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Get secrets from vault
+        id: vault-secrets
+        uses: aws-actions/aws-secretsmanager-get-secrets@v2
+        with:
+          secret-ids: |
+            ,/vault/liquibase
+          parse-json-secrets: true
 
       - run: terraform init
+        env:
+          TF_VAR_DBX_HOST: ${{ env.TH_DATABRICKS_WORKSPACE_HOST }}
+          TF_VAR_DBX_TOKEN: ${{ env.TH_DATABRICKS_WORKSPACE_TOKEN }}
         working-directory: src/test/terraform
 
       - run: terraform plan
+        env:
+          TF_VAR_DBX_HOST: ${{ env.TH_DATABRICKS_WORKSPACE_HOST }}
+          TF_VAR_DBX_TOKEN: ${{ env.TH_DATABRICKS_WORKSPACE_TOKEN }}
         working-directory: src/test/terraform
 
-      - run: |
+      - name: Import and apply
+        env:
+          TF_VAR_DBX_HOST: ${{ env.TH_DATABRICKS_WORKSPACE_HOST }}
+          TF_VAR_DBX_TOKEN: ${{ env.TH_DATABRICKS_WORKSPACE_TOKEN }}
+        run: |
           terraform import databricks_schema.test_harness main.liquibase_harness_test_ds || true
           terraform taint databricks_schema.test_harness || true
           terraform apply -auto-approve
@@ -46,17 +68,20 @@ jobs:
       - name: Collect Databricks Config
         id: collect-databricks-config
         working-directory: src/test/terraform
+        env:
+          TF_VAR_DBX_HOST: ${{ env.TH_DATABRICKS_WORKSPACE_HOST }}
+          TF_VAR_DBX_TOKEN: ${{ env.TH_DATABRICKS_WORKSPACE_TOKEN }}
         run: |
           CLUSTER_ID=$(terraform output -raw endpoint_url)
           DATABRICKS_HOST=${TF_VAR_DBX_HOST#https://}
           echo "DATABRICKS_URL=jdbc:databricks://$DATABRICKS_HOST:443/default;transportMode=http;ssl=1;httpPath=/sql/1.0/warehouses/$CLUSTER_ID;AuthMech=3;ConnCatalog=$TF_VAR_TEST_CATALOG;ConnSchema=$TF_VAR_TEST_SCHEMA;EnableArrow=0" >> $GITHUB_OUTPUT
 
       - name: Upload the terraform state file
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: terraform-state
           path: src/test/terraform/terraform.tfstate
-        
+
   liquibase-test-harness:
     name: Liquibase Test Harness
     runs-on: ubuntu-24.04
@@ -66,9 +91,8 @@ jobs:
       pull-requests: write
       contents: write
       packages: write
+      id-token: write
     env:
-      WORKSPACE_ID: ${{ secrets.TH_DATABRICKS_WORKSPACE_ID }}
-      TF_VAR_DBX_TOKEN: ${{ secrets.TH_DATABRICKS_WORKSPACE_TOKEN }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     strategy:
       max-parallel: 1
@@ -78,14 +102,28 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
+
+      - name: Configure AWS credentials for vault access
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ secrets.LIQUIBASE_VAULT_OIDC_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Get secrets from vault
+        id: vault-secrets
+        uses: aws-actions/aws-secretsmanager-get-secrets@v2
+        with:
+          secret-ids: |
+            ,/vault/liquibase
+          parse-json-secrets: true
 
       - name: Setup Temurin Java 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: 17
           distribution: temurin
-          cache: 'maven'
+          cache: "maven"
 
       - name: maven-settings-xml-action
         uses: whelk-io/maven-settings-xml-action@v22
@@ -120,12 +158,12 @@ jobs:
               {
                 "id": "liquibase-pro",
                 "username": "liquibot",
-                "password": "${{ secrets.LIQUIBOT_PAT_GPM_ACCESS }}"
+                "password": "${{ env.LIQUIBOT_PAT_GPM_ACCESS }}"
               },
               {
                 "id": "liquibase",
                 "username": "liquibot",
-                "password": "${{ secrets.LIQUIBOT_PAT_GPM_ACCESS }}"
+                "password": "${{ env.LIQUIBOT_PAT_GPM_ACCESS }}"
               }
             ]
 
@@ -134,10 +172,13 @@ jobs:
 
       - name: Run ${{ matrix.liquibase-support-level }} Liquibase Test Harness # Run the Liquibase test harness at each test level
         if: always() # Run the action even if the previous steps fail
+        env:
+          WORKSPACE_ID: ${{ env.TH_DATABRICKS_WORKSPACE_ID }}
+          TF_VAR_DBX_TOKEN: ${{ env.TH_DATABRICKS_WORKSPACE_TOKEN }}
         run: mvn -B -ntp -DdbPassword=${{env.TF_VAR_DBX_TOKEN}} -DdbUrl='${{needs.start-test-harness-infra.outputs.DATABRICKS_URL}}' -Dtest=liquibase.ext.databricks.${{ matrix.liquibase-support-level }}ExtensionHarnessTestSuite test -Dliquibase.version=master-SNAPSHOT # Run the Liquibase test harness at each test level
 
       - name: Test Reporter # Generate a test report using the Test Reporter action
-        uses: dorny/test-reporter@v2.1.0
+        uses: dorny/test-reporter@v2.3.0
         if: always() # Run the action even if the previous steps fail
         with:
           name: Liquibase Test Harness - ${{ matrix.liquibase-support-level }} Reports # Set the name of the test report
@@ -154,27 +195,43 @@ jobs:
       checks: write
       pull-requests: write
       contents: write
+      id-token: write
     env:
-      TF_VAR_DBX_HOST: ${{ secrets.TH_DATABRICKS_WORKSPACE_HOST }}
-      TF_VAR_DBX_TOKEN: ${{ secrets.TH_DATABRICKS_WORKSPACE_TOKEN }}
       TF_VAR_TEST_CATALOG: main
       TF_VAR_TEST_SCHEMA: liquibase_harness_test_ds
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
+
+      - name: Configure AWS credentials for vault access
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ secrets.LIQUIBASE_VAULT_OIDC_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Get secrets from vault
+        id: vault-secrets
+        uses: aws-actions/aws-secretsmanager-get-secrets@v2
+        with:
+          secret-ids: |
+            ,/vault/liquibase
+          parse-json-secrets: true
 
       - run: terraform init
         working-directory: src/test/terraform
 
       - name: Download the terraform state file
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: terraform-state
           path: src/test/terraform
 
       - name: Stop test database
         working-directory: src/test/terraform
+        env:
+          TF_VAR_DBX_HOST: ${{ env.TH_DATABRICKS_WORKSPACE_HOST }}
+          TF_VAR_DBX_TOKEN: ${{ env.TH_DATABRICKS_WORKSPACE_TOKEN }}
         run: |
           set -e
           echo "Checking Terraform-managed resources"

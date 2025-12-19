@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.liquibase</groupId>
         <artifactId>liquibase-parent-pom</artifactId>
-        <version>0.5.8</version> <!-- Replace with the desired version -->
+        <version>1.0.0</version> <!-- Replace with the desired version -->
     </parent>
 
     <groupId>org.liquibase.ext</groupId>
@@ -51,9 +51,9 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <liquibase.version>4.32.0</liquibase.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <liquibase.version>5.0.1</liquibase.version>
         <sonar.organization>liquibase</sonar.organization>
         <sonar.projectKey>${sonar.organization}_${project.artifactId}</sonar.projectKey>
         <sonar.projectName>${project.name}</sonar.projectName>
@@ -64,8 +64,6 @@
         <sonar.sources>src/main/java</sonar.sources>
         <sonar.tests>src/test</sonar.tests>
         <liquibase-test-harness.version>1.0.10</liquibase-test-harness.version>
-        <junit.version>5.13.2</junit.version>
-        <junit-platform.version>1.13.2</junit-platform.version>
         <mockito.version>4.11.0</mockito.version>
         <jacoco.fileset.directory>target</jacoco.fileset.directory>
     </properties>
@@ -84,18 +82,18 @@
         <dependency>
             <groupId>com.databricks</groupId>
             <artifactId>databricks-jdbc</artifactId>
-            <version>2.7.3</version>
+            <version>3.0.5</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.38</version>
+            <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>${junit.version}</version>
+            <version>${jupiter.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -112,12 +110,12 @@
         <dependency>
             <groupId>org.junit.vintage</groupId>
             <artifactId>junit-vintage-engine</artifactId>
-            <version>${junit.version}</version>
+            <version>${jupiter.version}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.version}</version>
+            <version>${jupiter.version}</version>
         </dependency>
         <dependency>
             <groupId>org.skyscreamer</groupId>
@@ -153,18 +151,16 @@
 
         <plugins>
             <plugin>
-                <groupId>org.liquibase</groupId>
-                <artifactId>liquibase-maven-plugin</artifactId>
-                <version>${liquibase.version}</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <propertyFileWillOverride>true</propertyFileWillOverride>
-                    <propertyFile>target/classes/liquibase.properties</propertyFile>
-                    <logging>DEBUG</logging>
-                    <changeLogFile>target/classes/changelog.sql</changeLogFile>
-                    <outputChangeLogFile>target/classes/generatedChangelog.databricks.sql</outputChangeLogFile>
-                    <diffTypes>tables,views</diffTypes>
-                    <diffIncludeCatalog>true</diffIncludeCatalog>
-                    <diffIncludeSchema>true</diffIncludeSchema>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
 
@@ -177,7 +173,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.11.2</version>
+                <version>3.12.0</version>
                 <configuration>
                     <attach>true</attach>
                     <author>false</author>
@@ -202,7 +198,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.13</version>
+                <version>0.8.14</version>
                 <configuration>
                     <fileSets>
                         <fileSet>
@@ -218,19 +214,19 @@
             <plugin>
                 <groupId>org.sonarsource.scanner.maven</groupId>
                 <artifactId>sonar-maven-plugin</artifactId>
-                <version>5.1.0.4751</version>
+                <version>5.5.0.6356</version>
             </plugin>
 
             <plugin>
                 <groupId>org.liquibase.ext</groupId>
                 <artifactId>liquibase-sdk-maven-plugin</artifactId>
-                <version>0.10.25</version>
+                <version>0.11.0</version>
             </plugin>
 
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
-                <version>1.7.1</version>
+                <version>1.7.3</version>
                 <configuration>
                     <embedBuildProfileDependencies>true</embedBuildProfileDependencies>
                     <updatePomFile>true</updatePomFile>
@@ -272,7 +268,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.4.2</version>
+                <version>3.5.0</version>
                 <configuration>
                     <archive>
                         <manifestEntries>

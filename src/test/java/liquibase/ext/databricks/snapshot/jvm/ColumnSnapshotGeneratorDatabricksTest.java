@@ -1,6 +1,7 @@
 package liquibase.ext.databricks.snapshot.jvm;
 
 import liquibase.exception.DatabaseException;
+import liquibase.ext.databricks.database.DatabricksDatabase;
 import liquibase.snapshot.JdbcDatabaseSnapshot;
 import liquibase.statement.DatabaseFunction;
 import liquibase.structure.DatabaseObject;
@@ -33,12 +34,12 @@ class ColumnSnapshotGeneratorDatabricksTest {
     private ArgumentCaptor<String> queryCaptor;
     private DatabaseObject testedColumn;
 
-    private static final Map<String, String> COLUMN_WITH_DEFAULT_NAMES = new HashMap<String , String>() {{
+    private static final Map<String, String> COLUMN_WITH_DEFAULT_NAMES = new HashMap<String, String>() {{
         put("intcolumn", "-101");
         put("eventDescription", "default string, regular ? almost();!$#@^%[] String bigint");
         put("eventShortDescription", "short desc");
     }};
-    private static final Map<String, DatabaseFunction> COLUMN_WITH_DEFAULT_COMPUTED_NAMES = new HashMap<String , DatabaseFunction>() {{
+    private static final Map<String, DatabaseFunction> COLUMN_WITH_DEFAULT_COMPUTED_NAMES = new HashMap<String, DatabaseFunction>() {{
         put("eventTime", new DatabaseFunction("current_timestamp()"));
         put("year", new DatabaseFunction("YEAR(CURRENT_TIMESTAMP())"));
         put("eventDate", new DatabaseFunction("CAST(CURRENT_TIMESTAMP() AS DATE)"));
@@ -59,16 +60,17 @@ class ColumnSnapshotGeneratorDatabricksTest {
 
 
     @BeforeEach
-    public void setUp() throws DatabaseException, SQLException {
+    public void setUp() {
         snapshotGenerator = new ColumnSnapshotGeneratorDatabricks();
         testedColumn = new Column();
         testedColumn.setAttribute("relation", new Table(TEST_CATALOG_NAME, TEST_SCHEMA_NAME, TEST_TABLE_NAME));
-        when(snapshot.getScratchData(queryCaptor.capture())).thenReturn(SHOW_CREATE_TABLE_RESPONSE);
+        when(snapshot.getDatabase()).thenReturn(new DatabricksDatabase());
     }
 
     @Test
-    void snapshotObjectTest() throws DatabaseException, SQLException {
-        for(Map.Entry<String, String> columnWithDefault : COLUMN_WITH_DEFAULT_NAMES.entrySet()) {
+    void snapshotObjectTest() throws DatabaseException {
+        when(snapshot.getScratchData(queryCaptor.capture())).thenReturn(SHOW_CREATE_TABLE_RESPONSE);
+        for (Map.Entry<String, String> columnWithDefault : COLUMN_WITH_DEFAULT_NAMES.entrySet()) {
             testedColumn.setName(columnWithDefault.getKey());
             testedColumn.setAttribute("liquibase-complete", true);
             DatabaseObject databaseObject = snapshotGenerator.snapshotObject(testedColumn, snapshot);
@@ -77,7 +79,7 @@ class ColumnSnapshotGeneratorDatabricksTest {
             assertNotNull(((Column) databaseObject).getDefaultValue());
             assertEquals(columnWithDefault.getValue(), ((Column) databaseObject).getDefaultValue());
         }
-        for(Map.Entry<String, DatabaseFunction> columnWithDefaultComputed: COLUMN_WITH_DEFAULT_COMPUTED_NAMES.entrySet()) {
+        for (Map.Entry<String, DatabaseFunction> columnWithDefaultComputed : COLUMN_WITH_DEFAULT_COMPUTED_NAMES.entrySet()) {
             testedColumn.setName(columnWithDefaultComputed.getKey());
             testedColumn.setAttribute("liquibase-complete", true);
             DatabaseObject databaseObject = snapshotGenerator.snapshotObject(testedColumn, snapshot);
@@ -87,5 +89,18 @@ class ColumnSnapshotGeneratorDatabricksTest {
             assertEquals(columnWithDefaultComputed.getValue(), ((Column) databaseObject).getDefaultValue());
         }
         assertEquals(EXPECTED_SHOW_CREATE_QUERY, queryCaptor.getValue());
+    }
+
+    @Test
+    void getShowCreateTableQueryTest() {
+        Column columnInTableWithDashesInName = new Column();
+        columnInTableWithDashesInName.setAttribute("relation", new Table(TEST_CATALOG_NAME, TEST_SCHEMA_NAME, "random_table-of-stuff"));
+
+        String resultForSimpleTableName = ColumnSnapshotGeneratorDatabricks.getShowCreateTableQuery(snapshot, (Column) testedColumn);
+        String resultForTableWithDashes = ColumnSnapshotGeneratorDatabricks.getShowCreateTableQuery(snapshot, columnInTableWithDashesInName);
+
+        assertEquals("SHOW CREATE TABLE main.liquibase_harness_test_ds.tablewithdefaultvalues;", resultForSimpleTableName);
+        assertEquals("SHOW CREATE TABLE main.liquibase_harness_test_ds.`random_table-of-stuff`;", resultForTableWithDashes);
+
     }
 }
