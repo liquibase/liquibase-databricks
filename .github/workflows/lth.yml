@@ -14,7 +14,7 @@ concurrency:
 jobs:
   start-test-harness-infra:
     name: Start Liquibase Test Harness infra
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     permissions:
       checks: write
       pull-requests: write
@@ -59,7 +59,7 @@ jobs:
         
   liquibase-test-harness:
     name: Liquibase Test Harness
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: start-test-harness-infra
     permissions:
       checks: write
@@ -149,7 +149,7 @@ jobs:
     name: Stop Liquibase Test Harness infra
     needs: [liquibase-test-harness]
     if: always() # Always destroy, even if the previous steps fail
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     permissions:
       checks: write
       pull-requests: write
