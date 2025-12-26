@@ -39,23 +39,33 @@ public class DatabricksConnection extends JdbcConnection {
     @Override
     public void open(String url, Driver driverObject, Properties driverProperties) throws DatabaseException {
 
-        if(!url.contains("UserAgentEntry")) {
-            driverProperties.setProperty("UserAgentEntry", "Liquibase");
-        }
-
-        if(!url.contains("EnableArrow")) {
-            driverProperties.setProperty("EnableArrow", "0");
-        }
-
+        // Remove UserAgentEntry and EnableArrow from driverProperties to avoid duplicates
+        // The JDBC driver may read from driverProperties and add them to the URL, causing duplicates
+        driverProperties.remove("UserAgentEntry");
+        driverProperties.remove("EnableArrow");
+        
         // Set UserAgent to specify to Databricks that liquibase is the tool running these commands
         // Set EnableArrow because the arrow results break everything. And the JDBC release notes say to just disable it.
+
+        // First, deduplicate all parameters in the URL to handle any existing duplicates
+        url = deduplicateUrlParameters(url);
 
         // Ensure there's a terminating semicolon for consistent parsing
         if (!url.endsWith(";")) {
             url += ";";
         }
 
-        this.openConn(url, driverObject, driverProperties);
+        // Only append parameters that don't already exist in the URL to avoid duplicate key errors
+        StringBuilder urlBuilder = new StringBuilder(url);
+        if (!urlContainsParam(url, "UserAgentEntry")) {
+            urlBuilder.append("UserAgentEntry=Liquibase;");
+        }
+        if (!urlContainsParam(url, "EnableArrow")) {
+            urlBuilder.append("EnableArrow=0;");
+        }
+
+        String updatedUrl = urlBuilder.toString();
+        this.openConn(updatedUrl, driverObject, driverProperties);
     }
 
     public void openConn(String url, Driver driverObject, Properties driverProperties) throws DatabaseException {
@@ -105,8 +115,6 @@ public class DatabricksConnection extends JdbcConnection {
         // Remove spaces and split by semicolon
         String[] uriArgs = url.replace(" ", "").split(";");
 
-       // System.out.println("PARSE URL - url args" + uriArgs.toString());
-
         // Use Java Streams to find the parameter value
         Optional<String> paramString = Arrays.stream(uriArgs)
                 .filter(x -> x.startsWith(paramName + "="))
@@ -119,6 +127,89 @@ public class DatabricksConnection extends JdbcConnection {
         return defaultParamsArr.length > 1 ? defaultParamsArr[1] : defaultValue; // Check to avoid index out of bound
     }
 
+    /**
+     * Check if a parameter exists in the URL (case-insensitive) to avoid duplicate key errors
+     */
+    protected static boolean urlContainsParam(String url, String paramName) {
+        if (url == null || paramName == null) {
+            return false;
+        }
+        // Ensure there's a terminating semicolon for consistent parsing
+        String normalizedUrl = url;
+        if (!normalizedUrl.endsWith(";")) {
+            normalizedUrl += ";";
+        }
+        // Remove spaces and split by semicolon
+        String[] uriArgs = normalizedUrl.replace(" ", "").split(";");
+
+        // Use case-insensitive matching to find the parameter
+        String lowerParamName = paramName.toLowerCase();
+        return Arrays.stream(uriArgs)
+                .anyMatch(x -> {
+                    int equalsIndex = x.indexOf('=');
+                    if (equalsIndex == -1) return false;
+                    String paramPart = x.substring(0, equalsIndex).toLowerCase();
+                    return paramPart.equals(lowerParamName);
+                });
+    }
+
+    /**
+     * Deduplicate all parameters in the JDBC URL to avoid "Multiple entries with same key" errors.
+     * This method removes duplicate parameters, keeping the first occurrence of each parameter (case-insensitive).
+     */
+    protected static String deduplicateUrlParameters(String url) {
+        if (url == null || url.isEmpty()) {
+            return url;
+        }
+        
+        // Find where the URL parameters start (after the base URL)
+        int paramStart = url.indexOf(';');
+        if (paramStart == -1) {
+            // No parameters, return as-is
+            return url;
+        }
+        
+        String baseUrl = url.substring(0, paramStart + 1); // Include the semicolon
+        String paramString = url.substring(paramStart + 1);
+        
+        // Ensure there's a terminating semicolon for consistent parsing
+        if (!paramString.endsWith(";")) {
+            paramString += ";";
+        }
+        
+        // Remove spaces and split by semicolon
+        String[] uriArgs = paramString.replace(" ", "").split(";");
+        
+        // Use LinkedHashMap to preserve order and deduplicate (case-insensitive)
+        Map<String, String> paramMap = new java.util.LinkedHashMap<>();
+        for (String arg : uriArgs) {
+            if (arg.isEmpty()) {
+                continue;
+            }
+            int equalsIndex = arg.indexOf('=');
+            if (equalsIndex == -1) {
+                // Parameter without value, skip or handle as needed
+                continue;
+            }
+            String paramName = arg.substring(0, equalsIndex);
+            String paramValue = arg.substring(equalsIndex + 1);
+            
+            // Use lowercase key for case-insensitive comparison
+            String lowerKey = paramName.toLowerCase();
+            if (!paramMap.containsKey(lowerKey)) {
+                // Keep the original case of the first occurrence
+                paramMap.put(lowerKey, paramName + "=" + paramValue);
+            }
+        }
+        
+        // Reconstruct the URL
+        StringBuilder urlBuilder = new StringBuilder(baseUrl);
+        for (String param : paramMap.values()) {
+            urlBuilder.append(param).append(";");
+        }
+        
+        return urlBuilder.toString();
+    }
 
     @Override
     public String getDatabaseProductVersion() throws DatabaseException {
@@ -152,17 +243,32 @@ public class DatabricksConnection extends JdbcConnection {
     protected String getConnectionUrl() throws SQLException {
 
         String rawUrl = con.getMetaData().getURL();
+        
+        // Handle null or empty URL according to JDBC spec
+        if (rawUrl == null) {
+            rawUrl = "";
+        }
+        
+        // First, deduplicate all parameters in the URL to handle any existing duplicates
+        rawUrl = deduplicateUrlParameters(rawUrl);
+        
         // Check for ; characters
-        String updatedUrl;
+        StringBuilder urlBuilder = new StringBuilder(rawUrl);
 
-        if (rawUrl.charAt(rawUrl.length() - 1) == ';') {
-            updatedUrl = rawUrl + "UserAgentEntry=Liquibase;EnableArrow=0;";
+        // Ensure there's a terminating semicolon for consistent parsing
+        if (rawUrl.isEmpty() || rawUrl.charAt(rawUrl.length() - 1) != ';') {
+            urlBuilder.append(";");
         }
-        else {
-            updatedUrl = rawUrl + ";UserAgentEntry=Liquibase;EnableArrow=0;";
 
+        // Only append parameters that don't already exist in the URL to avoid duplicate key errors
+        if (!urlContainsParam(rawUrl, "UserAgentEntry")) {
+            urlBuilder.append("UserAgentEntry=Liquibase;");
         }
-        return updatedUrl;
+        if (!urlContainsParam(rawUrl, "EnableArrow")) {
+            urlBuilder.append("EnableArrow=0;");
+        }
+
+        return urlBuilder.toString();
     }
 
     @Override
