@@ -1,8 +1,6 @@
 
 
 # Liquibase-Databricks Connector
-
-
 ## Summary 
 This is the repository for the Open Source version of the Liquibase Extension for Managing Delta Tables on DatabricksSQL.
 The official documentation for this extension is here: [Using Liquibase with Databricks Platforms](https://docs.liquibase.com/start/tutorials/databricks/home.html)
