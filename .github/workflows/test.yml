@@ -26,7 +26,7 @@ jobs:
     uses: liquibase/build-logic/.github/workflows/os-extension-test.yml@main
     secrets: inherit
     with:
-      os: ubuntu-latest
+      os: '["ubuntu-latest"]'
 
   dependabot-automerge:
     needs: [ build-test,authorize ]
