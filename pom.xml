@@ -46,7 +46,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
-    <liquibase.version>5.0.1</liquibase.version>
+    <liquibase.version>5.0.2</liquibase.version>
     <sonar.organization>liquibase</sonar.organization>
     <sonar.projectKey>${sonar.organization}_${project.artifactId}</sonar.projectKey>
     <sonar.projectName>${project.name}</sonar.projectName>
