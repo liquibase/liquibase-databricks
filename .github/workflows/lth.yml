@@ -90,7 +90,7 @@ jobs:
       checks: write
       pull-requests: write
       contents: write
-      packages: write
+      packages: read
       id-token: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
