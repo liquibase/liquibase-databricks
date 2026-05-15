@@ -325,4 +325,25 @@ class CreateTableGeneratorDatabricksTest {
                 () -> assertTrue(sql.contains("'boolean.prop' = false"), "Should handle boolean properties")
         );
     }
+
+    @Test
+    void createTableWithComplexProperties() {
+        // Test the fix for complex properties that contain commas
+        ExtendedTableProperties properties = new ExtendedTableProperties();
+        properties.setTblProperties(
+                "simple.property=true,clusteringColumns=[[\"column_1\"],[\"column_2\"]],delta.dataSkippingStatsColumns=COL_1,COL_2,COL_3,another.simple=false"
+        );
+        statement.setExtendedTableProperties(properties);
+
+        Sql[] result = generator.generateSql(statement, database, sqlGeneratorChain);
+        String sql = result[0].toSql();
+
+        // Verify that all properties are correctly parsed and included
+        assertAll(
+                () -> assertTrue(sql.contains("simple.property = true"), "Should handle simple property"),
+                () -> assertTrue(sql.contains("clusteringColumns = [[\"column_1\"],[\"column_2\"]]"), "Should handle complex array property"),
+                () -> assertTrue(sql.contains("delta.dataSkippingStatsColumns = COL_1,COL_2,COL_3"), "Should handle comma-separated property values"),
+                () -> assertTrue(sql.contains("another.simple = false"), "Should handle property after complex value")
+        );
+    }
 }
