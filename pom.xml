@@ -74,7 +74,7 @@
     <dependency>
       <groupId>com.databricks</groupId>
       <artifactId>databricks-jdbc</artifactId>
-      <version>3.3.3</version>
+      <version>3.4.1</version>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
