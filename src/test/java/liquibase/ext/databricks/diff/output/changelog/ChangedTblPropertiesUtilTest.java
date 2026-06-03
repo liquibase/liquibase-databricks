@@ -7,10 +7,6 @@ import liquibase.ext.databricks.change.alterTableProperties.AlterTableProperties
 import liquibase.structure.core.Table;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -107,8 +103,8 @@ class ChangedTblPropertiesUtilTest {
     void addAndRemoveAndChangeManyAtSameTimeAndInRandomOrder() {
         //Arrange
         Difference difference = new Difference("tblProperties",
-                "'this.should.be.ignored'=true,'this.should.be.added.too'=true,'this.should.be.added'=35,'this.should.be.changed'=true", "'this.should.be" +
-                ".changed'=false,'this.should.be.removed'='aaa','this.should.be.ignored'=true,this.should.be.removed.too'=bye");
+                "'this.should.be.ignored'=true,'this.should.be.added.too'=true,'this.should.be.added'=35,'this.should.be.changed'=true", 
+                "'this.should.be.changed'=false,'this.should.be.removed'='aaa','this.should.be.ignored'=true,'this.should.be.removed.too'=bye");
 
         //Act
         AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
@@ -120,36 +116,47 @@ class ChangedTblPropertiesUtilTest {
         assertEquals("'this.should.be.added.too'=true,'this.should.be.changed'=true,'this.should.be.added'=35",
                 result[0].getSetExtendedTableProperties().getTblProperties());
         assertNull(result[0].getUnsetExtendedTableProperties());
-        assertEquals("'this.should.be.removed',this.should.be.removed.too'", result[1].getUnsetExtendedTableProperties().getTblProperties());
+        assertEquals("'this.should.be.removed','this.should.be.removed.too'", result[1].getUnsetExtendedTableProperties().getTblProperties());
         assertNull(result[1].getSetExtendedTableProperties());
     }
 
     @Test
-    void ignoreInternalDeltaProperties() {
-        //Arrange
+    void deltaPropertiesHandledLikeRegularProperties() {
+        // Tests that delta properties are treated like any other property (no special filtering)
+        // Combines: add, remove, modify, and mix of delta and regular properties
         Difference difference = new Difference("tblProperties",
-                "'delta.columnMapping.maxColumnId'=35, 'this.should.be.added.too'=true",
-                "'this.should.be.dropped'=false, 'delta.feature.clustering'=20");
+                "'delta.columnMapping.mode'='name', 'regular.property'=true, 'delta.enableDeletionVectors'=true, 'delta.customProperty'=false",
+                "'delta.columnMapping.mode'='id', 'other.property'=false, 'delta.oldProperty'=true");
 
-        //Act
+        // Act
         AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
                 .getAlterTablePropertiesChangeDatabricks(table, control, difference);
 
-        //Assert
+        // Assert
         assertNotNull(result);
         assertEquals(2, result.length);
-        assertEquals("'this.should.be.added.too'=true", result[0].getSetExtendedTableProperties().getTblProperties());
+
+        // Verify SET operations (add new + modify existing)
+        String setProperties = result[0].getSetExtendedTableProperties().getTblProperties();
+        assertTrue(setProperties.contains("'delta.columnMapping.mode'='name'"));
+        assertTrue(setProperties.contains("'regular.property'=true"));
+        assertTrue(setProperties.contains("'delta.enableDeletionVectors'=true"));
+        assertTrue(setProperties.contains("'delta.customProperty'=false"));
         assertNull(result[0].getUnsetExtendedTableProperties());
-        assertEquals("'this.should.be.dropped'", result[1].getUnsetExtendedTableProperties().getTblProperties());
+
+        // Verify UNSET operations (remove properties not in reference)
+        String unsetProperties = result[1].getUnsetExtendedTableProperties().getTblProperties();
+        assertTrue(unsetProperties.contains("'other.property'"));
+        assertTrue(unsetProperties.contains("'delta.oldProperty'"));
         assertNull(result[1].getSetExtendedTableProperties());
     }
 
     @Test
-    void allowSpecificDeltaProperties() {
-        // Tests a mix of allowed and disallowed delta properties
+    void complexArrayPropertyParsing() {
+        // Test parsing of complex array properties like clusteringColumns
         Difference difference = new Difference("tblProperties",
-                "'delta.columnMapping.mode'='name', 'delta.enableDeletionVectors'=true, 'delta.feature.allowColumnDefaults'=true, 'delta.someOtherProperty'=false",
-                "'delta.columnMapping.mode'='id', 'delta.enableDeletionVectors'=false, 'delta.invalidProperty'=true");
+                "clusteringColumns=[[\"column_1\"],[\"column_2\"],[\"column_3\"]]",
+                "");
 
         // Act
         AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
@@ -158,26 +165,18 @@ class ChangedTblPropertiesUtilTest {
         // Assert
         assertNotNull(result);
         assertEquals(1, result.length);
-
-        Set<String> expectedProperties = new TreeSet<>(
-                Arrays.asList("'delta.columnMapping.mode'='name'", "'delta.enableDeletionVectors'=true", "'delta.feature.allowColumnDefaults'=true"));
-
-        Set<String> actualProperties = Arrays.stream(
-                        result[0].getSetExtendedTableProperties().getTblProperties().split(","))
-                .map(String::trim)
-                .collect(Collectors.toSet());
-
-        // Checks if only allowed properties are included
-        assertEquals(expectedProperties, actualProperties);
+        assertEquals("clusteringColumns=[[\"column_1\"],[\"column_2\"],[\"column_3\"]]", 
+                result[0].getSetExtendedTableProperties().getTblProperties());
+        assertNull(result[0].getUnsetExtendedTableProperties());
     }
 
+
     @Test
-    void allowAllWhitelistedDeltaProperties() {
-        // We test all properties on the whitelist
+    void complexCommaSeparatedPropertyParsing() {
+        // Test parsing of comma-separated properties like delta.dataSkippingStatsColumns
         Difference difference = new Difference("tblProperties",
-                "'delta.columnMapping.mode'='name', " +
-                        "'delta.enableDeletionVectors'=true, " +
-                        "'delta.feature.allowColumnDefaults'=true,", "");
+                "delta.dataSkippingStatsColumns=column_1,column_2,column_3,column_4",
+                "");
 
         // Act
         AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
@@ -186,41 +185,17 @@ class ChangedTblPropertiesUtilTest {
         // Assert
         assertNotNull(result);
         assertEquals(1, result.length);
-        // Checks whether all whitelist properties have been maintained
-        assertTrue(result[0].getSetExtendedTableProperties().getTblProperties().contains("'delta.columnMapping.mode'='name'"));
-        assertTrue(result[0].getSetExtendedTableProperties().getTblProperties().contains("'delta.enableDeletionVectors'=true"));
-        assertTrue(result[0].getSetExtendedTableProperties().getTblProperties().contains("'delta.feature.allowColumnDefaults'=true"));
+        assertEquals("delta.dataSkippingStatsColumns=column_1,column_2,column_3,column_4", 
+                result[0].getSetExtendedTableProperties().getTblProperties());
+        assertNull(result[0].getUnsetExtendedTableProperties());
     }
 
     @Test
-    void mixDeltaAndRegularProperties() {
-        // Tests a mix of allowed delta properties and regular properties
+    void mixedComplexAndSimpleProperties() {
+        // Test parsing when complex and simple properties are mixed
         Difference difference = new Difference("tblProperties",
-                "'delta.columnMapping.mode'='name', 'regular.property'=true, 'delta.enableDeletionVectors'=true",
-                "'delta.columnMapping.mode'='id', 'other.property'=false");
-
-        // Act
-        AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
-                .getAlterTablePropertiesChangeDatabricks(table, control, difference);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(2, result.length);
-
-        // Verifies that both permitted and regular delta properties were processed correctly
-        assertTrue(result[0].getSetExtendedTableProperties().getTblProperties()
-                .contains("'delta.columnMapping.mode'='name'"));
-        assertTrue(result[0].getSetExtendedTableProperties().getTblProperties()
-                .contains("'regular.property'=true"));
-        assertEquals("'other.property'", result[1].getUnsetExtendedTableProperties().getTblProperties());
-    }
-
-    @Test
-    void updateWhitelistedDeltaProperties() {
-        // Tests updating values for allowed delta properties
-        Difference difference = new Difference("tblProperties",
-                "'delta.columnMapping.mode'='name', 'delta.enableDeletionVectors'=true",
-                "'delta.columnMapping.mode'='id', 'delta.enableDeletionVectors'=false");
+                "simple.property=true,clusteringColumns=[[\"column_1\"],[\"column_2\"]],delta.dataSkippingStatsColumns=COL_1,COL_2,COL_3,another.simple=false",
+                "");
 
         // Act
         AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
@@ -229,9 +204,126 @@ class ChangedTblPropertiesUtilTest {
         // Assert
         assertNotNull(result);
         assertEquals(1, result.length);
-        // Checks whether the new values were applied correctly
-        String expectedNormalized = "'delta.columnMapping.mode'='name','delta.enableDeletionVectors'=true";
-        String actualNormalized = result[0].getSetExtendedTableProperties().getTblProperties();
-        assertEquals(expectedNormalized, actualNormalized);
+        String setProperties = result[0].getSetExtendedTableProperties().getTblProperties();
+        assertTrue(setProperties.contains("simple.property=true"));
+        assertTrue(setProperties.contains("clusteringColumns=[[\"column_1\"],[\"column_2\"]]"));
+        assertTrue(setProperties.contains("delta.dataSkippingStatsColumns=COL_1,COL_2,COL_3"));
+        assertTrue(setProperties.contains("another.simple=false"));
+        assertNull(result[0].getUnsetExtendedTableProperties());
+    }
+
+    @Test
+    void filterOutVolatileDeltaProperties() {
+        // Test that volatile delta properties are filtered out
+        Difference difference = new Difference("tblProperties",
+                "'delta.rowTracking.materializedRowCommitVersionColumnName'='_row-commit-version-col-d4dcd376-5186-4100-9a5e-5400b200dcd6'," +
+                "'delta.rowTracking.materializedRowIdColumnName'='_row-id-col-b67cce63-1793-4426-8f1d-fc346691b6fc'," +
+                "'delta.columnMapping.maxColumnId'='59'," +
+                "'regular.property'=true",
+                "");
+
+        // Act
+        AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
+                .getAlterTablePropertiesChangeDatabricks(table, control, difference);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.length);
+        String setProperties = result[0].getSetExtendedTableProperties().getTblProperties();
+        
+        // Volatile delta properties should be filtered out
+        assertFalse(setProperties.contains("delta.rowTracking.materializedRowCommitVersionColumnName"));
+        assertFalse(setProperties.contains("delta.rowTracking.materializedRowIdColumnName"));
+        assertFalse(setProperties.contains("delta.columnMapping.maxColumnId"));
+        
+        // Regular properties should be included
+        assertTrue(setProperties.contains("'regular.property'=true"));
+        assertNull(result[0].getUnsetExtendedTableProperties());
+    }
+
+    @Test
+    void filterOutVolatileDeltaPropertiesInRemoval() {
+        // Test that volatile delta properties are also filtered out when being removed
+        Difference difference = new Difference("tblProperties",
+                "",
+                "'delta.rowTracking.materializedRowCommitVersionColumnName'='_row-commit-version-col-old'," +
+                "'delta.columnMapping.maxColumnId'='45'," +
+                "'regular.property'=false");
+
+        // Act
+        AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
+                .getAlterTablePropertiesChangeDatabricks(table, control, difference);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.length);
+        String unsetProperties = result[0].getUnsetExtendedTableProperties().getTblProperties();
+        
+        // Volatile delta properties should be filtered out from removal
+        assertFalse(unsetProperties.contains("delta.rowTracking.materializedRowCommitVersionColumnName"));
+        assertFalse(unsetProperties.contains("delta.columnMapping.maxColumnId"));
+        
+        // Regular properties should be included for removal
+        assertTrue(unsetProperties.contains("'regular.property'"));
+        assertNull(result[0].getSetExtendedTableProperties());
+    }
+
+    @Test
+    void allowedDeltaPropertiesStillWork() {
+        // Test that non-volatile delta properties are still processed normally
+        Difference difference = new Difference("tblProperties",
+                "'delta.enableDeletionVectors'=true," +
+                "'delta.logRetentionDuration'='30 days'," +
+                "'delta.columnMapping.maxColumnId'='59'," + // This should be filtered
+                "'delta.targetFileSize'='128MB'",
+                "'delta.enableDeletionVectors'=false");
+
+        // Act
+        AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
+                .getAlterTablePropertiesChangeDatabricks(table, control, difference);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.length);
+        
+        String setProperties = result[0].getSetExtendedTableProperties().getTblProperties();
+        // Allowed delta properties should be included
+        assertTrue(setProperties.contains("'delta.enableDeletionVectors'=true"));
+        assertTrue(setProperties.contains("'delta.logRetentionDuration'='30 days'"));
+        assertTrue(setProperties.contains("'delta.targetFileSize'='128MB'"));
+        
+        // Volatile delta property should be filtered out
+        assertFalse(setProperties.contains("delta.columnMapping.maxColumnId"));
+        
+        assertNull(result[0].getUnsetExtendedTableProperties());
+    }
+
+    @Test
+    void quotedAndUnquotedVolatilePropertiesFiltered() {
+        // Test that both quoted and unquoted volatile properties are filtered
+        Difference difference = new Difference("tblProperties",
+                "delta.columnMapping.maxColumnId=59," +
+                "'delta.rowTracking.materializedRowIdColumnName'='_row-id-col-test'," +
+                "\"delta.rowTracking.materializedRowCommitVersionColumnName\"=\"_row-commit-version-col-test\"," +
+                "'regular.property'=true",
+                "");
+
+        // Act
+        AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
+                .getAlterTablePropertiesChangeDatabricks(table, control, difference);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.length);
+        String setProperties = result[0].getSetExtendedTableProperties().getTblProperties();
+        
+        // All volatile properties should be filtered regardless of quoting
+        assertFalse(setProperties.contains("delta.columnMapping.maxColumnId"));
+        assertFalse(setProperties.contains("delta.rowTracking.materializedRowIdColumnName"));
+        assertFalse(setProperties.contains("delta.rowTracking.materializedRowCommitVersionColumnName"));
+        
+        // Regular property should be included
+        assertTrue(setProperties.contains("'regular.property'=true"));
+        assertNull(result[0].getUnsetExtendedTableProperties());
     }
 }
