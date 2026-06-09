@@ -9,7 +9,7 @@
   </parent>
   <groupId>org.liquibase.ext</groupId>
   <artifactId>liquibase-databricks</artifactId>
-  <version>5.0.3-SNAPSHOT</version>
+  <version>5.0.3</version>
   <name>Liquibase Extension: Databricks support</name>
   <description>Liquibase Extension for Databricks.</description>
   <url>https://github.com/liquibase/liquibase-databricks</url>
@@ -39,7 +39,7 @@
     <connection>scm:git:${project.scm.url}</connection>
     <developerConnection>scm:git:${project.scm.url}</developerConnection>
     <url>https://github.com/liquibase/liquibase-databricks.git</url>
-    <tag>HEAD</tag>
+    <tag>temp</tag>
   </scm>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -266,11 +266,11 @@
         <executions>
           <execution>
             <id>build-sources-jar</id>
-            <phase/>
+            <phase />
           </execution>
           <execution>
             <id>build-javadoc-jar</id>
-            <phase/>
+            <phase />
           </execution>
         </executions>
       </plugin>
