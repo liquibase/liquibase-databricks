@@ -10,7 +10,8 @@ permissions:
   pull-requests: write
   packages: write
   id-token: write
-  
+  actions: read
+
 jobs:
   release:
     uses: liquibase/build-logic/.github/workflows/extension-release-published.yml@main
