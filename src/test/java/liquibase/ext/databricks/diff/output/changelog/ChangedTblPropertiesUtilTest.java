@@ -4,7 +4,9 @@ import liquibase.diff.Difference;
 import liquibase.diff.output.DiffOutputControl;
 import liquibase.ext.databricks.change.AbstractAlterPropertiesChangeDatabricks;
 import liquibase.ext.databricks.change.alterTableProperties.AlterTablePropertiesChangeDatabricks;
+import liquibase.ext.databricks.change.alterViewProperties.AlterViewPropertiesChangeDatabricks;
 import liquibase.structure.core.Table;
+import liquibase.structure.core.View;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -233,5 +235,187 @@ class ChangedTblPropertiesUtilTest {
         String expectedNormalized = "'delta.columnMapping.mode'='name','delta.enableDeletionVectors'=true";
         String actualNormalized = result[0].getSetExtendedTableProperties().getTblProperties();
         assertEquals(expectedNormalized, actualNormalized);
+    }
+
+    // === New tests to improve mutation coverage ===
+
+    @Test
+    void nullReferenceValueShouldProduceEmptyMap() {
+        // Tests the null branch of convertToMapExcludingDeltaParameters (line 107)
+        Difference difference = new Difference("tblProperties", null, "");
+
+        AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
+                .getAlterTablePropertiesChangeDatabricks(table, control, difference);
+
+        assertNotNull(result);
+        assertEquals(0, result.length);
+    }
+
+    @Test
+    void nullComparedValueShouldProduceEmptyMap() {
+        // Tests the null branch for compared value
+        Difference difference = new Difference("tblProperties", "'key'=value", null);
+
+        AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
+                .getAlterTablePropertiesChangeDatabricks(table, control, difference);
+
+        assertNotNull(result);
+        assertEquals(1, result.length);
+        assertEquals("'key'=value", result[0].getSetExtendedTableProperties().getTblProperties());
+    }
+
+    @Test
+    void whitespaceAroundKeysAndValuesShouldBeTrimmed() {
+        // Tests the trim() calls on line 111 (NakedReceiverMutator + InlineConstantMutator)
+        Difference difference = new Difference("tblProperties", " 'key' = value ", "");
+
+        AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
+                .getAlterTablePropertiesChangeDatabricks(table, control, difference);
+
+        assertNotNull(result);
+        assertEquals(1, result.length);
+        assertEquals("'key'=value", result[0].getSetExtendedTableProperties().getTblProperties());
+    }
+
+    @Test
+    void withIncludeCatalogAndSchemaShouldSetNames() {
+        // Tests the includeCatalog and includeSchema branches (lines 134, 138)
+        DiffOutputControl controlWithCatalogAndSchema = new DiffOutputControl(true, true, true, null);
+        Difference difference = new Difference("tblProperties", "'key'=value", "");
+
+        AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
+                .getAlterTablePropertiesChangeDatabricks(table, controlWithCatalogAndSchema, difference);
+
+        assertNotNull(result);
+        assertEquals(1, result.length);
+        assertEquals("catalogName", result[0].getCatalogName());
+        assertEquals("schemaName", result[0].getSchemaName());
+    }
+
+    @Test
+    void withIncludeCatalogOnlyShouldSetCatalogName() {
+        // Tests includeCatalog=true, includeSchema=false (line 134 true, line 138 false)
+        DiffOutputControl controlCatalogOnly = new DiffOutputControl(true, false, true, null);
+        Difference difference = new Difference("tblProperties", "'key'=value", "");
+
+        AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
+                .getAlterTablePropertiesChangeDatabricks(table, controlCatalogOnly, difference);
+
+        assertNotNull(result);
+        assertEquals(1, result.length);
+        assertEquals("catalogName", result[0].getCatalogName());
+        assertNull(result[0].getSchemaName());
+    }
+
+    @Test
+    void withIncludeSchemaOnlyShouldSetSchemaName() {
+        // Tests includeCatalog=false, includeSchema=true (line 134 false, line 138 true)
+        DiffOutputControl controlSchemaOnly = new DiffOutputControl(false, true, true, null);
+        Difference difference = new Difference("tblProperties", "'key'=value", "");
+
+        AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
+                .getAlterTablePropertiesChangeDatabricks(table, controlSchemaOnly, difference);
+
+        assertNotNull(result);
+        assertEquals(1, result.length);
+        assertNull(result[0].getCatalogName());
+        assertEquals("schemaName", result[0].getSchemaName());
+    }
+
+    @Test
+    void withNeitherCatalogNorSchemaShouldNotSetNames() {
+        // Tests includeCatalog=false, includeSchema=false (both lines 134, 138 false)
+        DiffOutputControl controlNeither = new DiffOutputControl(false, false, true, null);
+        Difference difference = new Difference("tblProperties", "'key'=value", "");
+
+        AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
+                .getAlterTablePropertiesChangeDatabricks(table, controlNeither, difference);
+
+        assertNotNull(result);
+        assertEquals(1, result.length);
+        assertNull(result[0].getCatalogName());
+        assertNull(result[0].getSchemaName());
+    }
+
+    @Test
+    void getAlterViewPropertiesChangeDatabricksShouldWork() {
+        // Tests getAlterViewPropertiesChangeDatabricks method (lines 47-49)
+        View view = new View("catalogName", "schemaName", "viewName");
+        DiffOutputControl control = new DiffOutputControl(true, true, true, null);
+        Difference difference = new Difference("tblProperties", "'key'=value", "");
+
+        AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
+                .getAlterViewPropertiesChangeDatabricks(view, control, difference);
+
+        assertNotNull(result);
+        assertEquals(1, result.length);
+        assertEquals("viewName", ((AlterViewPropertiesChangeDatabricks) result[0]).getViewName());
+        assertEquals("catalogName", result[0].getCatalogName());
+        assertEquals("schemaName", result[0].getSchemaName());
+    }
+
+    @Test
+    void getAlterViewPropertiesChangeDatabricksWithRemoveOnly() {
+        // Tests getAlterViewPropertiesChangeDatabricks with remove-only scenario
+        View view = new View("catalogName", "schemaName", "viewName");
+        DiffOutputControl control = new DiffOutputControl(true, true, true, null);
+        Difference difference = new Difference("tblProperties", "", "'key'=value");
+
+        AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
+                .getAlterViewPropertiesChangeDatabricks(view, control, difference);
+
+        assertNotNull(result);
+        assertEquals(1, result.length);
+        assertEquals("viewName", ((AlterViewPropertiesChangeDatabricks) result[0]).getViewName());
+        assertNull(result[0].getSetExtendedTableProperties());
+        assertNotNull(result[0].getUnsetExtendedTableProperties());
+    }
+
+    @Test
+    void getFilteredTblPropertiesShouldReturnFilteredString() {
+        // Tests getFilteredTblProperties method (lines 123-124)
+        String result = ChangedTblPropertiesUtil.getFilteredTblProperties("'key1'=value1,'key2'=value2");
+
+        assertNotNull(result);
+        assertTrue(result.contains("'key1'=value1"));
+        assertTrue(result.contains("'key2'=value2"));
+    }
+
+    @Test
+    void getFilteredTblPropertiesShouldExcludeDeltaProperties() {
+        // Tests getFilteredTblProperties filters out non-allowed delta properties
+        String result = ChangedTblPropertiesUtil.getFilteredTblProperties(
+                "'key1'=value1,delta.internalProp=bad,'delta.columnMapping.mode'=name");
+
+        assertNotNull(result);
+        assertTrue(result.contains("'key1'=value1"));
+        assertTrue(result.contains("'delta.columnMapping.mode'=name"));
+        assertFalse(result.contains("delta.internalProp"));
+    }
+
+    @Test
+    void getFilteredTblPropertiesWithEmptyInput() {
+        // Tests getFilteredTblProperties with empty string
+        String result = ChangedTblPropertiesUtil.getFilteredTblProperties("");
+
+        assertNotNull(result);
+        assertEquals("", result);
+    }
+
+    @Test
+    void justRemoveShouldNotSetCatalogOrSchemaWithDefaultControl() {
+        // Tests that default DiffOutputControl (includeCatalog=true, includeSchema=true)
+        // sets catalog and schema names even for remove-only changes
+        Difference difference = new Difference("tblProperties", "", "'key'=value");
+
+        AbstractAlterPropertiesChangeDatabricks[] result = ChangedTblPropertiesUtil
+                .getAlterTablePropertiesChangeDatabricks(table, control, difference);
+
+        assertNotNull(result);
+        assertEquals(1, result.length);
+        assertNull(result[0].getSetExtendedTableProperties());
+        assertNotNull(result[0].getUnsetExtendedTableProperties());
+        assertEquals("catalogName", result[0].getCatalogName());
+        assertEquals("schemaName", result[0].getSchemaName());
     }
 }
