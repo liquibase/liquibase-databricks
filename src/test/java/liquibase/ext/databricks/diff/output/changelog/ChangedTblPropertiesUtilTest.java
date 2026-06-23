@@ -376,9 +376,7 @@ class ChangedTblPropertiesUtilTest {
         // Tests getFilteredTblProperties method (lines 123-124)
         String result = ChangedTblPropertiesUtil.getFilteredTblProperties("'key1'=value1,'key2'=value2");
 
-        assertNotNull(result);
-        assertTrue(result.contains("'key1'=value1"));
-        assertTrue(result.contains("'key2'=value2"));
+        assertEquals("'key2'=value2,'key1'=value1", result);
     }
 
     @Test
@@ -387,10 +385,7 @@ class ChangedTblPropertiesUtilTest {
         String result = ChangedTblPropertiesUtil.getFilteredTblProperties(
                 "'key1'=value1,delta.internalProp=bad,'delta.columnMapping.mode'=name");
 
-        assertNotNull(result);
-        assertTrue(result.contains("'key1'=value1"));
-        assertTrue(result.contains("'delta.columnMapping.mode'=name"));
-        assertFalse(result.contains("delta.internalProp"));
+        assertEquals("'delta.columnMapping.mode'=name,'key1'=value1", result);
     }
 
     @Test
