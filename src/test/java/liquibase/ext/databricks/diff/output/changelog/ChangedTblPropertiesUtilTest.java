@@ -376,7 +376,10 @@ class ChangedTblPropertiesUtilTest {
         // Tests getFilteredTblProperties method (lines 123-124)
         String result = ChangedTblPropertiesUtil.getFilteredTblProperties("'key1'=value1,'key2'=value2");
 
-        assertEquals("'key2'=value2,'key1'=value1", result);
+        // order-independent: getFilteredTblProperties joins HashMap entries, so entry order is not contractual
+        assertEquals(
+                new TreeSet<>(Arrays.asList("'key1'=value1", "'key2'=value2")),
+                new TreeSet<>(Arrays.asList(result.split(","))));
     }
 
     @Test
@@ -385,7 +388,10 @@ class ChangedTblPropertiesUtilTest {
         String result = ChangedTblPropertiesUtil.getFilteredTblProperties(
                 "'key1'=value1,delta.internalProp=bad,'delta.columnMapping.mode'=name");
 
-        assertEquals("'delta.columnMapping.mode'=name,'key1'=value1", result);
+        // order-independent: delta.internalProp is filtered out; remaining entry order is not contractual
+        assertEquals(
+                new TreeSet<>(Arrays.asList("'key1'=value1", "'delta.columnMapping.mode'=name")),
+                new TreeSet<>(Arrays.asList(result.split(","))));
     }
 
     @Test
