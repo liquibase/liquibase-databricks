@@ -252,7 +252,7 @@ class ChangedTblPropertiesUtilTest {
     }
 
     @Test
-    void nullComparedValueShouldProduceEmptyMap() {
+    void nullComparedValueShouldProduceSetPropertyChange() {
         // Tests the null branch for compared value
         Difference difference = new Difference("tblProperties", "'key'=value", null);
 
@@ -404,7 +404,7 @@ class ChangedTblPropertiesUtilTest {
     }
 
     @Test
-    void justRemoveShouldNotSetCatalogOrSchemaWithDefaultControl() {
+    void justRemoveShouldSetCatalogAndSchemaWithDefaultControl() {
         // Tests that default DiffOutputControl (includeCatalog=true, includeSchema=true)
         // sets catalog and schema names even for remove-only changes
         Difference difference = new Difference("tblProperties", "", "'key'=value");
