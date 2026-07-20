@@ -126,7 +126,7 @@ jobs:
           cache: "maven"
 
       - name: Set up Maven settings.xml
-        uses: liquibase/build-logic/.github/actions/setup-maven-settings@39a2f8419c891bdb2a08a78b02f6a2c1bc8ae59e # main
+        uses: liquibase/build-logic/.github/actions/setup-maven-settings@f4c22eb731637eb0fbc8b33bd15f0e6b144bea85 # main
         with:
           gpm-token: ${{ env.LIQUIBOT_PAT_GPM_ACCESS }}
           releases-enabled: 'false'
