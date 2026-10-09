@@ -62,6 +62,10 @@ public class ColumnSnapshotGeneratorDatabricks extends ColumnSnapshotGenerator {
         //This should work after fix on Databricks side
         if (example instanceof Column) {
             Column column = (Column) super.snapshotObject(example, snapshot);
+            if (column == null) {
+                // The column does not exist, which is the answer has() is asking for.
+                return null;
+            }
             String showCreateRelatedTableQuery = getShowCreateTableQuery(snapshot, column);
             if (snapshot.getScratchData(showCreateRelatedTableQuery) != null) {
                 String showCreateTableStatement = (String) snapshot.getScratchData(showCreateRelatedTableQuery);
