@@ -17,10 +17,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -89,6 +92,17 @@ class ColumnSnapshotGeneratorDatabricksTest {
             assertEquals(columnWithDefaultComputed.getValue(), ((Column) databaseObject).getDefaultValue());
         }
         assertEquals(EXPECTED_SHOW_CREATE_QUERY, queryCaptor.getValue());
+    }
+
+    @Test
+    void snapshotObject_returnsNullForMissingColumn() throws Exception {
+        JdbcDatabaseSnapshot.CachingDatabaseMetaData metaData = mock(JdbcDatabaseSnapshot.CachingDatabaseMetaData.class);
+        when(snapshot.getDatabase()).thenReturn(new DatabricksDatabase());
+        when(snapshot.getMetaDataFromCache()).thenReturn(metaData);
+        when(metaData.getColumns(any(), any(), any(), any())).thenReturn(Collections.emptyList());
+        testedColumn.setName("ATTRIBUTES");
+
+        assertNull(snapshotGenerator.snapshotObject(testedColumn, snapshot));
     }
 
     @Test
