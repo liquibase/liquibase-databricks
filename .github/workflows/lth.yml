@@ -30,7 +30,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Get the Databricks workspace credentials from vault
-        uses: liquibase/build-logic/.github/actions/setup-aws-vault@2003fece51886ec69cda3df1cb4520b3ceeb2e0c # main
+        uses: liquibase/build-logic/.github/actions/setup-aws-vault@adee5f2b8709f6cd43684a5de0a8e0128bafc4eb # main
         with:
           group: th-databricks
           role-arn: ${{ secrets.VAULT_GROUPED_TH_DATABRICKS_ROLE_ARN }}
@@ -97,13 +97,13 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Get the GPM token from vault
-        uses: liquibase/build-logic/.github/actions/setup-aws-vault@2003fece51886ec69cda3df1cb4520b3ceeb2e0c # main
+        uses: liquibase/build-logic/.github/actions/setup-aws-vault@adee5f2b8709f6cd43684a5de0a8e0128bafc4eb # main
         with:
           group: liquibot-github-pat
           role-arn: ${{ secrets.VAULT_GROUPED_LIQUIBOT_GITHUB_PAT_ROLE_ARN }}
 
       - name: Get the Databricks workspace credentials from vault
-        uses: liquibase/build-logic/.github/actions/setup-aws-vault@2003fece51886ec69cda3df1cb4520b3ceeb2e0c # main
+        uses: liquibase/build-logic/.github/actions/setup-aws-vault@adee5f2b8709f6cd43684a5de0a8e0128bafc4eb # main
         with:
           group: th-databricks
           role-arn: ${{ secrets.VAULT_GROUPED_TH_DATABRICKS_ROLE_ARN }}
@@ -159,7 +159,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Get the Databricks workspace credentials from vault
-        uses: liquibase/build-logic/.github/actions/setup-aws-vault@2003fece51886ec69cda3df1cb4520b3ceeb2e0c # main
+        uses: liquibase/build-logic/.github/actions/setup-aws-vault@adee5f2b8709f6cd43684a5de0a8e0128bafc4eb # main
         with:
           group: th-databricks
           role-arn: ${{ secrets.VAULT_GROUPED_TH_DATABRICKS_ROLE_ARN }}
